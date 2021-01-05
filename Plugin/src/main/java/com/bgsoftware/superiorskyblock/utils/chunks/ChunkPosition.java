@@ -12,6 +12,9 @@ import java.util.Objects;
 public final class ChunkPosition {
 
     private final String worldName;
+    // Start SpaceDelta
+    private World cachedWorld;
+    // End SpaceDelta
     private final int x, z;
 
     private ChunkPosition(String worldName, int x, int z){
@@ -25,7 +28,11 @@ public final class ChunkPosition {
     }
 
     public World getWorld() {
-        return Bukkit.getWorld(worldName);
+        // Start SpaceDelta
+        if (cachedWorld == null)
+            cachedWorld = Bukkit.getWorld(worldName);
+        return cachedWorld;
+        // End SpaceDelta
     }
 
     public int getX() {

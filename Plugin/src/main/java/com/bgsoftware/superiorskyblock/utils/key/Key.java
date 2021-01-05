@@ -105,6 +105,12 @@ public final class Key implements com.bgsoftware.superiorskyblock.api.key.Key {
         return of(Key.of(key), location);
     }
 
+    // Start SpaceDelta
+    public static Key ofNoLegacy(String key, Location location){
+        return of(key, location);
+    }
+    // End SpaceDelta
+
     public static Key of(Key key, Location location){
         return plugin.getBlockValues().convertKey(key, location);
     }

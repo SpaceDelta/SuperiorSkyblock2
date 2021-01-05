@@ -84,13 +84,13 @@
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
-        <!-- Panther !-->
+        <!-- Panther
         <dependency>
             <groupId>com.ayanix</groupId>
             <artifactId>Panther</artifactId>
             <version>1.1.6-SNAPSHOT</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency>!-->
     </dependencies>
 
 </project>
