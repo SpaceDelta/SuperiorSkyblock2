@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="$PROJECT_DIR$/../../../gradle-6.5" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/API" />
+            <option value="$PROJECT_DIR$/PaperHook" />
+            <option value="$PROJECT_DIR$/v1_10_R1" />
+            <option value="$PROJECT_DIR$/v1_11_R1" />
+            <option value="$PROJECT_DIR$/v1_12_R1" />
+            <option value="$PROJECT_DIR$/v1_13_R1" />
+            <option value="$PROJECT_DIR$/v1_13_R2" />
+            <option value="$PROJECT_DIR$/v1_14_R1" />
+            <option value="$PROJECT_DIR$/v1_15_R1" />
+            <option value="$PROJECT_DIR$/v1_16_R1" />
+            <option value="$PROJECT_DIR$/v1_16_R2" />
+            <option value="$PROJECT_DIR$/v1_16_R3" />
+            <option value="$PROJECT_DIR$/v1_8_R1" />
+            <option value="$PROJECT_DIR$/v1_8_R2" />
+            <option value="$PROJECT_DIR$/v1_8_R3" />
+            <option value="$PROJECT_DIR$/v1_9_R1" />
+            <option value="$PROJECT_DIR$/v1_9_R2" />
+          </set>
+        </option>
+        <option name="useQualifiedModuleNames" value="true" />
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

@@ -138,6 +138,11 @@ public interface IslandDataHandler {
     void saveIslandEffects();
 
     /**
+     * Save the island roles limits of the island.
+     */
+    void saveRolesLimits();
+
+    /**
      * Save the warps of the island.
      */
     void saveWarps();
@@ -191,5 +196,10 @@ public interface IslandDataHandler {
      * Save the unique visitors of the island.
      */
     void saveUniqueVisitors();
+
+    /**
+     * Save the warp categories of the island.
+     */
+    void saveWarpCategories();
 
 }

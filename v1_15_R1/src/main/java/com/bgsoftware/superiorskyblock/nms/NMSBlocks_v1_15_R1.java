@@ -20,7 +20,6 @@ import com.bgsoftware.superiorskyblock.utils.tags.Tag;
 import com.bgsoftware.superiorskyblock.utils.threads.Executor;
 import com.google.common.base.Suppliers;
 import com.mojang.datafixers.util.Either;
-import net.minecraft.server.v1_15_R1.AxisAlignedBB;
 import net.minecraft.server.v1_15_R1.BiomeBase;
 import net.minecraft.server.v1_15_R1.BiomeStorage;
 import net.minecraft.server.v1_15_R1.Block;
@@ -36,8 +35,6 @@ import net.minecraft.server.v1_15_R1.ChunkConverter;
 import net.minecraft.server.v1_15_R1.ChunkCoordIntPair;
 import net.minecraft.server.v1_15_R1.ChunkRegionLoader;
 import net.minecraft.server.v1_15_R1.ChunkSection;
-import net.minecraft.server.v1_15_R1.Entity;
-import net.minecraft.server.v1_15_R1.EntityPlayer;
 import net.minecraft.server.v1_15_R1.EnumSkyBlock;
 import net.minecraft.server.v1_15_R1.GameRules;
 import net.minecraft.server.v1_15_R1.HeightMap;
@@ -51,6 +48,7 @@ import net.minecraft.server.v1_15_R1.LightEngineBlock;
 import net.minecraft.server.v1_15_R1.LightEngineGraph;
 import net.minecraft.server.v1_15_R1.NBTTagCompound;
 import net.minecraft.server.v1_15_R1.NBTTagList;
+import net.minecraft.server.v1_15_R1.Packet;
 import net.minecraft.server.v1_15_R1.PacketPlayOutBlockChange;
 import net.minecraft.server.v1_15_R1.PacketPlayOutMapChunk;
 import net.minecraft.server.v1_15_R1.PacketPlayOutUnloadChunk;
@@ -100,8 +98,8 @@ public final class NMSBlocks_v1_15_R1 implements NMSBlocks {
 
     private static final ReflectField<BiomeBase[]> BIOME_BASE_ARRAY = new ReflectField<>(BiomeStorage.class, BiomeBase[].class, "f", "g");
     private static final ReflectField<Boolean> RANDOM_TICK = new ReflectField<>(Block.class, Boolean.class, "randomTick");
-
     private static final ReflectMethod<Void> SKY_LIGHT_UPDATE = new ReflectMethod<>(LightEngineGraph.class, "a", Long.class, Long.class, Integer.class, Boolean.class);
+    private static final ReflectField<Map<Long, PlayerChunk>> VISIBLE_CHUNKS = new ReflectField<>(PlayerChunkMap.class, Map.class, "visibleChunks");
 
     static {
         Map<String, String> fieldNameToName = new HashMap<>();
@@ -165,39 +163,33 @@ public final class NMSBlocks_v1_15_R1 implements NMSBlocks {
 
         if(plugin.getSettings().lightsUpdate) {
             // Update lights for the blocks.
-            for (com.bgsoftware.superiorskyblock.utils.blocks.BlockData blockData : blockDataList) {
-                BlockPosition blockPosition = new BlockPosition(blockData.getX(), blockData.getY(), blockData.getZ());
-                if (blockData.getBlockLightLevel() > 0) {
-                    try {
-                        ((LightEngineBlock) world.e().a(EnumSkyBlock.BLOCK)).a(blockPosition, blockData.getBlockLightLevel());
-                    } catch (Exception ignored) {}
+            // We use a delayed task to avoid null nibbles
+            Executor.sync(() -> {
+                for (com.bgsoftware.superiorskyblock.utils.blocks.BlockData blockData : blockDataList) {
+                    BlockPosition blockPosition = new BlockPosition(blockData.getX(), blockData.getY(), blockData.getZ());
+                    if (blockData.getBlockLightLevel() > 0) {
+                        try {
+                            ((LightEngineBlock) world.e().a(EnumSkyBlock.BLOCK)).a(blockPosition, blockData.getBlockLightLevel());
+                        } catch (Exception ignored) { }
+                    }
+                    if(blockData.getSkyLightLevel() > 0 && bukkitChunk.getWorld().getEnvironment() == org.bukkit.World.Environment.NORMAL){
+                        try {
+                            SKY_LIGHT_UPDATE.invoke(world.e().a(EnumSkyBlock.SKY), 9223372036854775807L,
+                                    blockPosition.asLong(), 15 - blockData.getSkyLightLevel(), true);
+                        } catch (Exception ignored) { }
+                    }
                 }
-                if(blockData.getSkyLightLevel() > 0 && bukkitChunk.getWorld().getEnvironment() == org.bukkit.World.Environment.NORMAL){
-                    try {
-                        SKY_LIGHT_UPDATE.invoke(world.e().a(EnumSkyBlock.SKY), 9223372036854775807L,
-                                blockPosition.asLong(), 15 - blockData.getSkyLightLevel(), true);
-                    } catch (Exception ignored) { }
-                }
-            }
+            }, 10L);
         }
-
     }
 
     @Override
     public void setBlock(Location location, Material material, byte data) {
-        World world = ((CraftWorld) location.getWorld()).getHandle();
+        WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
         BlockPosition blockPosition = new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ());
         setBlock(world.getChunkAtWorldCoords(blockPosition), blockPosition, getCombinedId(material, data), null, null);
-
-        AxisAlignedBB bb = new AxisAlignedBB(blockPosition.getX() - 120, 0, blockPosition.getZ() - 120,
-                blockPosition.getX() + 120, 256, blockPosition.getZ() + 120);
-
-        PacketPlayOutBlockChange packetPlayOutBlockChange = new PacketPlayOutBlockChange(world, blockPosition);
-
-        for(Entity entity : world.getEntities(null, bb)){
-            if(entity instanceof EntityPlayer)
-                ((EntityPlayer) entity).playerConnection.sendPacket(packetPlayOutBlockChange);
-        }
+        sendPacketToRelevantPlayers(world, blockPosition.getX() >> 4, blockPosition.getZ() >> 4,
+                new PacketPlayOutBlockChange(world, blockPosition));
     }
 
     @SuppressWarnings("unchecked")
@@ -330,18 +322,9 @@ public final class NMSBlocks_v1_15_R1 implements NMSBlocks {
     @Override
     public void refreshChunk(org.bukkit.Chunk bukkitChunk) {
         Chunk chunk = ((CraftChunk) bukkitChunk).getHandle();
-
-        PacketPlayOutMapChunk packetPlayOutMapChunk = new PacketPlayOutMapChunk(chunk, 65535);
-
-        AxisAlignedBB bb = new AxisAlignedBB((bukkitChunk.getX() << 4) - 60, 0, (bukkitChunk.getZ() << 4) - 60,
-                (bukkitChunk.getX() << 4) + 60, 256, (bukkitChunk.getZ() << 4) + 60);
-
-        Executor.ensureMain(() -> {
-            for(Entity entity : chunk.getWorld().getEntities(null, bb)){
-                if(entity instanceof EntityPlayer)
-                    ((EntityPlayer) entity).playerConnection.sendPacket(packetPlayOutMapChunk);
-            }
-        });
+        ChunkCoordIntPair chunkCoords = chunk.getPos();
+        sendPacketToRelevantPlayers((WorldServer) chunk.world, chunkCoords.x, chunkCoords.z,
+                new PacketPlayOutMapChunk(chunk, 65535));
     }
 
     @Override
@@ -384,14 +367,10 @@ public final class NMSBlocks_v1_15_R1 implements NMSBlocks {
                 if(chunkSection != null){
                     for (BlockPosition bp : BlockPosition.b(0, 0, 0, 15, 15, 15)) {
                         IBlockData blockData = chunkSection.getType(bp.getX(), bp.getY(), bp.getZ());
-
                         if (blockData.getBlock() != Blocks.AIR) {
-                            Location location = new Location(chunkPosition.getWorld(), (chunkCoords.x << 4) + bp.getX(),
-                                    chunkSection.getYPosition() + bp.getY(), (chunkCoords.z << 4) + bp.getZ());
+                            Location location = new Location(chunkPosition.getWorld(), (chunkCoords.x << 4) + bp.getX(), chunkSection.getYPosition() + bp.getY(), (chunkCoords.z << 4) + bp.getZ());
                             Material type = CraftMagicNumbers.getMaterial(blockData.getBlock());
-                            // Start SpaceDelta
-                            Key blockKey = Key.ofNoLegacy(type.name(), location);
-                            // End SpaceDelta
+                            Key blockKey = Key.of(type.name(), location);
                             blockCounts.put(blockKey, blockCounts.getOrDefault(blockKey, 0) + 1);
                             if (type == Material.SPAWNER) {
                                 spawnersLocations.add(location);
@@ -465,8 +444,12 @@ public final class NMSBlocks_v1_15_R1 implements NMSBlocks {
 
             if(!(world.generator instanceof WorldGenerator)) {
                 ProtoChunk protoChunk = new ProtoChunk(chunkCoords, ChunkConverter.a);
-                CustomChunkGenerator customChunkGenerator = new CustomChunkGenerator(world, world.generator);
-                customChunkGenerator.buildBase(null, protoChunk);
+
+                try{
+                    CustomChunkGenerator customChunkGenerator = new CustomChunkGenerator(world, world.generator);
+                    customChunkGenerator.buildBase(null, protoChunk);
+                }catch (Exception ignored){}
+
                 ChunkSection[] chunkSections = protoChunk.getSections();
 
                 for(int i = -1; i < 17; ++i) {
@@ -630,6 +613,17 @@ public final class NMSBlocks_v1_15_R1 implements NMSBlocks {
         BlockData blockData = block.getBlockData();
 
         return blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged();
+    }
+
+    private void sendPacketToRelevantPlayers(WorldServer worldServer, int chunkX, int chunkZ, Packet<?> packet){
+        PlayerChunkMap playerChunkMap = worldServer.getChunkProvider().playerChunkMap;
+        ChunkCoordIntPair chunkCoordIntPair = new ChunkCoordIntPair(chunkX, chunkZ);
+        try {
+            playerChunkMap.getVisibleChunk(chunkCoordIntPair.pair()).sendPacketToTrackedPlayers(packet, false);
+        }catch (Throwable ex){
+            VISIBLE_CHUNKS.get(playerChunkMap).get(chunkCoordIntPair.pair()).players.a(chunkCoordIntPair, false)
+                    .forEach(entityPlayer -> entityPlayer.playerConnection.sendPacket(packet));
+        }
     }
 
     private static final class CropsTickingTileEntity extends TileEntity implements ITickable {
