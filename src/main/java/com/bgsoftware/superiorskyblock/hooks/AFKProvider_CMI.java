@@ -1,4 +1,4 @@
-package com.bgsoftware.superiorskyblock.hooks;
+/*package com.bgsoftware.superiorskyblock.hooks;
 
 import com.Zrips.CMI.CMI;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
@@ -17,3 +17,4 @@ public final class AFKProvider_CMI implements AFKProvider {
     }
 
 }
+ */

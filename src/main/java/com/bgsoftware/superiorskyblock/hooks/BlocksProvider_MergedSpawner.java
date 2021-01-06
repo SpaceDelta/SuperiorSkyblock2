@@ -1,5 +1,6 @@
 package com.bgsoftware.superiorskyblock.hooks;
 
+/*
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
@@ -14,11 +15,25 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+ */
+
+import com.bgsoftware.superiorskyblock.api.objects.Pair;
+import org.bukkit.Location;
 
 public final class BlocksProvider_MergedSpawner implements BlocksProvider {
 
     private static boolean registered = false;
 
+    @Override
+    public Pair<Integer, String> getSpawner(Location location) {
+        return null;
+    }
+
+    public static boolean isRegistered() {
+        return registered;
+    }
+
+    /*
     public BlocksProvider_MergedSpawner(){
         if(!registered) {
             Bukkit.getPluginManager().registerEvents(new BlocksProvider_MergedSpawner.StackerListener(), SuperiorSkyblockPlugin.getPlugin());
@@ -68,5 +83,5 @@ public final class BlocksProvider_MergedSpawner implements BlocksProvider {
         }
 
     }
-
+ */
 }

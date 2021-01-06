@@ -1,4 +1,4 @@
-package com.bgsoftware.superiorskyblock.hooks;
+/*package com.bgsoftware.superiorskyblock.hooks;
 
 import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
@@ -110,3 +110,4 @@ public final class BlocksProvider_EpicSpawners implements BlocksProvider {
     }
 
 }
+ */

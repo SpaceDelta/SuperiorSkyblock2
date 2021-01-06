@@ -8,13 +8,13 @@ import com.bgsoftware.superiorskyblock.api.hooks.SpawnersProvider;
 import com.bgsoftware.superiorskyblock.api.hooks.WorldsProvider;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
-import com.bgsoftware.superiorskyblock.hooks.AFKProvider_CMI;
+// import com.bgsoftware.superiorskyblock.hooks.AFKProvider_CMI;
 import com.bgsoftware.superiorskyblock.hooks.AFKProvider_Essentials;
 import com.bgsoftware.superiorskyblock.hooks.AsyncProvider;
 import com.bgsoftware.superiorskyblock.hooks.AsyncProvider_Default;
-import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_AdvancedSpawners;
+//import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_AdvancedSpawners;
 import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_Default;
-import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_EpicSpawners;
+// import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_EpicSpawners;
 import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_PvpingSpawners;
 import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_RoseStacker;
 import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_SilkSpawners;
@@ -25,20 +25,20 @@ import com.bgsoftware.superiorskyblock.hooks.EconomyProvider_Default;
 import com.bgsoftware.superiorskyblock.hooks.EconomyProvider_Vault;
 import com.bgsoftware.superiorskyblock.hooks.SlimefunHook;
 import com.bgsoftware.superiorskyblock.hooks.ChangeSkinHook;
-import com.bgsoftware.superiorskyblock.hooks.JetsMinionsHook;
+// import com.bgsoftware.superiorskyblock.hooks.JetsMinionsHook;
 import com.bgsoftware.superiorskyblock.hooks.LeaderHeadsHook;
 import com.bgsoftware.superiorskyblock.hooks.PermissionsProvider;
 import com.bgsoftware.superiorskyblock.hooks.PermissionsProvider_Default;
 import com.bgsoftware.superiorskyblock.hooks.PermissionsProvider_LuckPerms;
 import com.bgsoftware.superiorskyblock.hooks.PlaceholderHook;
 import com.bgsoftware.superiorskyblock.hooks.BlocksProvider;
-import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_MergedSpawner;
+//import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_MergedSpawner;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
 import com.bgsoftware.superiorskyblock.hooks.PricesProvider;
 import com.bgsoftware.superiorskyblock.hooks.PricesProvider_ShopGUIPlus;
 import com.bgsoftware.superiorskyblock.hooks.SkinsRestorerHook;
 import com.bgsoftware.superiorskyblock.hooks.VanishProvider;
-import com.bgsoftware.superiorskyblock.hooks.VanishProvider_CMI;
+// import com.bgsoftware.superiorskyblock.hooks.VanishProvider_CMI;
 import com.bgsoftware.superiorskyblock.hooks.VanishProvider_Essentials;
 import com.bgsoftware.superiorskyblock.hooks.VanishProvider_SuperVanish;
 import com.bgsoftware.superiorskyblock.hooks.VanishProvider_VanishNoPacket;
@@ -91,8 +91,8 @@ public final class ProvidersHandler extends AbstractHandler implements Providers
             if(Bukkit.getPluginManager().isPluginEnabled("LeaderHeads"))
                 runSafe(LeaderHeadsHook::register);
 
-            if(Bukkit.getPluginManager().isPluginEnabled("JetsMinions"))
-                runSafe(() -> JetsMinionsHook.register(plugin));
+            //if(Bukkit.getPluginManager().isPluginEnabled("JetsMinions"))
+              //  runSafe(() -> JetsMinionsHook.register(plugin));
 
             if(Bukkit.getPluginManager().isPluginEnabled("SkinsRestorer"))
                 runSafe(() -> SkinsRestorerHook.register(plugin));
@@ -110,13 +110,13 @@ public final class ProvidersHandler extends AbstractHandler implements Providers
                 String spawnersProvider = plugin.getSettings().spawnersProvider;
                 boolean auto = spawnersProvider.equalsIgnoreCase("Auto");
 
-                if (Bukkit.getPluginManager().isPluginEnabled("MergedSpawner") &&
-                        (auto || spawnersProvider.equalsIgnoreCase("MergedSpawner"))) {
-                    runSafe(() -> setSpawnersProvider(new BlocksProvider_MergedSpawner()));
-                } else if (Bukkit.getPluginManager().isPluginEnabled("AdvancedSpawners") &&
-                        (auto || spawnersProvider.equalsIgnoreCase("AdvancedSpawners"))) {
-                    runSafe(() -> setSpawnersProvider(new BlocksProvider_AdvancedSpawners()));
-                } else if (Bukkit.getPluginManager().isPluginEnabled("WildStacker") &&
+                //if (Bukkit.getPluginManager().isPluginEnabled("MergedSpawner") &&
+                  //      (auto || spawnersProvider.equalsIgnoreCase("MergedSpawner"))) {
+                    //runSafe(() -> setSpawnersProvider(new BlocksProvider_MergedSpawner()));
+                //} else if (Bukkit.getPluginManager().isPluginEnabled("AdvancedSpawners") &&
+                  //      (auto || spawnersProvider.equalsIgnoreCase("AdvancedSpawners"))) {
+                  //  runSafe(() -> setSpawnersProvider(new BlocksProvider_AdvancedSpawners()));
+                /*} else*/ if (Bukkit.getPluginManager().isPluginEnabled("WildStacker") &&
                         (auto || spawnersProvider.equalsIgnoreCase("WildStacker"))) {
                     runSafe(() -> setSpawnersProvider(new BlocksProvider_WildStacker()));
                 } else if (Bukkit.getPluginManager().isPluginEnabled("SilkSpawners") &&
@@ -126,9 +126,9 @@ public final class ProvidersHandler extends AbstractHandler implements Providers
                 } else if (Bukkit.getPluginManager().isPluginEnabled("PvpingSpawners") &&
                         (auto || spawnersProvider.equalsIgnoreCase("PvpingSpawners"))) {
                     runSafe(() -> setSpawnersProvider(new BlocksProvider_PvpingSpawners()));
-                } else if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners") &&
-                        (auto || spawnersProvider.equalsIgnoreCase("EpicSpawners"))) {
-                    runSafe(() -> setSpawnersProvider(new BlocksProvider_EpicSpawners()));
+                //} else if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners") &&
+                  //      (auto || spawnersProvider.equalsIgnoreCase("EpicSpawners"))) {
+                    //runSafe(() -> setSpawnersProvider(new BlocksProvider_EpicSpawners()));
                 } else if (Bukkit.getPluginManager().isPluginEnabled("UltimateStacker") &&
                         (auto || spawnersProvider.equalsIgnoreCase("UltimateStacker"))) {
                     runSafe(() -> setSpawnersProvider(new BlocksProvider_UltimateStacker()));
@@ -152,11 +152,11 @@ public final class ProvidersHandler extends AbstractHandler implements Providers
                 runSafe(() -> vanishProvider = new VanishProvider_SuperVanish(plugin));
             else if(Bukkit.getPluginManager().isPluginEnabled("Essentials"))
                 runSafe(() -> vanishProvider = new VanishProvider_Essentials(plugin));
-            else if(Bukkit.getPluginManager().isPluginEnabled("CMI"))
-                runSafe(() -> vanishProvider = new VanishProvider_CMI(plugin));
+            //else if(Bukkit.getPluginManager().isPluginEnabled("CMI"))
+              //  runSafe(() -> vanishProvider = new VanishProvider_CMI(plugin));
 
-            if(Bukkit.getPluginManager().isPluginEnabled("CMI"))
-                runSafe(() -> addAFKProvider(new AFKProvider_CMI()));
+            //if(Bukkit.getPluginManager().isPluginEnabled("CMI"))
+             //   runSafe(() -> addAFKProvider(new AFKProvider_CMI()));
             if(Bukkit.getPluginManager().isPluginEnabled("Essentials"))
                 runSafe(() -> addAFKProvider(new AFKProvider_Essentials()));
 

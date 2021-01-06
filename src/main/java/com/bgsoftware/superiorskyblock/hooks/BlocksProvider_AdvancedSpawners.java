@@ -1,3 +1,4 @@
+/*
 package com.bgsoftware.superiorskyblock.hooks;
 
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
@@ -63,3 +64,4 @@ public final class BlocksProvider_AdvancedSpawners implements BlocksProvider {
     }
 
 }
+ */

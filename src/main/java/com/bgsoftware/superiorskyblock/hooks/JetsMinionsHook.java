@@ -1,4 +1,4 @@
-package com.bgsoftware.superiorskyblock.hooks;
+/*package com.bgsoftware.superiorskyblock.hooks;
 
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.listeners.BlocksListener;
@@ -30,3 +30,4 @@ public final class JetsMinionsHook implements Listener {
     }
 
 }
+ */

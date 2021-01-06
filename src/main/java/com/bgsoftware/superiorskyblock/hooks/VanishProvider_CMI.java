@@ -1,3 +1,4 @@
+/*
 package com.bgsoftware.superiorskyblock.hooks;
 
 import com.Zrips.CMI.CMI;
@@ -44,3 +45,4 @@ public final class VanishProvider_CMI implements VanishProvider, Listener {
     }
 
 }
+ */
