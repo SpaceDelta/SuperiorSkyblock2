@@ -1,11 +1,12 @@
-group 'SuperiorSkyblock'
+
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'base'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'maven-publish'
 
-version = "1.5.1"
+group 'com.github.OmerBenGera'
+version = "1.5.2"
 
 buildscript {
     repositories {
@@ -19,6 +20,7 @@ buildscript {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'publishing'
     apply plugin: 'com.github.johnrengelman.shadow'
 
     repositories {
@@ -29,6 +31,22 @@ subprojects {
     shadowJar {
         archiveName = "${project.name}.jar"
         destinationDir = file("../archive/")
+    }
+
+    publishing {
+        repositories {
+
+            maven {
+                credentials {
+                    username sd_user
+                    password sd_pass
+                }
+
+                url sd_repo
+            }
+
+        }
+
     }
 
     build {
@@ -103,6 +121,10 @@ dependencies {
     compileOnly 'org.kitteh:VanishNoPacket:latest'
     compileOnly 'net.milkbowl:Vault:latest'
     compileOnly 'com.bgsoftware:WildStackerAPI:latest'
+
+    compileOnly ('net.spacedelta:runes:1.2.9-SNAPSHOT') {
+        exclude group: 'com.zaxxer'
+    }
 }
 
 jar {

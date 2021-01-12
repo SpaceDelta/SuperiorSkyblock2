@@ -9,6 +9,7 @@ import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_MergedSpawner;
 import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_RoseStacker;
 import com.bgsoftware.superiorskyblock.hooks.CoreProtectHook;
+import com.bgsoftware.superiorskyblock.hooks.RunesHook;
 import com.bgsoftware.superiorskyblock.menu.StackedBlocksDepositMenu;
 import com.bgsoftware.superiorskyblock.utils.LocationUtils;
 import com.bgsoftware.superiorskyblock.utils.ServerVersion;
@@ -303,14 +304,22 @@ public final class BlocksListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockStack(BlockPlaceEvent e){
-        if(plugin.getGrid().getBlockAmount(e.getBlock()) > 1)
+        if(plugin.getGrid().getBlockAmount(e.getBlock()) > 1) {
             plugin.getGrid().setBlockAmount(e.getBlock(), 1);
+            // System.out.println("set  + 1"+ e.getBlock());
+        }
 
-        if(!canStackBlocks(e.getPlayer(), e.getItemInHand(), e.getBlockAgainst(), e.getBlockReplacedState()))
+        if(!canStackBlocks(e.getPlayer(), e.getItemInHand(), e.getBlockAgainst(), e.getBlockReplacedState())) {
+            // System.out.println("cant stack");
             return;
+        }
 
-        if(tryStack(e.getPlayer(), e.getItemInHand(), e.getBlockAgainst().getLocation(), e))
+        if(tryStack(e.getPlayer(), e.getItemInHand(), e.getBlockAgainst().getLocation(), e)) {
+            // System.out.println("try stack (" + e.getBlockAgainst().getLocation() + ")");
             e.setCancelled(true);
+        }
+
+        // System.out.println("------------------------");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -416,6 +425,7 @@ public final class BlocksListener implements Listener {
         Block block = stackedBlock.getBlock();
 
         if(!EventsCaller.callBlockStackEvent(block, player, blockAmount, blockAmount + amount)) {
+            // System.out.println("cancel");
             depositedAmount.accept(0);
             return false;
         }
@@ -447,18 +457,20 @@ public final class BlocksListener implements Listener {
         plugin.getGrid().setBlockAmount(block, blockAmount + amount);
 
         if(plugin.getGrid().hasBlockFailed()) {
+            // System.out.println("block fialed");
             depositedAmount.accept(0);
             return false;
         }
 
         if(island != null){
+            // System.out.println("handle ");
             island.handleBlockPlace(block, amount);
         }
 
         CoreProtectHook.recordBlockChange(player, block, true);
 
         depositedAmount.accept(amount);
-
+        // System.out.println("ok!  " + block);
         return true;
     }
 
@@ -516,9 +528,18 @@ public final class BlocksListener implements Listener {
         if(player != null && plugin.getSettings().stackedBlocksAutoPickup){
             ItemUtils.addItem(blockItem, player.getInventory(), block.getLocation());
         }
-        else {
+        // Start SpaceDelta
+        else if (player != null && RunesHook.PRESENT) {
+            RunesHook.hasRune(player, "Magnet", has -> {
+                if (has) {
+                    player.getInventory().addItem(blockItem)
+                            .forEach((integer, itemStack) -> block.getWorld().dropItemNaturally(block.getLocation(), blockItem));
+                } else
+                    block.getWorld().dropItemNaturally(block.getLocation(), blockItem);
+            });
+            // End SpaceDelta
+        } else
             block.getWorld().dropItemNaturally(block.getLocation(), blockItem);
-        }
 
         return true;
     }

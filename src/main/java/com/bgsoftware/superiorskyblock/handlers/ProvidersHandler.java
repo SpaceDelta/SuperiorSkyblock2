@@ -9,40 +9,13 @@ import com.bgsoftware.superiorskyblock.api.hooks.WorldsProvider;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 // import com.bgsoftware.superiorskyblock.hooks.AFKProvider_CMI;
-import com.bgsoftware.superiorskyblock.hooks.AFKProvider_Essentials;
-import com.bgsoftware.superiorskyblock.hooks.AsyncProvider;
-import com.bgsoftware.superiorskyblock.hooks.AsyncProvider_Default;
+import com.bgsoftware.superiorskyblock.hooks.*;
 //import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_AdvancedSpawners;
-import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_Default;
 // import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_EpicSpawners;
-import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_PvpingSpawners;
-import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_RoseStacker;
-import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_SilkSpawners;
-import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_UltimateStacker;
-import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_WildStacker;
-import com.bgsoftware.superiorskyblock.hooks.CoreProtectHook;
-import com.bgsoftware.superiorskyblock.hooks.EconomyProvider_Default;
-import com.bgsoftware.superiorskyblock.hooks.EconomyProvider_Vault;
-import com.bgsoftware.superiorskyblock.hooks.SlimefunHook;
-import com.bgsoftware.superiorskyblock.hooks.ChangeSkinHook;
 // import com.bgsoftware.superiorskyblock.hooks.JetsMinionsHook;
-import com.bgsoftware.superiorskyblock.hooks.LeaderHeadsHook;
-import com.bgsoftware.superiorskyblock.hooks.PermissionsProvider;
-import com.bgsoftware.superiorskyblock.hooks.PermissionsProvider_Default;
-import com.bgsoftware.superiorskyblock.hooks.PermissionsProvider_LuckPerms;
-import com.bgsoftware.superiorskyblock.hooks.PlaceholderHook;
-import com.bgsoftware.superiorskyblock.hooks.BlocksProvider;
 //import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_MergedSpawner;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
-import com.bgsoftware.superiorskyblock.hooks.PricesProvider;
-import com.bgsoftware.superiorskyblock.hooks.PricesProvider_ShopGUIPlus;
-import com.bgsoftware.superiorskyblock.hooks.SkinsRestorerHook;
-import com.bgsoftware.superiorskyblock.hooks.VanishProvider;
 // import com.bgsoftware.superiorskyblock.hooks.VanishProvider_CMI;
-import com.bgsoftware.superiorskyblock.hooks.VanishProvider_Essentials;
-import com.bgsoftware.superiorskyblock.hooks.VanishProvider_SuperVanish;
-import com.bgsoftware.superiorskyblock.hooks.VanishProvider_VanishNoPacket;
-import com.bgsoftware.superiorskyblock.hooks.WorldsProvider_Default;
 import com.bgsoftware.superiorskyblock.utils.chunks.ChunkPosition;
 import com.bgsoftware.superiorskyblock.utils.key.Key;
 import com.bgsoftware.superiorskyblock.utils.legacy.Materials;
@@ -105,6 +78,11 @@ public final class ProvidersHandler extends AbstractHandler implements Providers
 
             if(Bukkit.getPluginManager().isPluginEnabled("CoreProtect"))
                 runSafe(() -> CoreProtectHook.register(plugin));
+
+            // Start SpaceDelta
+            if (Bukkit.getPluginManager().isPluginEnabled("SDRunes"))
+                runSafe(() -> RunesHook.register(plugin));
+            // End SpaceDelta
 
             if(this.spawnersProvider == null || spawnersProvider instanceof BlocksProvider) {
                 String spawnersProvider = plugin.getSettings().spawnersProvider;
