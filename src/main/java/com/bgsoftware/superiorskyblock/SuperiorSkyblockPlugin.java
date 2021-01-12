@@ -361,7 +361,7 @@ public final class SuperiorSkyblockPlugin extends JavaPlugin implements Superior
         Executor.sync(() -> {
             log("Performing initial island worth calculations...");
             gridHandler.calcAllIslands(() -> log("Initial island worth calculations completed."));
-        }, 20L);
+        }, 20 * 10L);
         // End SpaceDelta
 
         CalcTask.startTask();
