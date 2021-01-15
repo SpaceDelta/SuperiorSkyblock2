@@ -237,6 +237,9 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
         if(equals(other))
             return HitActionResult.SUCCESS;
 
+        if (other.asPlayer() == null)
+            return HitActionResult.TARGET_NOT_ONLINE;
+
         // Checks for island teammates pvp
         if(getIslandLeader().equals(other.getIslandLeader()) &&
                 !plugin.getSettings().pvpWorlds.contains(getWorld().getName()))
@@ -264,13 +267,19 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
      */
 
     @Override
-    public World getWorld(){
-        return getLocation().getWorld();
+    public World getWorld() {
+        final Location location = getLocation();
+        return location != null
+                ? location.getWorld()
+                : null;
     }
 
     @Override
-    public Location getLocation(){
-        return asPlayer().getLocation();
+    public Location getLocation() {
+        final Player player = asPlayer();
+        return player != null
+                ? player.getLocation()
+                : null;
     }
 
     @Override
