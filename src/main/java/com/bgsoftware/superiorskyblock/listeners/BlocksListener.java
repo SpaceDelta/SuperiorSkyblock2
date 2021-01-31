@@ -474,10 +474,10 @@ public final class BlocksListener implements Listener {
         return true;
     }
 
-    public static boolean tryUnstack(Player player, Block block, SuperiorSkyblockPlugin plugin){
+    public static boolean tryUnstack(Player player, Block block, SuperiorSkyblockPlugin plugin) {
         int blockAmount = plugin.getGrid().getBlockAmount(block);
 
-        if(blockAmount <= 1)
+        if (blockAmount <= 1)
             return false;
 
         // When sneaking, you'll break 64 from the stack. Otherwise, 1.
@@ -486,7 +486,7 @@ public final class BlocksListener implements Listener {
         // Fix amount so it won't be more than the stack's amount
         amount = Math.min(amount, blockAmount);
 
-        if(!EventsCaller.callBlockUnstackEvent(block, player, blockAmount, blockAmount - amount))
+        if (!EventsCaller.callBlockUnstackEvent(block, player, blockAmount, blockAmount - amount))
             return false;
 
         Island island = plugin.getGrid().getIslandAt(block.getLocation());
@@ -497,8 +497,8 @@ public final class BlocksListener implements Listener {
 
         CoreProtectHook.recordBlockChange(player, block, false);
 
-        if(plugin.getGrid().hasBlockFailed()) {
-            if(island != null)
+        if (plugin.getGrid().hasBlockFailed()) {
+            if (island != null)
                 island.handleBlockBreak(Key.of(block), blockAmount - 1);
             leftAmount = 0;
             amount = 1;
@@ -507,25 +507,24 @@ public final class BlocksListener implements Listener {
         ItemStack blockItem = ServerVersion.isLegacy() ? block.getState().getData().toItemStack(amount) :
                 new ItemStack(block.getType(), amount);
 
-        if(blockItem.getType().name().equals("GLOWING_REDSTONE_ORE")) {
+        if (blockItem.getType().name().equals("GLOWING_REDSTONE_ORE")) {
             blockItem.setType(Material.REDSTONE_ORE);
-        }
-
-        else if(ServerVersion.isLegacy() && blockItem.getType().name().equals("CAULDRON")) {
+        } else if (ServerVersion.isLegacy() && blockItem.getType().name().equals("CAULDRON")) {
             blockItem.setType(Material.valueOf("CAULDRON_ITEM"));
         }
 
-        if(island != null){
+        if (island != null) {
             island.handleBlockBreak(Key.of(blockItem), amount);
         }
 
         // If the amount of the stack is less than 0, it should be air.
-        if(leftAmount <= 0){
+        if (leftAmount <= 0) {
             block.setType(Material.AIR);
-        }
+        } else
+            Executor.sync(() -> block.setType(blockItem.getType()), 2L);
 
         // Dropping the item
-        if(player != null && plugin.getSettings().stackedBlocksAutoPickup){
+        if (player != null && plugin.getSettings().stackedBlocksAutoPickup) {
             ItemUtils.addItem(blockItem, player.getInventory(), block.getLocation());
         }
         // Start SpaceDelta

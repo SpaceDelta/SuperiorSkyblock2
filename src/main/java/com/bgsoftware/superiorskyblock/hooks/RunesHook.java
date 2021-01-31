@@ -1,9 +1,7 @@
 package com.bgsoftware.superiorskyblock.hooks;
 
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
-import com.bgsoftware.superiorskyblock.api.SuperiorSkyblock;
 import net.spacedelta.runes.RunesPlugin;
-import net.spacedelta.runes.rune.model.Rune;
 import org.bukkit.entity.Player;
 
 import java.util.function.Consumer;
