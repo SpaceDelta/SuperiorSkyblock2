@@ -5,9 +5,6 @@ import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
 import com.bgsoftware.superiorskyblock.utils.key.Key;
 import com.bgsoftware.superiorskyblock.utils.legacy.Materials;
-import gcspawners.ASAPI;
-import gcspawners.AdvancedSpawnerPlaceEvent;
-import gcspawners.AdvancedSpawnersBreakEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -20,7 +17,7 @@ public final class BlocksProvider_AdvancedSpawners implements BlocksProvider {
     private static boolean registered = false;
 
     public BlocksProvider_AdvancedSpawners(){
-        if(!registered) {
+        if(false && !registered) { // SpaceDelta
             Bukkit.getPluginManager().registerEvents(new BlocksProvider_AdvancedSpawners.StackerListener(), SuperiorSkyblockPlugin.getPlugin());
             registered = true;
             SuperiorSkyblockPlugin.log("Using AdvancedSpawners as a spawners provider.");
@@ -29,18 +26,21 @@ public final class BlocksProvider_AdvancedSpawners implements BlocksProvider {
 
     @Override
     public Pair<Integer, String> getSpawner(Location location) {
-        return !Bukkit.isPrimaryThread() ? new Pair<>(-1, null) :
-                new Pair<>(ASAPI.getSpawnerAmount(location), ASAPI.getSpawnerType(location).toUpperCase());
+        // Start SpaceDelta
+        return /*!Bukkit.isPrimaryThread() ? */ new Pair<>(-1, null);
+                /* new Pair<>(ASAPI.getSpawnerAmount(location), ASAPI.getSpawnerType(location).toUpperCase()) */
     }
 
     @Override
     public String getSpawnerType(ItemStack itemStack) {
-        return ASAPI.getSpawnerType(itemStack).toUpperCase();
+        return "PIG"; // ASAPI.getSpawnerType(itemStack).toUpperCase();
     }
+
 
     @SuppressWarnings("unused")
     private static class StackerListener implements Listener {
 
+            /*
         private final SuperiorSkyblockPlugin plugin = SuperiorSkyblockPlugin.getPlugin();
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -59,7 +59,9 @@ public final class BlocksProvider_AdvancedSpawners implements BlocksProvider {
             if(island != null)
                 island.handleBlockBreak(Key.of(Materials.SPAWNER.toBukkitType() + ":" + e.getEntityType().toUpperCase()), e.getCountBroken());
         }
-
+           */
     }
+
+    // End SpaceDelta
 
 }

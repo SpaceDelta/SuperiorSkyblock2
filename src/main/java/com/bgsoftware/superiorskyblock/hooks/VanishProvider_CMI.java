@@ -1,8 +1,5 @@
 package com.bgsoftware.superiorskyblock.hooks;
 
-import com.Zrips.CMI.CMI;
-import com.Zrips.CMI.events.CMIPlayerUnVanishEvent;
-import com.Zrips.CMI.events.CMIPlayerVanishEvent;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.listeners.PlayersListener;
 import org.bukkit.Bukkit;
@@ -20,7 +17,7 @@ public final class VanishProvider_CMI implements VanishProvider, Listener {
     public VanishProvider_CMI(SuperiorSkyblockPlugin plugin){
         this.plugin = plugin;
 
-        if(!alreadyEnabled){
+        if(false && !alreadyEnabled){
             alreadyEnabled = true;
             Bukkit.getPluginManager().registerEvents(this, plugin);
         }
@@ -30,9 +27,11 @@ public final class VanishProvider_CMI implements VanishProvider, Listener {
 
     @Override
     public boolean isVanished(Player player) {
-        return CMI.getInstance().getVanishManager().getAllVanished().contains(player.getUniqueId());
+        // Start SpaceDelta
+        return false; // CMI.getInstance().getVanishManager().getAllVanished().contains(player.getUniqueId());
     }
 
+    /*
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerVanish(CMIPlayerVanishEvent e){
         PlayersListener.handlePlayerQuit(plugin.getPlayers().getSuperiorPlayer(e.getPlayer()));
@@ -42,5 +41,7 @@ public final class VanishProvider_CMI implements VanishProvider, Listener {
     public void onPlayerUnvanish(CMIPlayerUnVanishEvent e){
         PlayersListener.handlePlayerJoin(plugin.getPlayers().getSuperiorPlayer(e.getPlayer()));
     }
+     */
+    // End SpaceDelta
 
 }

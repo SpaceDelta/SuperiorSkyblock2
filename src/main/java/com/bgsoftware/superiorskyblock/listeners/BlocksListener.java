@@ -8,6 +8,7 @@ import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_MergedSpawner;
 import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.hooks.BlocksProvider_RoseStacker;
 import com.bgsoftware.superiorskyblock.hooks.CoreProtectHook;
+import com.bgsoftware.superiorskyblock.hooks.RunesHook;
 import com.bgsoftware.superiorskyblock.menu.StackedBlocksDepositMenu;
 import com.bgsoftware.superiorskyblock.utils.LocationUtils;
 import com.bgsoftware.superiorskyblock.utils.ServerVersion;
@@ -515,9 +516,19 @@ public final class BlocksListener implements Listener {
         if(player != null && plugin.getSettings().stackedBlocksAutoPickup){
             ItemUtils.addItem(blockItem, player.getInventory(), block.getLocation());
         }
-        else {
+        // Start SpaceDelta
+        else if (player != null && RunesHook.PRESENT) {
+            RunesHook.hasRune(player, "Magnet", has -> {
+                if (has) {
+                    player.getInventory().addItem(blockItem)
+                            .forEach((integer, itemStack) -> block.getWorld().dropItemNaturally(block.getLocation(), blockItem));
+                } else
+                    block.getWorld().dropItemNaturally(block.getLocation(), blockItem);
+            });
+            // End SpaceDelta
+        } else
             block.getWorld().dropItemNaturally(block.getLocation(), blockItem);
-        }
+
 
         return true;
     }

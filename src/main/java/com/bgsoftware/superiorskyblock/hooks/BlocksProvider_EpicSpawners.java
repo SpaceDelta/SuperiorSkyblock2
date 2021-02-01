@@ -7,10 +7,6 @@ import com.bgsoftware.superiorskyblock.api.objects.Pair;
 import com.bgsoftware.superiorskyblock.utils.StringUtils;
 import com.bgsoftware.superiorskyblock.utils.key.Key;
 import com.bgsoftware.superiorskyblock.utils.legacy.Materials;
-import com.songoda.epicspawners.EpicSpawners;
-import com.songoda.epicspawners.api.events.SpawnerBreakEvent;
-import com.songoda.epicspawners.api.events.SpawnerChangeEvent;
-import com.songoda.epicspawners.api.events.SpawnerPlaceEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -22,10 +18,10 @@ public final class BlocksProvider_EpicSpawners implements BlocksProvider {
 
     private static boolean registered = false;
 
-    private final EpicSpawners instance = EpicSpawners.getInstance();
+    // private final EpicSpawners instance = EpicSpawners.getInstance();
 
-    public BlocksProvider_EpicSpawners(){
-        if(!registered) {
+    public BlocksProvider_EpicSpawners() {
+        if(false && !registered) { // SpaceDelta
             Bukkit.getPluginManager().registerEvents(new StackerListener(), SuperiorSkyblockPlugin.getPlugin());
             registered = true;
             SuperiorSkyblockPlugin.log("Using EpicSpawners as a spawners provider.");
@@ -36,7 +32,9 @@ public final class BlocksProvider_EpicSpawners implements BlocksProvider {
     public Pair<Integer, String> getSpawner(Location location) {
         int blockCount = -1;
         if(Bukkit.isPrimaryThread()){
-            blockCount = instance.getSpawnerManager().getSpawnerFromWorld(location).getFirstStack().getStackSize();
+            // Start SpaceDelta
+            // blockCount = instance.getSpawnerManager().getSpawnerFromWorld(location).getFirstStack().getStackSize();
+            // EndSpaceDelta
         }
         return new Pair<>(blockCount, null);
     }
@@ -44,7 +42,8 @@ public final class BlocksProvider_EpicSpawners implements BlocksProvider {
     @Override
     public String getSpawnerType(ItemStack itemStack) {
         try {
-            return instance.getSpawnerManager().getSpawnerData(itemStack).getEntities().get(0).name();
+            // return instance.getSpawnerManager().getSpawnerData(itemStack).getEntities().get(0).name();
+            return "PIG";
         }catch (Exception ex){
             return "PIG";
         }
@@ -55,6 +54,8 @@ public final class BlocksProvider_EpicSpawners implements BlocksProvider {
 
         private final SuperiorSkyblockPlugin plugin = SuperiorSkyblockPlugin.getPlugin();
 
+        // Start SpaceDelta
+        /*
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onSpawnerStack(SpawnerPlaceEvent e){
             Island island = plugin.getGrid().getIslandAt(e.getSpawner().getLocation());
@@ -106,6 +107,8 @@ public final class BlocksProvider_EpicSpawners implements BlocksProvider {
             if(island != null)
                 island.handleBlockBreak(e.getSpawner().getLocation().getBlock(), e.getSpawner().getFirstStack().getStackSize());
         }
+         */
+        // End SpaceDelta
 
     }
 

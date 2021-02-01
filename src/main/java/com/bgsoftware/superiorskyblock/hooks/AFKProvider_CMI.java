@@ -1,6 +1,5 @@
 package com.bgsoftware.superiorskyblock.hooks;
 
-import com.Zrips.CMI.CMI;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.hooks.AFKProvider;
 import org.bukkit.entity.Player;
@@ -13,7 +12,10 @@ public final class AFKProvider_CMI implements AFKProvider {
 
     @Override
     public boolean isAFK(Player player) {
-        return CMI.getInstance().getPlayerManager().getUser(player).isAfk();
+        // Start SpaceDelta
+        // return CMI.getInstance().getPlayerManager().getUser(player).isAfk();
+        return false;
+        // End SpaceDelta
     }
 
 }

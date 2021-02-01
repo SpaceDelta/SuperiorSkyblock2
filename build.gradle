@@ -10,6 +10,7 @@ version = "1.5.2"
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'publishing'
     apply plugin: 'com.github.johnrengelman.shadow'
 
     repositories {
@@ -23,12 +24,44 @@ subprojects {
         destinationDirectory = file("../archive/")
     }
 
+    // Start SpaceDelta
+    publishing {
+        repositories {
+            maven {
+                credentials {
+                    username sd_user
+                    password sd_pass
+                }
+
+                url sd_ext_libs
+            }
+        }
+    }
+    // End SpaceDelta
+
     build {
         dependsOn shadowJar
     }
 }
 
 repositories {
+    // Start SpaceDelta
+    maven {
+        credentials {
+            username sd_user
+            password sd_pass
+        }
+        url sd_libs
+    }
+    maven {
+        credentials {
+            username sd_user
+            password sd_pass
+        }
+        url sd_ext_libs
+    }
+    // End SpaceDelta
+
     maven { url 'https://repo.bg-software.com/repository/nms/' }
     maven { url 'https://repo.bg-software.com/repository/api/' }
     maven { url 'https://repo.bg-software.com/repository/common/' }
@@ -63,23 +96,23 @@ dependencies {
     compileOnly 'org.spigotmc:v1_16_R3-Tuinity:latest'
 
     // Plugin hooks
-    compileOnly 'gcspawners:AdvancedSpawners:latest'
+    // compileOnly 'gcspawners:AdvancedSpawners:latest'
     compileOnly 'com.github.games647:ChangeSkin:latest'
-    compileOnly 'com.zrips:CMI:latest'
+    // compileOnly 'com.zrips:CMI:latest'
     compileOnly 'net.coreprotect:CoreProtect-6:latest'
-    compileOnly 'com.songoda:EpicSpawners-6:latest'
+    // compileOnly 'com.songoda:EpicSpawners-6:latest'
     compileOnly 'com.earth2me:Essentials-2.16:latest'
     compileOnly 'com.boydti:FastAsyncWorldEdit:latest'
-    compileOnly 'me.jet315:JetsMinions:latest'
+    // compileOnly 'me.jet315:JetsMinions:latest'
     compileOnly 'me.robin:LeaderHeads:latest'
     compileOnly 'net.luckperms:LuckPerms:latest'
     compileOnly 'net.luckperms:LuckPerms:latest'
-    compileOnly 'com.vk2gpz:MergedSpawner:latest'
+    // compileOnly 'com.vk2gpz:MergedSpawner:latest'
     compileOnly 'be.maximvdw:MVdWPlaceholderAPI:latest'
     compileOnly 'me.clip:PlaceholderAPI:latest'
     compileOnly 'skyblock.hassan:PvpingSpawners:latest'
     compileOnly 'dev.rosewood:RoseStacker:latest'
-    compileOnly 'net.brcdev:ShopGUIPlus-1.20:latest'
+    compileOnly 'net.brcdev:shopgui:1.49.0' // from sd
     compileOnly 'de.candc:SilkSpawners:latest'
     compileOnly 'skinsrestorer:SkinsRestorer:latest'
     compileOnly 'me.mrcookieslime:Slimefun4:latest'
@@ -90,6 +123,10 @@ dependencies {
     compileOnly 'net.milkbowl:Vault:latest'
     compileOnly 'com.bgsoftware:WildStackerAPI:latest'
     compileOnly 'com.grinderwolf:SlimeWorldManager:latest'
+
+    compileOnly ('net.spacedelta:runes:1.2.18-SNAPSHOT') {
+        exclude group: 'com.zaxxer'
+    }
 }
 
 jar {

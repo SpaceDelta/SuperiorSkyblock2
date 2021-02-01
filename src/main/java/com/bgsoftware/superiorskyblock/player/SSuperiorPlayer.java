@@ -239,6 +239,11 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
         if(equals(other))
             return HitActionResult.SUCCESS;
 
+        // Start SpaceDelta
+        if (other.asPlayer() == null)
+            return HitActionResult.COOP_DAMAGE.TARGET_NOT_ONLINE;
+        // End SpaceDelta
+
         // Checks for island teammates pvp
         if(getIslandLeader().equals(other.getIslandLeader()) &&
                 !plugin.getSettings().pvpWorlds.contains(getWorld().getName()))

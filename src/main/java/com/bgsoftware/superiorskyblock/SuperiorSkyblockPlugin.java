@@ -380,6 +380,13 @@ public final class SuperiorSkyblockPlugin extends JavaPlugin implements Superior
             //CropsTask.startTask();
         });
 
+        // Start SpaceDelta
+        Executor.sync(() -> {
+            log("Performing initial island worth calculations...");
+            gridHandler.calcAllIslands(() -> log("Initial island worth calculations completed."));
+        }, 8 * 20L);
+        // End SpaceDelta
+
         CalcTask.startTask();
     }
 

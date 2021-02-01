@@ -5,9 +5,6 @@ import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
 import com.bgsoftware.superiorskyblock.utils.key.Key;
 import com.bgsoftware.superiorskyblock.utils.legacy.Materials;
-import com.vk2gpz.mergedspawner.api.MergedSpawnerAPI;
-import com.vk2gpz.mergedspawner.event.MergedSpawnerBreakEvent;
-import com.vk2gpz.mergedspawner.event.MergedSpawnerPlaceEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -20,7 +17,7 @@ public final class BlocksProvider_MergedSpawner implements BlocksProvider {
     private static boolean registered = false;
 
     public BlocksProvider_MergedSpawner(){
-        if(!registered) {
+        if(false && !registered) { // SpaceDelta
             Bukkit.getPluginManager().registerEvents(new BlocksProvider_MergedSpawner.StackerListener(), SuperiorSkyblockPlugin.getPlugin());
             registered = true;
             SuperiorSkyblockPlugin.log("Using MergedSpawner as a spawners provider.");
@@ -31,15 +28,17 @@ public final class BlocksProvider_MergedSpawner implements BlocksProvider {
     public Pair<Integer, String> getSpawner(Location location) {
         int blockCount = -1;
         if(Bukkit.isPrimaryThread()){
-            MergedSpawnerAPI spawnerAPI = MergedSpawnerAPI.getInstance();
-            blockCount = spawnerAPI.getCountFor(location.getBlock());
+            // Start SpaceDelta
+            // MergedSpawnerAPI spawnerAPI = MergedSpawnerAPI.getInstance();
+            // blockCount = spawnerAPI.getCountFor(location.getBlock());
+            // End SpaceDelta
         }
         return new Pair<>(blockCount, null);
     }
 
     @Override
     public String getSpawnerType(ItemStack itemStack) {
-        return MergedSpawnerAPI.getInstance().getEntityType(itemStack).name();
+        return "PIG"; // return MergedSpawnerAPI.getInstance().getEntityType(itemStack).name();
     }
 
     public static boolean isRegistered(){
@@ -49,6 +48,8 @@ public final class BlocksProvider_MergedSpawner implements BlocksProvider {
     @SuppressWarnings("unused")
     private static class StackerListener implements Listener {
 
+        // Start SpaceDelta
+        /*
         private final SuperiorSkyblockPlugin plugin = SuperiorSkyblockPlugin.getPlugin();
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -66,7 +67,8 @@ public final class BlocksProvider_MergedSpawner implements BlocksProvider {
             if(island != null)
                 island.handleBlockBreak(Key.of(Materials.SPAWNER.toBukkitType() + ":" + e.getSpawnerType()), decreaseAmount);
         }
-
+         */
+        // End SpaceDelta
     }
 
 }
