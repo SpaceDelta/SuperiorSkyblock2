@@ -5,7 +5,7 @@ plugins {
     id 'maven-publish'
 }
 
-group 'SuperiorSkyblock'
+group 'com.bgsoftware'
 version = "1.5.2"
 
 subprojects {
@@ -33,7 +33,7 @@ subprojects {
                     password sd_pass
                 }
 
-                url sd_ext_libs
+                url sd_repo
             }
         }
     }
@@ -51,14 +51,7 @@ repositories {
             username sd_user
             password sd_pass
         }
-        url sd_libs
-    }
-    maven {
-        credentials {
-            username sd_user
-            password sd_pass
-        }
-        url sd_ext_libs
+        url sd_repo
     }
     // End SpaceDelta
 
@@ -175,7 +168,20 @@ publish.shouldRunAfter shadowJar
 shadowJar.shouldRunAfter build
 
 publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+
     repositories {
         mavenLocal()
+        maven {
+            credentials {
+                username sd_user
+                password sd_pass
+            }
+            url sd_ext_libs
+        }
     }
 }
