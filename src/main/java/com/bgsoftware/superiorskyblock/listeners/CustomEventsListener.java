@@ -340,7 +340,9 @@ public final class CustomEventsListener implements Listener {
         }
 
         // Checking if the player is locked to visitors.
-        if(toIsland.isLocked() && !toIsland.hasPermission(superiorPlayer, IslandPrivileges.CLOSE_BYPASS)){
+        if(toIsland.isLocked()
+                && !superiorPlayer.hasPermissionWithoutOP("superior.admin.teleport") // SpaceDelta :: allow admins to TP to locked islands
+                && !toIsland.hasPermission(superiorPlayer, IslandPrivileges.CLOSE_BYPASS)){
             EventsCaller.callIslandRestrictMoveEvent(superiorPlayer, IslandRestrictMoveEvent.RestrictReason.LOCKED_ISLAND);
             if(event instanceof Cancellable)
                 ((Cancellable) event).setCancelled(true);
