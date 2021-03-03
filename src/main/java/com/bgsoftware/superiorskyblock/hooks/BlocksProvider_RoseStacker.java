@@ -41,7 +41,8 @@ public final class BlocksProvider_RoseStacker implements BlocksProvider {
 
     @Override
     public String getSpawnerType(ItemStack itemStack) {
-        return StackerUtils.getStackedItemEntityType(itemStack).name();
+        return "PIG";
+        // return StackerUtils.getStackedItemEntityType(itemStack).name();
     }
 
     public static boolean isRegistered(){

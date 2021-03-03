@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 public final class Executor {
 
-    private static SuperiorSkyblockPlugin plugin;
+    private static SuperiorSkyblockPlugin plugin = SuperiorSkyblockPlugin.INSTANCE;
     private static ExecutorService databaseExecutor;
     private static boolean shutdown = false;
 

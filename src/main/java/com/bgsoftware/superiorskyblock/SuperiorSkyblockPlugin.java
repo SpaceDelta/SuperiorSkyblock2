@@ -37,6 +37,7 @@ import com.bgsoftware.superiorskyblock.nms.NMSAdapter;
 import com.bgsoftware.superiorskyblock.nms.NMSBlocks;
 import com.bgsoftware.superiorskyblock.nms.NMSHolograms;
 import com.bgsoftware.superiorskyblock.nms.NMSTags;
+import com.bgsoftware.superiorskyblock.sync.MessageConsumers;
 import com.bgsoftware.superiorskyblock.tutorial.TutorialCommand;
 import com.bgsoftware.superiorskyblock.utils.FileUtils;
 import com.bgsoftware.superiorskyblock.utils.ServerVersion;
@@ -53,6 +54,9 @@ import com.bgsoftware.superiorskyblock.utils.islands.SortingComparators;
 import com.bgsoftware.superiorskyblock.utils.items.EnchantsUtils;
 import com.bgsoftware.superiorskyblock.utils.threads.Executor;
 
+import net.spacedelta.lib.plugin.BukkitPlugin;
+import net.spacedelta.lib.plugin.PluginSide;
+import net.spacedelta.lib.plugin.annotation.Instance;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -66,7 +70,11 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class SuperiorSkyblockPlugin extends JavaPlugin implements SuperiorSkyblock {
+public final class SuperiorSkyblockPlugin extends BukkitPlugin implements SuperiorSkyblock {
+
+    @Instance
+    public static SuperiorSkyblockPlugin INSTANCE;
+    public static boolean isClient;
 
     private static final ReflectField<SuperiorSkyblock> PLUGIN = new ReflectField<>(SuperiorSkyblockAPI.class, SuperiorSkyblock.class, "plugin");
     private static SuperiorSkyblockPlugin plugin;
@@ -140,99 +148,109 @@ public final class SuperiorSkyblockPlugin extends JavaPlugin implements Superior
     }
 
     @Override
-    public void onEnable() {
+    public void enable() {
+        isClient = getSide() == PluginSide.CLIENT;
+
         try {
+            // TODO don't init a lot of this shit on client servers
+
             if (!shouldEnable) {
                 Bukkit.shutdown();
                 return;
             }
 
-            Executor.init(this);
+            if (!isClient) {
+                Executor.init(this);
 
-            if(startTutorial){
-                plugin.getNMSAdapter().registerCommand(new TutorialCommand(this));
-                safeEventsRegister(new TutorialListener(this));
-                return;
-            }
-
-            loadSortingTypes();
-            loadIslandFlags();
-            loadIslandPrivileges();
-
-            EnchantsUtils.registerGlowEnchantment();
-
-            EventsCaller.callPluginInitializeEvent(this);
-
-            try{
-                providersHandler.prepareWorlds();
-            }catch (RuntimeException ex){
-                shouldEnable = false;
-                new HandlerLoadException(ex.getMessage(), HandlerLoadException.ErrorLevel.SERVER_SHUTDOWN).printStackTrace();
-                Bukkit.shutdown();
-                return;
-            }
-
-            reloadPlugin(true);
-
-            try {
-                safeEventsRegister(new BlocksListener(this));
-                safeEventsRegister(new ChunksListener(this));
-                safeEventsRegister(new CustomEventsListener(this));
-                safeEventsRegister(new GeneratorsListener(this));
-                safeEventsRegister(new MenusListener(this));
-                safeEventsRegister(new PlayersListener(this));
-                safeEventsRegister(new ProtectionListener(this));
-                safeEventsRegister(new SettingsListener(this));
-                safeEventsRegister(new UpgradesListener(this));
-            }catch (RuntimeException ex){
-                shouldEnable = false;
-                new HandlerLoadException("Cannot load plugin due to a missing event: " + ex.getMessage() + " - contact @Ome_R!",
-                        HandlerLoadException.ErrorLevel.CONTINUE).printStackTrace();
-                Bukkit.shutdown();
-                return;
-            }
-
-            if (Updater.isOutdated()) {
-                log("");
-                log("A new version is available (v" + Updater.getLatestVersion() + ")!");
-                log("Version's description: \"" + Updater.getVersionDescription() + "\"");
-                log("");
-            }
-
-            ChunksProvider.init();
-
-            Executor.sync(() -> {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    SuperiorPlayer superiorPlayer = playersHandler.getSuperiorPlayer(player);
-                    superiorPlayer.updateLastTimeStatus();
-                    Island island = gridHandler.getIslandAt(superiorPlayer.getLocation());
-                    Island playerIsland = superiorPlayer.getIsland();
-
-                    if (superiorPlayer.hasIslandFlyEnabled()) {
-                        if (island != null && island.hasPermission(superiorPlayer, IslandPrivileges.FLY)) {
-                            player.setAllowFlight(true);
-                            player.setFlying(true);
-                        } else {
-                            superiorPlayer.toggleIslandFly();
-                        }
-                    }
-
-                    if (playerIsland != null)
-                        playerIsland.setCurrentlyActive();
-
-                    if (island != null)
-                        island.setPlayerInside(superiorPlayer, true);
+                if (startTutorial) {
+                    plugin.getNMSAdapter().registerCommand(new TutorialCommand(this));
+                    safeEventsRegister(new TutorialListener(this));
+                    return;
                 }
-            }, 1L);
+
+                loadSortingTypes();
+                loadIslandFlags();
+                loadIslandPrivileges();
+
+                EnchantsUtils.registerGlowEnchantment();
+
+                EventsCaller.callPluginInitializeEvent(this);
+
+                try {
+                    providersHandler.prepareWorlds();
+                } catch (RuntimeException ex) {
+                    shouldEnable = false;
+                    new HandlerLoadException(ex.getMessage(), HandlerLoadException.ErrorLevel.SERVER_SHUTDOWN).printStackTrace();
+                    Bukkit.shutdown();
+                    return;
+                }
+            }
+
+            reloadPlugin(true, getSide());
+
+            if (!isClient) {
+                try {
+                    safeEventsRegister(new BlocksListener(this));
+                    safeEventsRegister(new ChunksListener(this));
+                    safeEventsRegister(new CustomEventsListener(this));
+                    safeEventsRegister(new GeneratorsListener(this));
+                    safeEventsRegister(new MenusListener(this));
+                    safeEventsRegister(new PlayersListener(this));
+                    safeEventsRegister(new ProtectionListener(this));
+                    safeEventsRegister(new SettingsListener(this));
+                    safeEventsRegister(new UpgradesListener(this));
+                } catch (RuntimeException ex) {
+                    shouldEnable = false;
+                    new HandlerLoadException("Cannot load plugin due to a missing event: " + ex.getMessage() + " - contact @Ome_R!",
+                            HandlerLoadException.ErrorLevel.CONTINUE).printStackTrace();
+                    Bukkit.shutdown();
+                    return;
+                }
+
+                if (Updater.isOutdated()) {
+                    log("");
+                    log("A new version is available (v" + Updater.getLatestVersion() + ")!");
+                    log("Version's description: \"" + Updater.getVersionDescription() + "\"");
+                    log("");
+                }
+
+                ChunksProvider.init();
+
+                Executor.sync(() -> {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        SuperiorPlayer superiorPlayer = playersHandler.getSuperiorPlayer(player);
+                        superiorPlayer.updateLastTimeStatus();
+                        Island island = gridHandler.getIslandAt(superiorPlayer.getLocation());
+                        Island playerIsland = superiorPlayer.getIsland();
+
+                        if (superiorPlayer.hasIslandFlyEnabled()) {
+                            if (island != null && island.hasPermission(superiorPlayer, IslandPrivileges.FLY)) {
+                                player.setAllowFlight(true);
+                                player.setFlying(true);
+                            } else {
+                                superiorPlayer.toggleIslandFly();
+                            }
+                        }
+
+                        if (playerIsland != null)
+                            playerIsland.setCurrentlyActive();
+
+                        if (island != null)
+                            island.setPlayerInside(superiorPlayer, true);
+                    }
+                }, 1L);
+            }
         }catch (Throwable ex){
             shouldEnable = false;
             ex.printStackTrace();
             Bukkit.shutdown();
         }
+
+        new MessageConsumers(this); // init message bus handlers
     }
 
     @Override
-    public void onDisable() {
+    public void disable() {
         if(!shouldEnable)
             return;
 
@@ -334,18 +352,22 @@ public final class SuperiorSkyblockPlugin extends JavaPlugin implements Superior
         return getGenerator();
     }
 
-    public void reloadPlugin(boolean loadGrid){
+    public void reloadPlugin(boolean loadGrid, PluginSide side) {
         HeadUtils.readTextures(this);
 
         settingsHandler = new SettingsHandler(this);
 
         blockValuesHandler.loadData();
         upgradesHandler.loadData();
-        missionsHandler.loadData();
+        if (!isClient) missionsHandler.loadData();
 
         Locale.reload();
 
         commandsHandler.loadData();
+
+        if (side == PluginSide.CLIENT) {
+            return; // oop
+        }
 
         if(loadGrid) {
             playersHandler.loadData();

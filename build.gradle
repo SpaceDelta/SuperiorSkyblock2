@@ -8,10 +8,16 @@ plugins {
 group 'com.bgsoftware'
 version = "1.5.2"
 
+targetCompatibility = '11'
+sourceCompatibility = '11'
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'publishing'
     apply plugin: 'com.github.johnrengelman.shadow'
+
+    targetCompatibility = '11'
+    sourceCompatibility = '11'
 
     repositories {
         maven { url 'https://repo.bg-software.com/repository/nms/' }
@@ -43,6 +49,7 @@ subprojects {
         dependsOn shadowJar
     }
 }
+
 
 repositories {
     // Start SpaceDelta
@@ -116,6 +123,7 @@ dependencies {
     compileOnly 'net.milkbowl:Vault:latest'
     compileOnly 'com.bgsoftware:WildStackerAPI:latest'
     compileOnly 'com.grinderwolf:SlimeWorldManager:latest'
+    compileOnly 'net.spacedelta:library:1.1-SNAPSHOT'
 
     compileOnly ('net.spacedelta:runes:1.2.18-SNAPSHOT') {
         exclude group: 'com.zaxxer'
@@ -162,7 +170,7 @@ shadowJar {
 
 build {
     dependsOn shadowJar
-    dependsOn publish
+    // dependsOn publish
 }
 publish.shouldRunAfter shadowJar
 shadowJar.shouldRunAfter build
@@ -181,7 +189,7 @@ publishing {
                 username sd_user
                 password sd_pass
             }
-            url sd_ext_libs
+            url sd_repo
         }
     }
 }

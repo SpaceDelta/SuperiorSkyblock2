@@ -4,15 +4,19 @@ import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.schematic.Schematic;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.menu.MenuIslandCreation;
+import com.bgsoftware.superiorskyblock.sync.MessageType;
 import com.bgsoftware.superiorskyblock.utils.StringUtils;
 import com.bgsoftware.superiorskyblock.Locale;
 
 import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
+import net.spacedelta.lib.data.DataBuffer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public final class CmdCreate implements ISuperiorCommand {
 
@@ -71,7 +75,22 @@ public final class CmdCreate implements ISuperiorCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
-        SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(sender);
+        var buffer = DataBuffer.create()
+                .write("uuid", ((Player) sender).getUniqueId().toString())
+                .write("raw-args", args);
+
+        if (SuperiorSkyblockPlugin.isClient) {
+            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.CREATE_ISLAND_REQUEST, buffer);
+        } else {
+            executeServer(plugin, buffer);
+        }
+    }
+
+    public static void executeServer(SuperiorSkyblockPlugin plugin, DataBuffer buffer) {
+        var uuid = UUID.fromString(buffer.readString("uuid"));
+        var args = (ArrayList<String>) buffer.read("raw-args", ArrayList.class);
+
+        SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(uuid);
 
         if(superiorPlayer.getIsland() != null){
             Locale.ALREADY_IN_ISLAND.send(superiorPlayer);
@@ -86,28 +105,33 @@ public final class CmdCreate implements ISuperiorCommand {
         String islandName = "", schematicName = null;
 
         if(plugin.getSettings().islandNamesRequiredForCreation) {
-            if (args.length >= 2) {
-                islandName = args[1];
-                if(!StringUtils.isValidName(sender, null, islandName))
+            if (args.size() >= 2) {
+                islandName = args.get(1);
+                if(!StringUtils.isValidName(superiorPlayer, null, islandName))
                     return;
             }
         }
 
-        if(plugin.getSettings().schematicNameArgument && args.length == (plugin.getSettings().islandNamesRequiredForCreation ? 3 : 2)){
-            schematicName = args[plugin.getSettings().islandNamesRequiredForCreation ? 2 : 1];
+        if(plugin.getSettings().schematicNameArgument && args.size() == (plugin.getSettings().islandNamesRequiredForCreation ? 3 : 2)){
+            schematicName = args.get(plugin.getSettings().islandNamesRequiredForCreation ? 2 : 1);
             Schematic schematic = plugin.getSchematics().getSchematic(schematicName);
             if(schematic == null || schematicName.endsWith("_nether") || schematicName.endsWith("_the_end")){
-                Locale.INVALID_SCHEMATIC.send(sender, schematicName);
+                Locale.INVALID_SCHEMATIC.send(superiorPlayer, schematicName);
                 return;
             }
         }
 
-        if(schematicName == null) {
-            MenuIslandCreation.openInventory(superiorPlayer, null, islandName);
-        }
-        else{
-            MenuIslandCreation.simulateClick(superiorPlayer, islandName, schematicName, false);
-        }
+        // if(schematicName == null) {
+            var buffer1 = DataBuffer.create()
+                    .write("uuid", superiorPlayer.asOfflinePlayer().getUniqueId().toString())
+                    .write("island-name", islandName);
+
+            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.OPEN_ISLAND_CREATION_MENU, buffer1);
+        //     MenuIslandCreation.openInventory(superiorPlayer, null, islandName);
+        // }
+        // else{
+        //     MenuIslandCreation.simulateClick(superiorPlayer, islandName, schematicName, false);
+        // }
     }
 
     @Override

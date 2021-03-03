@@ -2,6 +2,17 @@ group 'v1_16_R3'
 
 dependencies {
     compileOnly "org.spigotmc:v1_16_R3-Tuinity:latest"
+    compileOnly 'net.spacedelta:library:1.1-SNAPSHOT'
     compileOnly project(":API")
     compileOnly parent
+}
+
+repositories {
+    maven {
+        credentials {
+            username sd_user
+            password sd_pass
+        }
+        url sd_repo
+    }
 }

@@ -3,6 +3,7 @@ package com.bgsoftware.superiorskyblock.commands;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.SuperiorSkyblock;
 import com.bgsoftware.superiorskyblock.api.commands.SuperiorCommand;
+import net.spacedelta.lib.data.DataBuffer;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;

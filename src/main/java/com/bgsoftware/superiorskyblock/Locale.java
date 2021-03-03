@@ -2,6 +2,7 @@ package com.bgsoftware.superiorskyblock;
 
 import com.bgsoftware.common.config.CommentedConfiguration;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
+import com.bgsoftware.superiorskyblock.sync.MessageType;
 import com.bgsoftware.superiorskyblock.utils.LocaleUtils;
 import com.bgsoftware.superiorskyblock.utils.StringUtils;
 import com.bgsoftware.superiorskyblock.utils.registry.Registry;
@@ -10,6 +11,8 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.spacedelta.lib.data.DataBuffer;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -698,15 +701,23 @@ public enum Locale {
     }
 
     public void send(SuperiorPlayer superiorPlayer, Object... objects){
-        if(superiorPlayer.isOnline())
-            send(superiorPlayer.asPlayer(), superiorPlayer.getUserLocale(), objects);
+        // if(superiorPlayer.isOnline())
+        send(superiorPlayer.asOfflinePlayer(), superiorPlayer.getUserLocale(), objects);
     }
 
+    public void send(Object source, Object... objects){
+        // if(superiorPlayer.isOnline())
+        send(source, java.util.Locale.ENGLISH, objects); // TODO
+    }
+
+
+    /*
     public void send(CommandSender sender, Object... objects){
         send(sender, LocaleUtils.getLocale(sender), objects);
     }
+     */
 
-    public void send(CommandSender sender, java.util.Locale locale, Object... objects){
+    public void send(Object sender, java.util.Locale locale, Object... objects){
         MessageContainer messageContainer = messages.get(locale);
         if(messageContainer != null)
             messageContainer.sendMessage(sender, objects);
@@ -866,7 +877,7 @@ public enum Locale {
 
         abstract String getMessage();
 
-        abstract void sendMessage(CommandSender sender, Object... objects);
+        abstract void sendMessage(Object sender, Object... objects);
 
     }
 
@@ -884,10 +895,39 @@ public enum Locale {
             return message;
         }
 
+        /*
         @Override
         void sendMessage(CommandSender sender, Object... objects) {
-            if(message != null && !message.isEmpty())
-                sender.sendMessage(replaceArgs(message, objects));
+            if(message == null || message.isEmpty()) {
+                return;
+            }
+
+            // TODO use uuid method
+
+            var buffer = DataBuffer.create()
+                    .write("uuid", ((OfflinePlayer) sender).getUniqueId())
+                    .write("message", replaceArgs(message, objects));
+
+            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.CHAT_MESSAGE, buffer);
+        }
+         */
+
+        @Override
+        void sendMessage(Object sender, Object... objects) {
+            if(message == null || message.isEmpty()) {
+                return;
+            }
+
+            if (!(sender instanceof OfflinePlayer)) {
+                ((CommandSender) sender).sendMessage(replaceArgs(message, objects));
+                return;
+            }
+
+            var buffer = DataBuffer.create()
+                    .write("uuid", ((OfflinePlayer) sender).getUniqueId())
+                    .write("message", replaceArgs(message, objects));
+
+            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.CHAT_MESSAGE, buffer);
         }
     }
 
@@ -952,12 +992,14 @@ public enum Locale {
             return rawMessage;
         }
 
+        /*
         @Override
         void sendMessage(CommandSender sender, Object... objects) {
             if(!(sender instanceof Player)){
                 sender.sendMessage(rawMessage);
             }
             else {
+                // TODO component message type
                 BaseComponent[] duplicate = replaceArgs(textComponents, objects);
                 
                 if(duplicate.length > 0)
@@ -969,6 +1011,12 @@ public enum Locale {
                 plugin.getNMSAdapter().sendTitle((Player) sender, Locale.replaceArgs(titleMessage, objects),
                         Locale.replaceArgs(subtitleMessage, objects), fadeIn, duration, fadeOut);
             }
+        }
+         */
+
+        @Override
+        void sendMessage(Object sender, Object... objects) {
+            // TODO
         }
 
         private static BaseComponent[] replaceArgs(BaseComponent[] textComponents, Object... objects){

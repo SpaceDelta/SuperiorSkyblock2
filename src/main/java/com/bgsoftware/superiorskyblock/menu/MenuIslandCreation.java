@@ -222,12 +222,12 @@ public final class MenuIslandCreation extends SuperiorMenu {
 
     public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, String islandName){
         MenuIslandCreation menuIslandCreation = new MenuIslandCreation(superiorPlayer, islandName);
-        if(plugin.getSettings().skipOneItemMenus && menuIslandCreation.hasOnlyOneItem()){
+        /*if(plugin.getSettings().skipOneItemMenus && menuIslandCreation.hasOnlyOneItem()){
             clickSchematic(menuIslandCreation.getOnlyOneItem(), menuIslandCreation, false, false);
         }
-        else {
+        else {*/
             menuIslandCreation.open(previousMenu);
-        }
+        // }
     }
 
     public static void simulateClick(SuperiorPlayer superiorPlayer, String islandName, String schematic, boolean rightClick){

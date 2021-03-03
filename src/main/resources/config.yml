@@ -728,3 +728,5 @@ charge-on-warp: 0
 
 # Should island warps be public by default?
 public-warps: false
+
+side: CLIENT

@@ -51,7 +51,7 @@ public final class CmdAdminReload implements ISuperiorCommand {
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
         Executor.async(() -> {
             Locale.RELOAD_PROCCESS_REQUEST.send(sender);
-            plugin.reloadPlugin(false);
+            plugin.reloadPlugin(false, SuperiorSkyblockPlugin.INSTANCE.getSide());
             Locale.RELOAD_COMPLETED.send(sender);
         });
     }
