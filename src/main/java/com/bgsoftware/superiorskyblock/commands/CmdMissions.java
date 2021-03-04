@@ -7,6 +7,7 @@ import com.bgsoftware.superiorskyblock.menu.MenuIslandMissions;
 import com.bgsoftware.superiorskyblock.menu.MenuMissions;
 import com.bgsoftware.superiorskyblock.menu.MenuPlayerMissions;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -54,6 +55,11 @@ public final class CmdMissions implements ISuperiorCommand {
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(sender);
+
+        if (SuperiorSkyblockPlugin.isClient) {
+            superiorPlayer.asPlayer().sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            return;
+        }
 
         if(args.length == 2){
             if(args[1].equalsIgnoreCase(Locale.COMMAND_ARGUMENT_ISLAND.getMessage(superiorPlayer.getUserLocale()))){

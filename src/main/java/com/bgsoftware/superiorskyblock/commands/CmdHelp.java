@@ -4,6 +4,7 @@ import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.commands.SuperiorCommand;
 import com.bgsoftware.superiorskyblock.utils.LocaleUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -50,6 +51,10 @@ public final class CmdHelp implements ISuperiorCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
+        if (SuperiorSkyblockPlugin.isClient) {
+            sender.sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            return;
+        }
         int page = 1;
 
         if(args.length == 2){

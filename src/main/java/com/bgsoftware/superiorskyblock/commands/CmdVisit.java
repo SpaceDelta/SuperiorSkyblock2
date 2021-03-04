@@ -7,6 +7,7 @@ import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -56,6 +57,10 @@ public final class CmdVisit implements ISuperiorCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
+        if (SuperiorSkyblockPlugin.isClient) {
+            sender.sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            return;
+        }
         Island targetIsland = CommandArguments.getIsland(plugin, sender, args[1]).getKey();
 
         if(targetIsland == null)

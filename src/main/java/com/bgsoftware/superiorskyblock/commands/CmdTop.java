@@ -4,6 +4,7 @@ import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.menu.MenuTopIslands;
 import com.bgsoftware.superiorskyblock.utils.islands.SortingTypes;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -49,6 +50,10 @@ public final class CmdTop implements ISuperiorCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
+        if (SuperiorSkyblockPlugin.isClient) {
+            sender.sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            return;
+        }
         MenuTopIslands.openInventory(plugin.getPlayers().getSuperiorPlayer(sender), null, SortingTypes.getDefaultSorting());
     }
 

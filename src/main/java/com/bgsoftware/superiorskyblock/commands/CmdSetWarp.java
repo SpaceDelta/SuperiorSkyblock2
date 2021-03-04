@@ -9,6 +9,7 @@ import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
 import com.bgsoftware.superiorskyblock.wrappers.SBlockPosition;
 import com.bgsoftware.superiorskyblock.Locale;
+import org.bukkit.ChatColor;
 
 import java.util.Collections;
 import java.util.List;
@@ -70,6 +71,10 @@ public final class CmdSetWarp implements IPermissibleCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, Island island, String[] args) {
+        if (SuperiorSkyblockPlugin.isClient) {
+            superiorPlayer.asPlayer().sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            return;
+        }
         if(island.getIslandWarps().size() >= island.getWarpsLimit()) {
             Locale.NO_MORE_WARPS.send(superiorPlayer);
             return;

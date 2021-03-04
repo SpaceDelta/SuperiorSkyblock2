@@ -12,6 +12,7 @@ import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
 import com.bgsoftware.superiorskyblock.utils.registry.Registry;
 import com.bgsoftware.superiorskyblock.wrappers.SBlockPosition;
 import com.bgsoftware.superiorskyblock.Locale;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
@@ -62,6 +63,10 @@ public final class CmdShow implements ISuperiorCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
+        if (SuperiorSkyblockPlugin.isClient) {
+            sender.sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            return;
+        }
         Island island = args.length == 1 ? CommandArguments.getIslandWhereStanding(plugin, sender).getKey() :
                 CommandArguments.getIsland(plugin, sender, args[1]).getKey();
 

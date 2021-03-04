@@ -7,6 +7,7 @@ import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
 import com.bgsoftware.superiorskyblock.Locale;
+import org.bukkit.ChatColor;
 
 import java.util.Collections;
 import java.util.List;
@@ -60,6 +61,10 @@ public final class CmdSetDiscord implements IPermissibleCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, Island island, String[] args) {
+        if (SuperiorSkyblockPlugin.isClient) {
+            superiorPlayer.asPlayer().sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            return;
+        }
         String discord = CommandArguments.buildLongString(args, 1, false);
         island.setDiscord(discord);
         Locale.CHANGED_DISCORD.send(superiorPlayer, discord);

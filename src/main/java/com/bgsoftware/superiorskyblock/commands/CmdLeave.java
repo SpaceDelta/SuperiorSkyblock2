@@ -9,6 +9,7 @@ import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.events.EventsCaller;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
 import com.bgsoftware.superiorskyblock.Locale;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -54,6 +55,10 @@ public final class CmdLeave implements ISuperiorCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
+        if (SuperiorSkyblockPlugin.isClient) {
+            sender.sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            return;
+        }
         Pair<Island, SuperiorPlayer> arguments = CommandArguments.getSenderIsland(plugin, sender);
 
         Island island = arguments.getKey();
@@ -63,7 +68,7 @@ public final class CmdLeave implements ISuperiorCommand {
 
         SuperiorPlayer superiorPlayer = arguments.getValue();
 
-        if(superiorPlayer.getPlayerRole().getNextRole() == null){
+        if (superiorPlayer.getPlayerRole().getNextRole() == null) {
             Locale.LEAVE_ISLAND_AS_LEADER.send(superiorPlayer);
             return;
         }
