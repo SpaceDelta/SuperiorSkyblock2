@@ -75,21 +75,20 @@ public final class CmdCreate implements ISuperiorCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
-        var buffer = DataBuffer.create()
-                .write("uuid", ((Player) sender).getUniqueId().toString())
-                .write("raw-args", args);
+        var uuid = ((Player) sender).getUniqueId();
 
         if (SuperiorSkyblockPlugin.isClient) {
+            var buffer = DataBuffer.create()
+                    .write("uuid", uuid.toString())
+                    .write("raw-args", args);
+
             plugin.getLibrary().getMessageBus().fire(plugin, MessageType.CREATE_ISLAND_REQUEST, buffer);
         } else {
-            executeServer(plugin, buffer);
+            executeOnServer(plugin, uuid);
         }
     }
 
-    public static void executeServer(SuperiorSkyblockPlugin plugin, DataBuffer buffer) {
-        var uuid = UUID.fromString(buffer.readString("uuid"));
-        var args = (ArrayList<String>) buffer.read("raw-args", ArrayList.class);
-
+    public static void executeOnServer(SuperiorSkyblockPlugin plugin, UUID uuid) {
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(uuid);
 
         if(superiorPlayer.getIsland() != null){
@@ -104,22 +103,24 @@ public final class CmdCreate implements ISuperiorCommand {
 
         String islandName = "", schematicName = null;
 
+        /*
         if(plugin.getSettings().islandNamesRequiredForCreation) {
-            if (args.size() >= 2) {
-                islandName = args.get(1);
+            if (args.length >= 2) {
+                islandName = args[1];
                 if(!StringUtils.isValidName(superiorPlayer, null, islandName))
                     return;
             }
         }
 
-        if(plugin.getSettings().schematicNameArgument && args.size() == (plugin.getSettings().islandNamesRequiredForCreation ? 3 : 2)){
-            schematicName = args.get(plugin.getSettings().islandNamesRequiredForCreation ? 2 : 1);
+        if(plugin.getSettings().schematicNameArgument && args.length == (plugin.getSettings().islandNamesRequiredForCreation ? 3 : 2)){
+            schematicName = args[plugin.getSettings().islandNamesRequiredForCreation ? 2 : 1];
             Schematic schematic = plugin.getSchematics().getSchematic(schematicName);
             if(schematic == null || schematicName.endsWith("_nether") || schematicName.endsWith("_the_end")){
                 Locale.INVALID_SCHEMATIC.send(superiorPlayer, schematicName);
                 return;
             }
         }
+         */
 
         // if(schematicName == null) {
             var buffer1 = DataBuffer.create()

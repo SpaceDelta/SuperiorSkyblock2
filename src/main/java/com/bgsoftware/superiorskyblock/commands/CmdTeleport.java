@@ -5,12 +5,19 @@ import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.island.data.SPlayerDataHandler;
+import com.bgsoftware.superiorskyblock.sync.MessageConsumers;
+import com.bgsoftware.superiorskyblock.sync.MessageType;
 import com.bgsoftware.superiorskyblock.utils.StringUtils;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.threads.Executor;
 import com.bgsoftware.superiorskyblock.Locale;
+import net.spacedelta.lib.Library;
+import net.spacedelta.lib.data.DataBuffer;
+import net.spacedelta.lib.util.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,26 +63,39 @@ public final class CmdTeleport implements ISuperiorCommand {
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
         if (SuperiorSkyblockPlugin.isClient) {
-            sender.sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            var data = DataBuffer.create()
+                    .write("uuid", ((Player) sender).getUniqueId().toString());
+
+            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.ISLAND_TELEPORT_REQUEST, data);
             return;
         }
-        Pair<Island, SuperiorPlayer> arguments = CommandArguments.getSenderIsland(plugin, sender);
+
+        executeOnServer(plugin.getPlayers().getSuperiorPlayer(sender));
+    }
+
+    public static void executeOnServer(@NotNull SuperiorPlayer player) {
+        var plugin = SuperiorSkyblockPlugin.INSTANCE;
+        Pair<Island, SuperiorPlayer> arguments = CommandArguments.getPlayerIsland(plugin, player);
 
         Island island = arguments.getKey();
 
         if(island == null)
             return;
 
-        SuperiorPlayer superiorPlayer = arguments.getValue();
-
+        /*
         if(plugin.getSettings().homeWarmup > 0 && !superiorPlayer.hasBypassModeEnabled() && !superiorPlayer.hasPermission("superior.admin.bypass.warmup")) {
             Locale.TELEPORT_WARMUP.send(superiorPlayer, StringUtils.formatTime(superiorPlayer.getUserLocale(), plugin.getSettings().homeWarmup));
             ((SPlayerDataHandler) superiorPlayer.getDataHandler()).setTeleportTask(Executor.sync(() ->
                     teleportToIsland(superiorPlayer, island), plugin.getSettings().homeWarmup / 50));
         }
         else {
-            teleportToIsland(superiorPlayer, island);
-        }
+         */
+        var data = DataBuffer.create()
+                .write("uuid", player.getUniqueId().toString());
+
+        plugin.getLibrary().getMessageBus().fire(plugin, MessageType.ISLAND_TELEPORT, data);
+        //     teleportToIsland(superiorPlayer, island);
+        // }
     }
 
     @Override
@@ -83,7 +103,7 @@ public final class CmdTeleport implements ISuperiorCommand {
         return new ArrayList<>();
     }
 
-    private void teleportToIsland(SuperiorPlayer superiorPlayer, Island island){
+    public static void teleportToIsland(SuperiorPlayer superiorPlayer, Island island){
         ((SPlayerDataHandler) superiorPlayer.getDataHandler()).setTeleportTask(null);
         superiorPlayer.teleport(island, result -> {
             if(result)

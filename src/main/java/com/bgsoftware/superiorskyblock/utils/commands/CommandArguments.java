@@ -79,6 +79,15 @@ public final class CommandArguments {
         return new Pair<>(island, superiorPlayer);
     }
 
+    public static Pair<Island, SuperiorPlayer> getPlayerIsland(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer){
+        Island island = superiorPlayer.getIsland();
+
+        if(island == null)
+            Locale.INVALID_ISLAND.send(superiorPlayer);
+
+        return new Pair<>(island, superiorPlayer);
+    }
+
     public static SuperiorPlayer getPlayer(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, String argument){
         return getPlayer(plugin, superiorPlayer.asPlayer(), argument);
     }

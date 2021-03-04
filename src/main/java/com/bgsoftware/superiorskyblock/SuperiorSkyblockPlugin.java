@@ -54,6 +54,8 @@ import com.bgsoftware.superiorskyblock.utils.islands.SortingComparators;
 import com.bgsoftware.superiorskyblock.utils.items.EnchantsUtils;
 import com.bgsoftware.superiorskyblock.utils.threads.Executor;
 
+import net.spacedelta.lib.Library;
+import net.spacedelta.lib.network.data.model.server.ServerData;
 import net.spacedelta.lib.plugin.BukkitPlugin;
 import net.spacedelta.lib.plugin.PluginSide;
 import net.spacedelta.lib.plugin.annotation.Instance;
@@ -74,6 +76,7 @@ public final class SuperiorSkyblockPlugin extends BukkitPlugin implements Superi
 
     @Instance
     public static SuperiorSkyblockPlugin INSTANCE;
+    public static final String MAIN_SERVER = "dev3"; // TODO
     public static boolean isClient;
 
     private static final ReflectField<SuperiorSkyblock> PLUGIN = new ReflectField<>(SuperiorSkyblockAPI.class, SuperiorSkyblock.class, "plugin");
@@ -150,6 +153,8 @@ public final class SuperiorSkyblockPlugin extends BukkitPlugin implements Superi
     @Override
     public void enable() {
         isClient = getSide() == PluginSide.CLIENT;
+        // MAIN_SERVER = getLibrary().getNetworkManager().getServerData().get("dev3");
+        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         try {
             // TODO don't init a lot of this shit on client servers
