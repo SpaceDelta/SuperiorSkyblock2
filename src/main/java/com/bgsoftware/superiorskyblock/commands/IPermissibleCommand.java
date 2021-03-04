@@ -7,6 +7,7 @@ import com.bgsoftware.superiorskyblock.api.island.IslandPrivilege;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -17,6 +18,11 @@ public interface IPermissibleCommand extends ISuperiorCommand {
 
     @Override
     default void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
+        if (SuperiorSkyblockPlugin.isClient) {
+            sender.sendMessage(ChatColor.RED + "You must be on your island to do this!");
+            return;
+        }
+
         Island island = null;
         SuperiorPlayer superiorPlayer = null;
 

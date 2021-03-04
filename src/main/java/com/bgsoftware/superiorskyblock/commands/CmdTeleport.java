@@ -90,6 +90,11 @@ public final class CmdTeleport implements ISuperiorCommand {
         }
         else {
          */
+        if (player.isOnline()) {
+            teleportToIsland(player, island);
+            return;
+        }
+
         var data = DataBuffer.create()
                 .write("uuid", player.getUniqueId().toString());
 

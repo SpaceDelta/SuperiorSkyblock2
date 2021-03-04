@@ -66,10 +66,6 @@ public final class CmdDisband implements IPermissibleCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, Island island, String[] args) {
-        if (SuperiorSkyblockPlugin.isClient) {
-            superiorPlayer.asPlayer().sendMessage(ChatColor.RED + "You can only do this on the main server!");
-            return;
-        }
         if (!superiorPlayer.hasDisbands() && plugin.getSettings().disbandCount > 0) {
             Locale.NO_MORE_DISBANDS.send(superiorPlayer);
             return;

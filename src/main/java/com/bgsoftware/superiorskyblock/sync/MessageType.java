@@ -13,6 +13,6 @@ public enum MessageType {
 
     // CmdTeleport
     ISLAND_TELEPORT_REQUEST,
-    ISLAND_TELEPORT
+    ISLAND_TELEPORT,
 
 }
