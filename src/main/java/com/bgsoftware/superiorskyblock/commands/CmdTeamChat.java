@@ -4,11 +4,14 @@ import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
+import com.bgsoftware.superiorskyblock.sync.MessageType;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
 import com.bgsoftware.superiorskyblock.Locale;
-import org.bukkit.ChatColor;
+import net.spacedelta.lib.data.DataBuffer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,32 +57,47 @@ public final class CmdTeamChat implements ISuperiorCommand {
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
         if (SuperiorSkyblockPlugin.isClient) {
-            sender.sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            if (args.length == 1) {
+                var data = DataBuffer.create()
+                        .write("uuid", ((Player) sender).getUniqueId());
+
+                plugin.getLibrary().getMessageBus().fire(plugin, MessageType.TEAM_CHAT_TOGGLE, data);
+                return;
+            }
+
+            var message = CommandArguments.buildLongString(args, 1, true);
+            var data = DataBuffer.create()
+                    .write("uuid", ((Player) sender).getUniqueId())
+                    .write("message", message);
+
+            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.TEAM_CHAT_MESSAGE, data);
             return;
         }
+
         Pair<Island, SuperiorPlayer> arguments = CommandArguments.getSenderIsland(plugin, sender);
-
-        Island island = arguments.getKey();
-
-        if(island == null)
-            return;
-
         SuperiorPlayer superiorPlayer = arguments.getValue();
 
-        if(args.length == 1){
-            if(superiorPlayer.hasTeamChatEnabled()){
-                Locale.TOGGLED_TEAM_CHAT_OFF.send(superiorPlayer);
-            }else{
-                Locale.TOGGLED_TEAM_CHAT_ON.send(superiorPlayer);
-            }
-            superiorPlayer.toggleTeamChat();
+        if (args.length == 1) {
+            toggleOnServer(superiorPlayer);
+        } else {
+            var message = CommandArguments.buildLongString(args, 1, true);
+            sendMessageOnServer(superiorPlayer, message);
+        }
+    }
+
+    public static void toggleOnServer(@NotNull SuperiorPlayer player) {
+        if (player.hasTeamChatEnabled()){
+            Locale.TOGGLED_TEAM_CHAT_OFF.send(player);
+        } else{
+            Locale.TOGGLED_TEAM_CHAT_ON.send(player);
         }
 
-        else{
-            String message = CommandArguments.buildLongString(args, 1, true);
-            IslandUtils.sendMessage(island, Locale.TEAM_CHAT_FORMAT, new ArrayList<>(), superiorPlayer.getPlayerRole(),
-                    superiorPlayer.getName(), message);
-        }
+        player.toggleTeamChat();
+    }
+
+    public static void sendMessageOnServer(@NotNull SuperiorPlayer player, @NotNull String message) {
+        var island = player.getIsland();
+        IslandUtils.sendMessage(island, Locale.TEAM_CHAT_FORMAT, new ArrayList<>(), player.getPlayerRole(), player.getName(), message);
     }
 
     @Override
