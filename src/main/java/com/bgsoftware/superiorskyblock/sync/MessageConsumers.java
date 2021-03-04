@@ -5,6 +5,7 @@ import com.bgsoftware.superiorskyblock.sync.handler.ChatMessage;
 import com.bgsoftware.superiorskyblock.sync.handler.Handler;
 import com.bgsoftware.superiorskyblock.sync.handler.create.CreateIslandRequest;
 import com.bgsoftware.superiorskyblock.sync.handler.create.OpenIslandCreationMenu;
+import com.bgsoftware.superiorskyblock.sync.handler.create.SelectIslandSchematic;
 import com.bgsoftware.superiorskyblock.sync.handler.teleport.IslandTeleport;
 import com.bgsoftware.superiorskyblock.sync.handler.teleport.IslandTeleportRequest;
 import net.spacedelta.lib.message.MessageBus;
@@ -24,6 +25,7 @@ public class MessageConsumers implements Listener {
                 new ChatMessage(),
                 new CreateIslandRequest(),
                 new OpenIslandCreationMenu(),
+                new SelectIslandSchematic(),
 
                 new IslandTeleportRequest(),
                 new IslandTeleport()

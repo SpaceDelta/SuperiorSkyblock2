@@ -16,6 +16,7 @@ import com.bgsoftware.superiorskyblock.island.data.SPlayerDataHandler;
 import com.bgsoftware.superiorskyblock.handlers.MissionsHandler;
 import com.bgsoftware.superiorskyblock.island.SpawnIsland;
 import com.bgsoftware.superiorskyblock.island.SPlayerRole;
+import com.bgsoftware.superiorskyblock.sync.MessageType;
 import com.bgsoftware.superiorskyblock.utils.FileUtils;
 import com.bgsoftware.superiorskyblock.utils.LocaleUtils;
 import com.bgsoftware.superiorskyblock.utils.LocationUtils;
@@ -27,6 +28,7 @@ import com.bgsoftware.superiorskyblock.utils.threads.Executor;
 
 import com.bgsoftware.superiorskyblock.wrappers.SBlockPosition;
 import com.google.common.base.Preconditions;
+import net.spacedelta.lib.data.DataBuffer;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
@@ -298,12 +300,24 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
 
     @Override
     public void teleport(Island island) {
-        if(isOnline())
-            teleport(island, null);
+        teleportOnServer(island, null);
     }
 
     @Override
     public void teleport(Island island, Consumer<Boolean> result) {
+        if (!isOnline() || SuperiorSkyblockPlugin.isClient) {
+            var data = DataBuffer.create()
+                    .write("uuid", getUniqueId().toString())
+                    .write("island-uuid", island.getUniqueId().toString());
+
+            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.ISLAND_TELEPORT, data);
+            return;
+        }
+
+        teleportOnServer(island, result);
+    }
+
+    public void teleportOnServer(Island island, Consumer<Boolean> result) {
         if(!isOnline())
             return;
 
@@ -451,6 +465,10 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
 
     @Override
     public PlayerRole getPlayerRole() {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return SPlayerRole.guestRole();
+        }
+
         if(playerRole == null)
             setPlayerRole(SPlayerRole.guestRole());
 

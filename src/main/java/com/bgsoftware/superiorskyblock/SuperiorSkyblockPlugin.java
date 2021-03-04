@@ -193,6 +193,10 @@ public final class SuperiorSkyblockPlugin extends BukkitPlugin implements Superi
 
             reloadPlugin(true, getSide());
 
+            if (isClient) {
+                safeEventsRegister(new MenusListener(this));
+            }
+
             if (!isClient) {
                 try {
                     safeEventsRegister(new BlocksListener(this));
@@ -370,51 +374,53 @@ public final class SuperiorSkyblockPlugin extends BukkitPlugin implements Superi
 
         commandsHandler.loadData();
 
-        if (side == PluginSide.CLIENT) {
-            return; // oop
-        }
+        if (side == PluginSide.SERVER) {
+            if(loadGrid) {
+                playersHandler.loadData();
+                gridHandler.loadData();
+            }
+            else{
+                Executor.sync(gridHandler::updateSpawn, 1L);
+                gridHandler.syncUpgrades();
+            }
 
-        if(loadGrid) {
-            playersHandler.loadData();
-            gridHandler.loadData();
-        }
-        else{
-            Executor.sync(gridHandler::updateSpawn, 1L);
-            gridHandler.syncUpgrades();
         }
 
         schematicsHandler.loadData();
         providersHandler.loadData();
         menusHandler.loadData();
 
-        if (loadGrid) {
-            try {
-                dataHandler.loadDataWithException();
-            }catch(HandlerLoadException ex){
-                if(!HandlerLoadException.handle(ex))
-                    return;
+        if (side == PluginSide.SERVER) {
+            if (loadGrid) {
+                try {
+                    dataHandler.loadDataWithException();
+                } catch (HandlerLoadException ex) {
+                    if (!HandlerLoadException.handle(ex))
+                        return;
+                }
             }
+
+
+            Executor.sync(() -> {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    SuperiorPlayer superiorPlayer = playersHandler.getSuperiorPlayer(player);
+                    Island island = gridHandler.getIslandAt(player.getLocation());
+                    nmsAdapter.setWorldBorder(superiorPlayer, island);
+                    if (island != null)
+                        island.applyEffects(superiorPlayer);
+                }
+                //CropsTask.startTask();
+            });
+
+            // Start SpaceDelta
+            Executor.sync(() -> {
+                log("Performing initial island worth calculations...");
+                gridHandler.calcAllIslands(() -> log("Initial island worth calculations completed."));
+            }, 8 * 20L);
+            // End SpaceDelta
+
+            CalcTask.startTask();
         }
-
-        Executor.sync(() -> {
-            for(Player player : Bukkit.getOnlinePlayers()) {
-                SuperiorPlayer superiorPlayer = playersHandler.getSuperiorPlayer(player);
-                Island island = gridHandler.getIslandAt(player.getLocation());
-                nmsAdapter.setWorldBorder(superiorPlayer, island);
-                if(island != null)
-                    island.applyEffects(superiorPlayer);
-            }
-            //CropsTask.startTask();
-        });
-
-        // Start SpaceDelta
-        Executor.sync(() -> {
-            log("Performing initial island worth calculations...");
-            gridHandler.calcAllIslands(() -> log("Initial island worth calculations completed."));
-        }, 8 * 20L);
-        // End SpaceDelta
-
-        CalcTask.startTask();
     }
 
     @Override

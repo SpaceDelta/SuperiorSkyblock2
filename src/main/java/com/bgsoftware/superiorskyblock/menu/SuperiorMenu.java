@@ -377,7 +377,7 @@ public abstract class SuperiorMenu implements InventoryHolder {
         return getData().permissions.get(slot);
     }
 
-    private MenuData getData(){
+    protected MenuData getData(){
         if(!dataMap.containsKey(identifier)){
             dataMap.add(identifier, new MenuData());
         }
@@ -448,7 +448,7 @@ public abstract class SuperiorMenu implements InventoryHolder {
         private final Registry<Integer, List<String>> commands = Registry.createRegistry();
         private final Registry<Integer, Pair<String, SoundWrapper>> permissions = Registry.createRegistry();
         private final Registry<Integer, ItemBuilder> fillItems = Registry.createRegistry();
-        private final Registry<String, Object> data = Registry.createRegistry();
+        public final Registry<String, Object> data = Registry.createRegistry();
         private String title = "";
         private InventoryType inventoryType = InventoryType.CHEST;
         private int rowsSize = 6;

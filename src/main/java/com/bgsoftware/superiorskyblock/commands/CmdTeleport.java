@@ -96,7 +96,8 @@ public final class CmdTeleport implements ISuperiorCommand {
         }
 
         var data = DataBuffer.create()
-                .write("uuid", player.getUniqueId().toString());
+                .write("uuid", player.getUniqueId().toString())
+                .write("island-uuid", island.getUniqueId().toString());
 
         plugin.getLibrary().getMessageBus().fire(plugin, MessageType.ISLAND_TELEPORT, data);
         //     teleportToIsland(superiorPlayer, island);

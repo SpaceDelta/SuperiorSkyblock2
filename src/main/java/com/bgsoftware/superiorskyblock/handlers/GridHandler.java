@@ -166,17 +166,17 @@ public final class GridHandler extends AbstractHandler implements GridManager {
                 island.setBiome(biome);
                 island.setTeleportLocation(((BaseSchematic) schematic).getTeleportLocation(islandLocation));
 
-                if (superiorPlayer.isOnline()) {
+                // if (superiorPlayer.isOnline()) {
                     Locale.CREATE_ISLAND.send(superiorPlayer, SBlockPosition.of(islandLocation), System.currentTimeMillis() - startTime);
                     if (event.getResult()) {
-                        if(updateGamemode)
-                            superiorPlayer.asPlayer().setGameMode(GameMode.SURVIVAL);
-                        superiorPlayer.teleport(island, result -> {
+                        /*if(updateGamemode)
+                            superiorPlayer.asPlayer().setGameMode(GameMode.SURVIVAL);*/
+                        superiorPlayer.teleport(island, result -> { // TODO use teleport packet logic
                             if(result)
                                 Executor.sync(() -> IslandUtils.resetChunksExcludedFromList(island, loadedChunks), 10L);
                         });
                     }
-                }
+                // }
 
                 plugin.getProviders().finishIslandCreation(islandLocation, superiorPlayer.getUniqueId(), islandUUID);
             }, ex -> {
