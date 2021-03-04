@@ -58,7 +58,7 @@ public final class CmdVisit implements ISuperiorCommand {
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
         if (SuperiorSkyblockPlugin.isClient) {
-            sender.sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            sender.sendMessage(SuperiorSkyblockPlugin.WRONG_SERVER);
             return;
         }
         Island targetIsland = CommandArguments.getIsland(plugin, sender, args[1]).getKey();

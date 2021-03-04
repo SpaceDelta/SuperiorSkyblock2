@@ -59,6 +59,7 @@ import net.spacedelta.lib.network.data.model.server.ServerData;
 import net.spacedelta.lib.plugin.BukkitPlugin;
 import net.spacedelta.lib.plugin.PluginSide;
 import net.spacedelta.lib.plugin.annotation.Instance;
+import net.spacedelta.lib.util.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -77,6 +78,7 @@ public final class SuperiorSkyblockPlugin extends BukkitPlugin implements Superi
     @Instance
     public static SuperiorSkyblockPlugin INSTANCE;
     public static final String MAIN_SERVER = "dev3"; // TODO
+    public static final String WRONG_SERVER = MessageUtils.formatColors("&c&lERROR&r You must be on your island to do this!");
     public static boolean isClient;
 
     private static final ReflectField<SuperiorSkyblock> PLUGIN = new ReflectField<>(SuperiorSkyblockAPI.class, SuperiorSkyblock.class, "plugin");

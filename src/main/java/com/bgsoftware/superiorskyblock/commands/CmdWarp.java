@@ -57,7 +57,7 @@ public final class CmdWarp implements ISuperiorCommand {
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
         if (SuperiorSkyblockPlugin.isClient) {
-            sender.sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            sender.sendMessage(SuperiorSkyblockPlugin.WRONG_SERVER);
             return;
         }
         Pair<Island, SuperiorPlayer> arguments = args.length == 1 ? CommandArguments.getSenderIsland(plugin, sender) :

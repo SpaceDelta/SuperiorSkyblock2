@@ -66,7 +66,7 @@ public final class CmdName implements IPermissibleCommand {
         String islandName = args[1];
 
         if (SuperiorSkyblockPlugin.isClient) {
-            superiorPlayer.asPlayer().sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            superiorPlayer.asPlayer().sendMessage(SuperiorSkyblockPlugin.WRONG_SERVER);
             return;
         }
 

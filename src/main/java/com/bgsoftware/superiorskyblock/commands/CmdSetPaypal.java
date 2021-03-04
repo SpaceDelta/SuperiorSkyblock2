@@ -61,7 +61,7 @@ public final class CmdSetPaypal implements IPermissibleCommand {
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, Island island, String[] args) {
         if (SuperiorSkyblockPlugin.isClient) {
-            superiorPlayer.asPlayer().sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            superiorPlayer.asPlayer().sendMessage(SuperiorSkyblockPlugin.WRONG_SERVER);
             return;
         }
         island.setPaypal(args[1]);

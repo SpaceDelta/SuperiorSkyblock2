@@ -57,7 +57,7 @@ public final class CmdMissions implements ISuperiorCommand {
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(sender);
 
         if (SuperiorSkyblockPlugin.isClient) {
-            superiorPlayer.asPlayer().sendMessage(ChatColor.RED + "You can only do this on the main server!");
+            superiorPlayer.asPlayer().sendMessage(SuperiorSkyblockPlugin.WRONG_SERVER);
             return;
         }
 
