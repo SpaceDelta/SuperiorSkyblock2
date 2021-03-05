@@ -5,9 +5,10 @@ public enum MessageType {
     // Locale
     CHAT_MESSAGE,
 
-    // Island chat messages uwu
+    // Island team shit uwu
     TEAM_CHAT_MESSAGE,
     TEAM_CHAT_TOGGLE,
+    TEAM_COMMAND_REQUEST,
 
     CREATE_ISLAND_REQUEST,
     OPEN_ISLAND_CREATION_MENU,

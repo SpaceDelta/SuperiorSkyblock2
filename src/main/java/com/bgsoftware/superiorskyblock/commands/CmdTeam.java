@@ -5,6 +5,7 @@ import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.island.PlayerRole;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.island.SPlayerRole;
+import com.bgsoftware.superiorskyblock.sync.MessageType;
 import com.bgsoftware.superiorskyblock.utils.LocaleUtils;
 import com.bgsoftware.superiorskyblock.utils.StringUtils;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
@@ -13,8 +14,10 @@ import com.bgsoftware.superiorskyblock.utils.islands.SortingComparators;
 import com.bgsoftware.superiorskyblock.utils.registry.Registry;
 import com.bgsoftware.superiorskyblock.utils.threads.Executor;
 import com.bgsoftware.superiorskyblock.Locale;
+import net.spacedelta.lib.data.DataBuffer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,18 +66,29 @@ public final class CmdTeam implements ISuperiorCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
+        var arg = args.length == 1 ? "" : args[1];
+
         if (SuperiorSkyblockPlugin.isClient) {
-            sender.sendMessage(SuperiorSkyblockPlugin.WRONG_SERVER);
+            var data = DataBuffer.create()
+                    .write("uuid", ((Player) sender).getUniqueId().toString())
+                    .write("team", arg);
+
+            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.TEAM_COMMAND_REQUEST, data);
             return;
         }
-        Island island = (args.length == 1 ? CommandArguments.getSenderIsland(plugin, sender) :
-                CommandArguments.getIsland(plugin, sender, args[1])).getKey();
+
+        executeOnServer(plugin, plugin.getPlayers().getSuperiorPlayer(sender), arg);
+    }
+
+    public static void executeOnServer(SuperiorSkyblockPlugin plugin, SuperiorPlayer player, String argument) {
+        Island island = (argument.isEmpty() ? CommandArguments.getPlayerIsland(plugin, player) :
+                CommandArguments.getIsland(plugin, player, argument)).getKey();
 
         if(island == null)
             return;
 
         Executor.async(() -> {
-            java.util.Locale locale = LocaleUtils.getLocale(sender);
+            java.util.Locale locale = LocaleUtils.getLocale(player);
             StringBuilder infoMessage = new StringBuilder();
 
             if(!Locale.ISLAND_TEAM_STATUS_HEADER.isEmpty(locale))
@@ -111,7 +125,7 @@ public final class CmdTeam implements ISuperiorCommand {
             if(!Locale.ISLAND_TEAM_STATUS_FOOTER.isEmpty(locale))
                 infoMessage.append(Locale.ISLAND_TEAM_STATUS_FOOTER.getMessage(locale));
 
-            Locale.sendMessage(sender, infoMessage.toString(), false);
+            Locale.sendMessage(player, infoMessage.toString(), false);
         });
     }
 

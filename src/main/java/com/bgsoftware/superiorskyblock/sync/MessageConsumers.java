@@ -5,6 +5,7 @@ import com.bgsoftware.superiorskyblock.sync.handler.ChatMessage;
 import com.bgsoftware.superiorskyblock.sync.handler.Handler;
 import com.bgsoftware.superiorskyblock.sync.handler.chat.TeamChatMessage;
 import com.bgsoftware.superiorskyblock.sync.handler.chat.TeamChatToggle;
+import com.bgsoftware.superiorskyblock.sync.handler.chat.TeamCommandRequest;
 import com.bgsoftware.superiorskyblock.sync.handler.create.CreateIslandRequest;
 import com.bgsoftware.superiorskyblock.sync.handler.create.OpenIslandCreationMenu;
 import com.bgsoftware.superiorskyblock.sync.handler.create.SelectIslandSchematic;
@@ -34,7 +35,8 @@ public class MessageConsumers implements Listener {
                 new IslandTeleport(),
 
                 new TeamChatMessage(),
-                new TeamChatToggle()
+                new TeamChatToggle(),
+                new TeamCommandRequest()
         );
     }
 

@@ -51,6 +51,22 @@ public final class CommandArguments {
         return new Pair<>(island, targetPlayer);
     }
 
+    public static Pair<Island, SuperiorPlayer> getIsland(SuperiorSkyblockPlugin plugin, SuperiorPlayer player, String argument){
+        SuperiorPlayer targetPlayer = plugin.getPlayers().getSuperiorPlayer(argument);
+        Island island = targetPlayer == null ? plugin.getGrid().getIsland(argument) : targetPlayer.getIsland();
+
+        if(island == null){
+            if(argument.equalsIgnoreCase(player.getName()))
+                Locale.INVALID_ISLAND.send(player);
+            else if(targetPlayer == null)
+                Locale.INVALID_ISLAND_OTHER_NAME.send(player, StringUtils.stripColors(argument));
+            else
+                Locale.INVALID_ISLAND_OTHER.send(player, targetPlayer.getName());
+        }
+
+        return new Pair<>(island, targetPlayer);
+    }
+
     public static Pair<List<Island>, SuperiorPlayer> getMultipleIslands(SuperiorSkyblockPlugin plugin, CommandSender sender, String argument){
         List<Island> islands = new ArrayList<>();
         SuperiorPlayer targetPlayer;

@@ -805,7 +805,16 @@ public enum Locale {
     }
 
     public static void sendMessage(SuperiorPlayer superiorPlayer, String message, boolean translateColors){
-        sendMessage(superiorPlayer.asPlayer(), message, translateColors);
+        if (superiorPlayer.isOnline()) {
+            sendMessage(superiorPlayer.asPlayer(), message, translateColors);
+            return;
+        }
+
+        var data = DataBuffer.create()
+                .write("uuid", superiorPlayer.getUniqueId().toString())
+                .write("message", translateColors ? StringUtils.translateColors(message) : message);
+
+        plugin.getLibrary().getMessageBus().fire(plugin, MessageType.CHAT_MESSAGE, data);
     }
 
     public static void sendMessage(CommandSender sender, String message, boolean translateColors){
