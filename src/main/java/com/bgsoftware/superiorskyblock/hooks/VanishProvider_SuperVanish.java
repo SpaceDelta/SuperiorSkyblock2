@@ -34,6 +34,10 @@ public final class VanishProvider_SuperVanish implements VanishProvider, Listene
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerVanish(PlayerVanishStateChangeEvent e){
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         if(e.isVanishing()) {
             PlayersListener.handlePlayerQuit(plugin.getPlayers().getSuperiorPlayer(e.getUUID()));
         }

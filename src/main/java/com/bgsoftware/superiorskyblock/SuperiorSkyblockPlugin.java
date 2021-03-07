@@ -272,7 +272,7 @@ public final class SuperiorSkyblockPlugin extends BukkitPlugin implements Superi
 
         ChunksProvider.stop();
         try {
-            dataHandler.saveDatabase(false);
+            if (!isClient) dataHandler.saveDatabase(false);
             missionsHandler.saveMissionsData();
 
             gridHandler.disablePlugin();
