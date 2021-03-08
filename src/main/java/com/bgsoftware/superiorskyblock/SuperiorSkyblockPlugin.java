@@ -77,7 +77,7 @@ public final class SuperiorSkyblockPlugin extends BukkitPlugin implements Superi
 
     @Instance
     public static SuperiorSkyblockPlugin INSTANCE;
-    public static final String MAIN_SERVER = "dev3"; // TODO
+    public static final String MAIN_SERVER = "sky04"; // TODO
     public static final String WRONG_SERVER = MessageUtils.formatColors("&c&lERROR&r You must be on your island to do this!");
     public static boolean isClient;
 

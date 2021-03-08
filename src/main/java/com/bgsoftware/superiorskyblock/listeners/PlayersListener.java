@@ -206,7 +206,7 @@ public final class PlayersListener implements Listener {
         Island island = superiorPlayer.getIsland();
 
         if(island != null) {
-            IslandUtils.sendMessage(island, Locale.PLAYER_QUIT_ANNOUNCEMENT, Collections.singletonList(superiorPlayer.getUniqueId()), superiorPlayer.getName());
+            // IslandUtils.sendMessage(island, Locale.PLAYER_QUIT_ANNOUNCEMENT, Collections.singletonList(superiorPlayer.getUniqueId()), superiorPlayer.getName());
             boolean anyOnline = island.getIslandMembers(true).stream().anyMatch(_superiorPlayer ->
                     !_superiorPlayer.getUniqueId().equals(superiorPlayer.getUniqueId()) &&  _superiorPlayer.isOnline());
             if(!anyOnline)

@@ -707,7 +707,7 @@ public enum Locale {
 
     public void send(Object source, Object... objects){
         // if(superiorPlayer.isOnline())
-        send(source, java.util.Locale.ENGLISH, objects); // TODO
+        send(source, LocaleUtils.getDefault(), objects); // TODO
     }
 
 
@@ -923,11 +923,11 @@ public enum Locale {
 
         @Override
         void sendMessage(Object sender, Object... objects) {
-            if(message == null || message.isEmpty()) {
+            if (message == null || message.isEmpty()) {
                 return;
             }
 
-            if (!(sender instanceof OfflinePlayer)) {
+            if (sender instanceof CommandSender) {
                 ((CommandSender) sender).sendMessage(replaceArgs(message, objects));
                 return;
             }
@@ -1026,6 +1026,7 @@ public enum Locale {
         @Override
         void sendMessage(Object sender, Object... objects) {
             // TODO
+            System.out.println(objects);
         }
 
         private static BaseComponent[] replaceArgs(BaseComponent[] textComponents, Object... objects){

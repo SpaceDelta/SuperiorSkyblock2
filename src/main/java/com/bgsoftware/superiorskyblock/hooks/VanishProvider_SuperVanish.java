@@ -29,7 +29,7 @@ public final class VanishProvider_SuperVanish implements VanishProvider, Listene
 
     @Override
     public boolean isVanished(Player player) {
-        return VanishAPI.isInvisible(player);
+        return false && VanishAPI.isInvisible(player);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
