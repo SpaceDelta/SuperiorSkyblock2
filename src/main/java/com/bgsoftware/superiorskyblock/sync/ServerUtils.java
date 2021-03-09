@@ -1,25 +1,22 @@
 package com.bgsoftware.superiorskyblock.sync;
 
-import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
-import com.google.common.collect.Iterables;
-import com.google.common.io.ByteStreams;
-import org.bukkit.Bukkit;
+import net.spacedelta.lib.Library;
+import net.spacedelta.lib.util.ConcurrentUtils;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class ServerUtils {
 
-    private static final SuperiorSkyblockPlugin PLUGIN = SuperiorSkyblockPlugin.INSTANCE;
-
     @NotNull
     public static String getMainServerId() {
-        return "dev3";
+        return "sky04";
     }
 
-    public static void sendPlayerToServer(@NotNull String playerName, @NotNull String serverId) {
-        var out = ByteStreams.newDataOutput();
-        out.writeUTF("ConnectOther");
-        out.writeUTF(playerName);
-        out.writeUTF(serverId);
-        Iterables.getFirst(Bukkit.getOnlinePlayers(), null).sendPluginMessage(PLUGIN, "BungeeCord", out.toByteArray());
+    public static void sendPlayerToServer(@NotNull Player player, @NotNull String serverId) {
+        var server = Library.get().getNetworkManager().getServerData().get(serverId);
+
+        if (server != null) {
+            ConcurrentUtils.ensureMain(() -> server.sendPlayer(player));
+        }
     }
 }

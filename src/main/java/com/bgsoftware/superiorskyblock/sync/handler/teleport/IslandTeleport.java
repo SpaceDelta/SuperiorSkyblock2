@@ -46,7 +46,7 @@ public class IslandTeleport implements Handler, Listener {
         if (isClient()) {
             PlayerUtils.getPlayer(uuid).ifPresent(player -> {
                 if (isClient()) {
-                    ServerUtils.sendPlayerToServer(player.getName(), SuperiorSkyblockPlugin.MAIN_SERVER);
+                    ServerUtils.sendPlayerToServer(player, ServerUtils.getMainServerId());
                 }
             });
 

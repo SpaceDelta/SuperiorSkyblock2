@@ -300,6 +300,12 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
 
     @Override
     public void teleport(Island island) {
+        // If they are teleporting to spawn, handle it via transfer system
+        if (island == plugin.getGrid().getSpawnIsland()) {
+            asPlayer().chat("/spawn");
+            return;
+        }
+
         teleportOnServer(island, null);
     }
 
