@@ -103,8 +103,11 @@ public final class UpgradesListener implements Listener {
         if(island == null)
             return;
 
-        if(e.getEntity() instanceof Player)
+        if(e.getEntity() instanceof Player){
+            // AYAYAYYAYAYA
+            ((Player) e.getEntity()).chat("/spawn");
             return;
+        }
 
         if(plugin.getSettings().dropsUpgradePlayersMultiply){
             EntityDamageEvent lastDamage = e.getEntity().getLastDamageCause();
