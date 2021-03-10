@@ -124,6 +124,7 @@ dependencies {
     compileOnly 'com.bgsoftware:WildStackerAPI:latest'
     compileOnly 'com.grinderwolf:SlimeWorldManager:latest'
     compileOnly 'net.spacedelta:library:1.1-SNAPSHOT'
+    compileOnly 'net.spacedelta:starship:2.0.1-SNAPSHOT'
 
     compileOnly ('net.spacedelta:runes:1.2.18-SNAPSHOT') {
         exclude group: 'com.zaxxer'

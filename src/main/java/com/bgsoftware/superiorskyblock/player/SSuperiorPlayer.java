@@ -17,6 +17,7 @@ import com.bgsoftware.superiorskyblock.handlers.MissionsHandler;
 import com.bgsoftware.superiorskyblock.island.SpawnIsland;
 import com.bgsoftware.superiorskyblock.island.SPlayerRole;
 import com.bgsoftware.superiorskyblock.sync.MessageType;
+import com.bgsoftware.superiorskyblock.sync.ServerUtils;
 import com.bgsoftware.superiorskyblock.utils.FileUtils;
 import com.bgsoftware.superiorskyblock.utils.LocaleUtils;
 import com.bgsoftware.superiorskyblock.utils.LocationUtils;
@@ -29,6 +30,8 @@ import com.bgsoftware.superiorskyblock.utils.threads.Executor;
 import com.bgsoftware.superiorskyblock.wrappers.SBlockPosition;
 import com.google.common.base.Preconditions;
 import net.spacedelta.lib.data.DataBuffer;
+import net.spacedelta.starship.StarshipPlugin;
+import net.spacedelta.starship.server.transfer.TransferMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
@@ -312,11 +315,25 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
     @Override
     public void teleport(Island island, Consumer<Boolean> result) {
         if (!isOnline() || SuperiorSkyblockPlugin.isClient) {
+            var loc = island.getTeleportLocation(World.Environment.NORMAL);
+            var data = DataBuffer.create()
+                    .write("uuid", getUniqueId().toString())
+                    .write("world", SuperiorSkyblockPlugin.INSTANCE.getProviders().getIslandsWorld(island, World.Environment.NORMAL).getName())
+                    .write("x", loc.getX())
+                    .write("y", loc.getY())
+                    .write("z", loc.getZ())
+                    .write("pitch", loc.getPitch())
+                    .write("yaw", loc.getYaw())
+                    .write("target-server", ServerUtils.getMainServerId());
+
+            plugin.getLibrary().getMessageBus().fire(StarshipPlugin.INSTANCE, TransferMessage.QUEUE_TELEPORT, data);
+            /*
             var data = DataBuffer.create()
                     .write("uuid", getUniqueId().toString())
                     .write("island-uuid", island.getUniqueId().toString());
 
             plugin.getLibrary().getMessageBus().fire(plugin, MessageType.ISLAND_TELEPORT, data);
+             */
             return;
         }
 
