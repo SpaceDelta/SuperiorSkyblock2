@@ -28,7 +28,7 @@ public class SelectIslandSchematic implements Handler {
         var schematic = data.readString("schematic");
         var islandName = data.readString("island-name");
         var rightClick = data.read("right-click", Boolean.class);
-        var menuData = data.read("menu-data", LinkedTreeMap.class); // stupid gson maps
+        // var menuData = data.read("menu-data", LinkedTreeMap.class); // stupid gson maps
 
         PlayerUtils.getSuperiorPlayer(uuid).ifPresent(player -> {
             MenuIslandCreation.clickSchematic(
@@ -38,7 +38,7 @@ public class SelectIslandSchematic implements Handler {
                     rightClick,
                     false,
                     null,
-                    menuData
+                    new LinkedTreeMap<>()
             );
         });
     }

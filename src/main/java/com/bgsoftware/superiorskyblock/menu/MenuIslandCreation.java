@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -46,12 +47,18 @@ public final class MenuIslandCreation extends SuperiorMenu {
                 int slot = (int) getData(schematic + "-slot");
                 if(slot == e.getRawSlot()) {
                     if (SuperiorSkyblockPlugin.isClient) {
+                        System.out.println("----------------- uwu debug -----------------");
+                        this.getData().data.toMap().entrySet().forEach(entry -> {
+                            System.out.println(entry.getKey() + " : " + entry.getValue());
+                        });
+                        System.out.println("----------------- uwu end debug -----------------");
+
                         var data = DataBuffer.create()
                                 .write("uuid", superiorPlayer.getUniqueId().toString())
                                 .write("schematic", schematic)
                                 .write("island-name", islandName)
-                                .write("right-click", e.getClick() == ClickType.RIGHT || e.getClick() == ClickType.SHIFT_RIGHT)
-                                .write("menu-data", this.getData().data.toMap());
+                                .write("right-click", e.getClick() == ClickType.RIGHT || e.getClick() == ClickType.SHIFT_RIGHT);
+                                // .write("menu-data", this.getData().data.toMap());
 
                         plugin.getLibrary().getMessageBus().fire(plugin, MessageType.SELECT_ISLAND_SCHEMATIC, data);
                     } else {
@@ -90,7 +97,7 @@ public final class MenuIslandCreation extends SuperiorMenu {
     public static void clickSchematic(String schematic, SuperiorPlayer superiorPlayer, String islandName, boolean rightClick,
                                        boolean fromInventory, @Nullable MenuIslandCreation menu, @NotNull Map<String, Object> data){
         // Checking for preview of islands.
-        if(rightClick){
+        if(false && rightClick){
             Location previewLocation = plugin.getSettings().islandPreviewLocations.get(schematic);
             if(previewLocation != null){
                 plugin.getGrid().startIslandPreview(superiorPlayer, schematic, islandName);
@@ -98,13 +105,13 @@ public final class MenuIslandCreation extends SuperiorMenu {
             }
         }
 
-        String permission = (String) data.getOrDefault(schematic + "-permission", "");
-        if (superiorPlayer.hasPermission(permission)) {
-            BigDecimal bonusWorth = BigDecimal.valueOf((double) data.getOrDefault(schematic + "-bonus-worth", 0D));
-            BigDecimal bonusLevel = BigDecimal.valueOf((double) data.getOrDefault(schematic + "-bonus-level", 0D));
-            boolean offset = (boolean) data.getOrDefault(schematic + "-offset", false);
+        // String permission = (String) data.getOrDefault(schematic + "-permission", "");
+        if (true /*|| superiorPlayer.hasPermission(permission)*/) {
+            BigDecimal bonusWorth = BigDecimal.valueOf(0D); /*BigDecimal.valueOf((double) data.getOrDefault(schematic + "-bonus-worth", 0D));*/
+            BigDecimal bonusLevel = BigDecimal.valueOf(0D); /*BigDecimal.valueOf((double) data.getOrDefault(schematic + "-bonus-level", 0D));*/
+            boolean offset = false; /*(boolean) data.getOrDefault(schematic + "-offset", false);*/
 
-            Biome biome = Biome.valueOf((String) data.getOrDefault(schematic + "-biome", "PLAINS"));
+            Biome biome = Biome.PLAINS; /*Biome.valueOf((String) data.getOrDefault(schematic + "-biome", "PLAINS"));*/
 
             /*
             SoundWrapper sound = (SoundWrapper) menu.getData(schematic + "-has-access-item-sound");
@@ -112,10 +119,12 @@ public final class MenuIslandCreation extends SuperiorMenu {
                 sound.playSound(menu.superiorPlayer.asPlayer());
              */
             //noinspection unchecked
+            /*
             List<String> commands = (List<String>) data.get(schematic + "-has-access-item-commands");
             if (commands != null)
                 commands.forEach(command -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                         command.replace("%player%", superiorPlayer.getName())));
+             */
 
             if(menu != null && fromInventory) {
                 menu.previousMove = false;
@@ -126,6 +135,7 @@ public final class MenuIslandCreation extends SuperiorMenu {
             plugin.getGrid().createIsland(superiorPlayer, schematic, bonusWorth, bonusLevel, biome, islandName, offset);
         }
         else{
+            /*
             SoundWrapper sound = (SoundWrapper) menu.getData(schematic + "-no-access-item-sound");
             if(sound != null)
                 sound.playSound(menu.superiorPlayer.asPlayer());
@@ -134,6 +144,7 @@ public final class MenuIslandCreation extends SuperiorMenu {
             if(commands != null)
                 commands.forEach(command -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                         command.replace("%player%", menu.superiorPlayer.getName())));
+             */
         }
     }
 
