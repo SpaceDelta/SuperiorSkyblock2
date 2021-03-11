@@ -146,8 +146,12 @@ public final class PlayersListener implements Listener {
 
         Executor.sync(() -> {
             if(superiorPlayer.isOnline() && plugin.getGrid().isIslandsWorld(superiorPlayer.getWorld()) && plugin.getGrid().getIslandAt(superiorPlayer.getLocation()) == null){
-                superiorPlayer.teleport(plugin.getGrid().getSpawnIsland());
-                Locale.ISLAND_GOT_DELETED_WHILE_INSIDE.send(superiorPlayer);
+                if (superiorPlayer.getIsland() == null) {
+                    Locale.ISLAND_GOT_DELETED_WHILE_INSIDE.send(superiorPlayer);
+                    return;
+                }
+
+                superiorPlayer.teleport(superiorPlayer.getIsland());
             }
         }, 10L);
 
