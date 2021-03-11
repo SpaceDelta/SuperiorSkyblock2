@@ -92,7 +92,8 @@ public final class CmdCreate implements ISuperiorCommand {
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(uuid);
 
         if(superiorPlayer.getIsland() != null){
-            Locale.ALREADY_IN_ISLAND.send(superiorPlayer);
+            CmdTeleport.executeOnServer(superiorPlayer); // tp to island if we already have one
+            // Locale.ALREADY_IN_ISLAND.send(superiorPlayer);
             return;
         }
 
