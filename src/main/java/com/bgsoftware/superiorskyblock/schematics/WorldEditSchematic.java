@@ -61,11 +61,7 @@ public final class WorldEditSchematic extends BaseSchematic implements Schematic
 
             var world = new BukkitWorld(location.getWorld());
             var point = BlockVector3.at(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-
-            long start = System.currentTimeMillis();
             clipboard.paste(world, point);
-            Bukkit.broadcastMessage(System.currentTimeMillis() - start + "ms to generate!");
-
             return null;
         }).thenAccept(o -> {
             ConcurrentUtils.ensureMain(() -> {
