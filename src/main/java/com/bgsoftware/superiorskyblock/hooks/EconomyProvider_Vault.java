@@ -30,8 +30,10 @@ public final class EconomyProvider_Vault implements EconomyProvider {
     public double getMoneyInBank(SuperiorPlayer superiorPlayer) {
         OfflinePlayer offlinePlayer = superiorPlayer.asOfflinePlayer();
 
+        /*
         if(!econ.hasAccount(offlinePlayer))
             econ.createPlayerAccount(offlinePlayer);
+         */
 
         return econ.getBalance(offlinePlayer);
     }
