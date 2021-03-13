@@ -7,6 +7,7 @@ import com.bgsoftware.superiorskyblock.api.island.SortingType;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.island.SpawnIsland;
+import com.bgsoftware.superiorskyblock.sync.IslandLevelCache;
 import com.bgsoftware.superiorskyblock.utils.StringUtils;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
 import com.bgsoftware.superiorskyblock.utils.islands.SortingTypes;
@@ -20,6 +21,7 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -297,11 +299,12 @@ public abstract class PlaceholderHook {
                     case "biome":
                         return StringUtils.format(island.getBiome().name());
                     case "level":
-                        return StringUtils.format(island.getIslandLevel());
+                        return StringUtils.format(IslandLevelCache.getLevel(superiorPlayer.getUniqueId()));
+                        // return StringUtils.format(island.getIslandLevel());
                     case "level_raw":
-                        return island.getIslandLevel().toString();
+                        return IslandLevelCache.getLevel(superiorPlayer.getUniqueId()) + "";
                     case "level_format":
-                        return StringUtils.fancyFormat(island.getIslandLevel(), superiorPlayer.getUserLocale());
+                        return StringUtils.fancyFormat(new BigDecimal(IslandLevelCache.getLevel(superiorPlayer.getUniqueId())), superiorPlayer.getUserLocale());
                     case "level_int":
                         return island.getIslandLevel().toBigInteger().toString();
                     case "worth":

@@ -34,6 +34,7 @@ import com.bgsoftware.superiorskyblock.menu.MenuCounts;
 import com.bgsoftware.superiorskyblock.menu.MenuUniqueVisitors;
 import com.bgsoftware.superiorskyblock.menu.MenuWarpCategories;
 import com.bgsoftware.superiorskyblock.menu.SuperiorMenu;
+import com.bgsoftware.superiorskyblock.sync.MessageType;
 import com.bgsoftware.superiorskyblock.upgrades.DefaultUpgradeLevel;
 import com.bgsoftware.superiorskyblock.upgrades.SUpgradeLevel;
 import com.bgsoftware.superiorskyblock.utils.ServerVersion;
@@ -77,6 +78,7 @@ import com.bgsoftware.superiorskyblock.utils.threads.SyncedObject;
 import com.bgsoftware.superiorskyblock.utils.upgrades.UpgradeValue;
 import com.bgsoftware.superiorskyblock.wrappers.SBlockPosition;
 import com.google.common.base.Preconditions;
+import net.spacedelta.lib.data.DataBuffer;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -2010,6 +2012,16 @@ public final class SIsland implements Island {
 
         if(!plugin.getSettings().negativeLevel && islandLevel.compareTo(BigDecimal.ZERO) < 0)
             islandLevel = BigDecimal.ZERO;
+
+        // broadcast level
+        BigDecimal finalIslandLevel = islandLevel;
+        getIslandMembers(true).forEach(member -> {
+            var data = DataBuffer.create()
+                    .write("uuid", member.getUniqueId().toString())
+                    .write("level", finalIslandLevel.longValue());
+
+            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.ISLAND_LEVEL_SYNC, data);
+        });
 
         return islandLevel;
     }
