@@ -13,11 +13,15 @@ import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.spacedelta.lib.Library;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class CmdInvite implements IPermissibleCommand {
 
@@ -72,10 +76,13 @@ public final class CmdInvite implements IPermissibleCommand {
             superiorPlayer.asPlayer().sendMessage(SuperiorSkyblockPlugin.WRONG_SERVER);
             return;
         }
-        SuperiorPlayer targetPlayer = CommandArguments.getPlayer(plugin, superiorPlayer, args[1]);
 
-        if(targetPlayer == null)
+        SuperiorPlayer targetPlayer = plugin.getPlayers().getSuperiorPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
+
+        if(targetPlayer == null) {
+            Locale.INVALID_PLAYER.send(superiorPlayer, args[1]);
             return;
+        }
 
         if(island.isMember(targetPlayer)){
             Locale.ALREADY_IN_ISLAND_OTHER.send(superiorPlayer);
@@ -125,8 +132,13 @@ public final class CmdInvite implements IPermissibleCommand {
 
     @Override
     public List<String> tabComplete(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, Island island, String[] args) {
-        return args.length == 2 ? CommandTabCompletes.getOnlinePlayers(plugin, args[1], plugin.getSettings().tabCompleteHideVanished,
-                onlinePlayer -> !island.isMember(onlinePlayer)) : new ArrayList<>();
+        if (args.length == 2) {
+            return Library.get().getNetworkManager().getPlayerDataService().getOnlinePlayers()
+                    .filter(s -> s.toLowerCase().contains(args[1].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
     }
 
 }

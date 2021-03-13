@@ -44,6 +44,7 @@ public final class SettingsListener implements Listener {
         this.plugin = plugin;
     }
 
+    /*
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntitySpawn(CreatureSpawnEvent e){
         if(plugin.getGrid() == null)
@@ -79,6 +80,7 @@ public final class SettingsListener implements Listener {
             }
         }
     }
+     */
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockFlow(BlockFromToEvent e){

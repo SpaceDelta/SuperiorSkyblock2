@@ -27,6 +27,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void saveTextureValue(){
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_SET_TEXTURE.getStatementHolder(this)
                 .setString(superiorPlayer.getTextureValue())
                 .setString(superiorPlayer.getUniqueId().toString())
@@ -35,6 +39,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void savePlayerName(){
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_SET_NAME.getStatementHolder(this)
                 .setString(superiorPlayer.getName())
                 .setString(superiorPlayer.getUniqueId().toString())
@@ -43,6 +51,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void saveUserLocale(){
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Locale userLocale = superiorPlayer.getUserLocale();
         Query.PLAYER_SET_LANGUAGE.getStatementHolder(this)
                 .setString(userLocale.getLanguage() + "-" + userLocale.getCountry())
@@ -52,6 +64,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void saveIslandLeader() {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_SET_LEADER.getStatementHolder(this)
                 .setString(superiorPlayer.getIslandLeader().getUniqueId().toString())
                 .setString(superiorPlayer.getUniqueId().toString())
@@ -60,6 +76,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void savePlayerRole() {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_SET_ROLE.getStatementHolder(this)
                 .setString(superiorPlayer.getPlayerRole().getId() + "")
                 .setString(superiorPlayer.getUniqueId().toString())
@@ -68,6 +88,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void saveToggledBorder() {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_SET_TOGGLED_BORDER.getStatementHolder(this)
                 .setBoolean(superiorPlayer.hasWorldBorderEnabled())
                 .setString(superiorPlayer.getUniqueId().toString())
@@ -76,6 +100,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void saveDisbands() {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_SET_DISBANDS.getStatementHolder(this)
                 .setInt(superiorPlayer.getDisbands())
                 .setString(superiorPlayer.getUniqueId().toString())
@@ -84,6 +112,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void saveToggledPanel() {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_SET_TOGGLED_PANEL.getStatementHolder(this)
                 .setBoolean(superiorPlayer.hasToggledPanel())
                 .setString(superiorPlayer.getUniqueId().toString())
@@ -92,6 +124,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void saveIslandFly() {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_SET_ISLAND_FLY.getStatementHolder(this)
                 .setBoolean(superiorPlayer.hasIslandFlyEnabled())
                 .setString(superiorPlayer.getUniqueId().toString())
@@ -100,6 +136,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void saveBorderColor() {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_SET_BORDER.getStatementHolder(this)
                 .setString(superiorPlayer.getBorderColor().name())
                 .setString(superiorPlayer.getUniqueId().toString())
@@ -108,6 +148,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void saveLastTimeStatus() {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_SET_LAST_STATUS.getStatementHolder(this)
                 .setString(superiorPlayer.getLastTimeStatus() + "")
                 .setString(superiorPlayer.getUniqueId().toString())
@@ -116,6 +160,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void saveMissions() {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_SET_MISSIONS.getStatementHolder(this)
                 .setString(IslandSerializer.serializeMissions(superiorPlayer.getCompletedMissionsWithAmounts()))
                 .setString(superiorPlayer.getUniqueId().toString())
@@ -141,11 +189,19 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void executeUpdateStatement(boolean async) {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         setUpdateStatement(Query.PLAYER_UPDATE.getStatementHolder(this)).execute(async);
     }
 
     @Override
     public void executeInsertStatement(boolean async) {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_INSERT.getStatementHolder(this)
                 .setString(superiorPlayer.getUniqueId().toString())
                 .setString(superiorPlayer.getIslandLeader().getUniqueId().toString())
@@ -165,6 +221,10 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     @Override
     public void executeDeleteStatement(boolean async) {
+        if (SuperiorSkyblockPlugin.isClient) {
+            return;
+        }
+
         Query.PLAYER_DELETE.getStatementHolder(this)
                 .setString(superiorPlayer.getUniqueId().toString())
                 .execute(async);

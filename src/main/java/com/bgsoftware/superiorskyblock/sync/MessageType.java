@@ -19,4 +19,5 @@ public enum MessageType {
     ISLAND_TELEPORT_REQUEST,
     ISLAND_TELEPORT,
 
+    ISLAND_ACCEPT_JOIN,
 }

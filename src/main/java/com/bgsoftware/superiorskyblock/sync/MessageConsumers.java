@@ -3,6 +3,7 @@ package com.bgsoftware.superiorskyblock.sync;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.sync.handler.ChatMessage;
 import com.bgsoftware.superiorskyblock.sync.handler.Handler;
+import com.bgsoftware.superiorskyblock.sync.handler.accept.IslandAccept;
 import com.bgsoftware.superiorskyblock.sync.handler.chat.TeamChatMessage;
 import com.bgsoftware.superiorskyblock.sync.handler.chat.TeamChatToggle;
 import com.bgsoftware.superiorskyblock.sync.handler.chat.TeamCommandRequest;
@@ -36,7 +37,9 @@ public class MessageConsumers implements Listener {
 
                 new TeamChatMessage(),
                 new TeamChatToggle(),
-                new TeamCommandRequest()
+                new TeamCommandRequest(),
+
+                new IslandAccept()
         );
     }
 
