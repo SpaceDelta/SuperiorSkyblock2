@@ -342,8 +342,6 @@ public final class BlocksListener implements Listener {
             }
         }
 
-        System.out.println(stackableBlock);
-
         if (stackableBlock == null) {
             plugin.getGrid().setBlockAmount(e.getBlock(), 1);
             return;
