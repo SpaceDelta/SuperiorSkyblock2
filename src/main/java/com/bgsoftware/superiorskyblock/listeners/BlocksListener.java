@@ -27,6 +27,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
@@ -62,6 +63,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -301,16 +303,63 @@ public final class BlocksListener implements Listener {
         }
     }
 
+    private static final BlockFace[] BLOCK_FACES = new BlockFace[]{
+            BlockFace.NORTH,
+            BlockFace.EAST,
+            BlockFace.SOUTH,
+            BlockFace.WEST,
+            BlockFace.UP,
+            BlockFace.DOWN,
+    };
+    private static final Set<Material> STACKABLE_BLOCKS = EnumSet.of(
+            Material.IRON_BLOCK,
+            Material.GOLD_BLOCK,
+            Material.DIAMOND_BLOCK,
+            Material.EMERALD_BLOCK,
+            Material.REDSTONE_BLOCK,
+            Material.LAPIS_BLOCK
+    );
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockStack(BlockPlaceEvent e){
+        var block = e.getBlock();
+        var type = block.getType();
+
+        // Can we stack this type?
+        if (!STACKABLE_BLOCKS.contains(type)) {
+            return;
+        }
+
+        // Scan for nearby, similar ore blocks
+        Block stackableBlock = null;
+
+        for (var face : BLOCK_FACES) {
+            var relativeBlock = block.getRelative(face);
+
+            if (relativeBlock.getType() == type) {
+                stackableBlock = relativeBlock;
+                break;
+            }
+        }
+
+        System.out.println(stackableBlock);
+
+        if (stackableBlock == null) {
+            plugin.getGrid().setBlockAmount(e.getBlock(), 1);
+            return;
+        }
+
+        if (tryStack(e.getPlayer(), e.getItemInHand(), stackableBlock.getLocation(), e)) {
+            e.setCancelled(true);
+        }
+
+        /*
         if(plugin.getGrid().getBlockAmount(e.getBlock()) > 1)
             plugin.getGrid().setBlockAmount(e.getBlock(), 1);
 
         if(!canStackBlocks(e.getPlayer(), e.getItemInHand(), e.getBlockAgainst(), e.getBlockReplacedState()))
             return;
-
-        if(tryStack(e.getPlayer(), e.getItemInHand(), e.getBlockAgainst().getLocation(), e))
-            e.setCancelled(true);
+        */
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
