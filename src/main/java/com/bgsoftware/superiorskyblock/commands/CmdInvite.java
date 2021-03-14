@@ -13,7 +13,11 @@ import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 import net.spacedelta.lib.Library;
+import net.spacedelta.lib.data.DataBuffer;
+import net.spacedelta.starship.StarshipPlugin;
+import net.spacedelta.starship.chat.remote.RemoteChatType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -117,12 +121,17 @@ public final class CmdInvite implements IPermissibleCommand {
 
             java.util.Locale targetLocal = LocaleUtils.getLocale(targetPlayer);
 
-            if(targetPlayer.asOfflinePlayer().isOnline() && !Locale.GOT_INVITE.isEmpty(targetLocal)) {
+            if(/*targetPlayer.asOfflinePlayer().isOnline() && */ !Locale.GOT_INVITE.isEmpty(targetLocal)) {
                 TextComponent textComponent = new TextComponent(Locale.GOT_INVITE.getMessage(targetLocal, superiorPlayer.getName()));
                 if(!Locale.GOT_INVITE_TOOLTIP.isEmpty(targetLocal))
                     textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent[] {new TextComponent(Locale.GOT_INVITE_TOOLTIP.getMessage(targetLocal))}));
                 textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + plugin.getCommands().getLabel() + " accept " + superiorPlayer.getName()));
-                targetPlayer.asPlayer().spigot().sendMessage(textComponent);
+
+                var data = DataBuffer.create()
+                        .write("target", targetPlayer.getUniqueId().toString())
+                        .write("raw-json", ComponentSerializer.toString(textComponent));
+
+                Library.get().getMessageBus().fire(StarshipPlugin.INSTANCE, RemoteChatType.TARGETED_JSON_MESSAGE, data);
             }
         }
 
