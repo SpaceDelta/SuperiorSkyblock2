@@ -105,7 +105,8 @@ public final class UpgradesListener implements Listener {
 
         if(e.getEntity() instanceof Player){
             // AYAYAYYAYAYA
-            ((Player) e.getEntity()).chat("/spawn");
+            var sPlayer = SuperiorSkyblockPlugin.INSTANCE.getPlayers().getSuperiorPlayer((Player) e.getEntity());
+            sPlayer.teleport(island, null);
             return;
         }
 
