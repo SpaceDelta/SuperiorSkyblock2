@@ -317,7 +317,8 @@ public final class BlocksListener implements Listener {
             Material.DIAMOND_BLOCK,
             Material.EMERALD_BLOCK,
             Material.REDSTONE_BLOCK,
-            Material.LAPIS_BLOCK
+            Material.LAPIS_BLOCK,
+            Material.COAL_BLOCK
     );
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
