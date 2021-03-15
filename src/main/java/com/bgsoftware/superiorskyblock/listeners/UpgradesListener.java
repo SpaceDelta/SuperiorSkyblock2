@@ -39,6 +39,7 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.inventory.InventoryHolder;
@@ -96,19 +97,21 @@ public final class UpgradesListener implements Listener {
      *   MOB DROPS
      */
 
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        var player = event.getPlayer();
+        var island = plugin.getGrid().getIslandAt(player.getLocation());
+        var sPlayer = SuperiorSkyblockPlugin.INSTANCE.getPlayers().getSuperiorPlayer(player);
+
+        sPlayer.teleport(island, null);
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent e) {
         Island island = plugin.getGrid().getIslandAt(e.getEntity().getLocation());
 
         if(island == null)
             return;
-
-        if(e.getEntity() instanceof Player){
-            // AYAYAYYAYAYA
-            var sPlayer = SuperiorSkyblockPlugin.INSTANCE.getPlayers().getSuperiorPlayer((Player) e.getEntity());
-            sPlayer.teleport(island, null);
-            return;
-        }
 
         if(plugin.getSettings().dropsUpgradePlayersMultiply){
             EntityDamageEvent lastDamage = e.getEntity().getLastDamageCause();

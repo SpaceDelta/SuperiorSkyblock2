@@ -47,12 +47,6 @@ public final class MenuIslandCreation extends SuperiorMenu {
                 int slot = (int) getData(schematic + "-slot");
                 if(slot == e.getRawSlot()) {
                     if (SuperiorSkyblockPlugin.isClient) {
-                        System.out.println("----------------- uwu debug -----------------");
-                        this.getData().data.toMap().entrySet().forEach(entry -> {
-                            System.out.println(entry.getKey() + " : " + entry.getValue());
-                        });
-                        System.out.println("----------------- uwu end debug -----------------");
-
                         var data = DataBuffer.create()
                                 .write("uuid", superiorPlayer.getUniqueId().toString())
                                 .write("schematic", schematic)
