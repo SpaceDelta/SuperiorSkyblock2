@@ -69,7 +69,7 @@ public final class CmdKick implements IPermissibleCommand {
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, Island island, String[] args) {
         var buffer = DataBuffer.create()
-                .write("uuid", superiorPlayer.asPlayer().getUniqueId())
+                .write("uuid", superiorPlayer.asPlayer().getUniqueId().toString())
                 .write("island", island.getUniqueId())
                 .write("name", args[1]);
 
