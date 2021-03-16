@@ -698,6 +698,7 @@ public final class PlayersListener implements Listener {
 
     private final class EffectsListener implements Listener{
 
+        /*
         @EventHandler(ignoreCancelled = true)
         public void onPlayerEffect(EntityPotionEffectEvent e){
             if(e.getAction() == EntityPotionEffectEvent.Action.ADDED || !(e.getEntity() instanceof Player) ||
@@ -715,7 +716,7 @@ public final class PlayersListener implements Listener {
                 e.setCancelled(true);
             }
         }
-
+         */
     }
 
 }
