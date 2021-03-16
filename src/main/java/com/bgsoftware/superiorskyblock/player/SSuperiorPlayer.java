@@ -18,6 +18,7 @@ import com.bgsoftware.superiorskyblock.island.SpawnIsland;
 import com.bgsoftware.superiorskyblock.island.SPlayerRole;
 import com.bgsoftware.superiorskyblock.sync.MessageType;
 import com.bgsoftware.superiorskyblock.sync.ServerUtils;
+import com.bgsoftware.superiorskyblock.sync.TeamChatToggle;
 import com.bgsoftware.superiorskyblock.utils.FileUtils;
 import com.bgsoftware.superiorskyblock.utils.LocaleUtils;
 import com.bgsoftware.superiorskyblock.utils.LocationUtils;
@@ -29,6 +30,7 @@ import com.bgsoftware.superiorskyblock.utils.threads.Executor;
 
 import com.bgsoftware.superiorskyblock.wrappers.SBlockPosition;
 import com.google.common.base.Preconditions;
+import net.spacedelta.lib.Library;
 import net.spacedelta.lib.data.DataBuffer;
 import net.spacedelta.starship.StarshipPlugin;
 import net.spacedelta.starship.server.transfer.TransferMessage;
@@ -587,12 +589,18 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
 
     @Override
     public boolean hasTeamChatEnabled() {
-        return teamChatEnabled;
+        return TeamChatToggle.isToggled(getUniqueId());
+        // return teamChatEnabled;
     }
 
     @Override
     public void toggleTeamChat() {
         teamChatEnabled = !teamChatEnabled;
+        var data = DataBuffer.create()
+                .write("uuid", getUniqueId().toString())
+                .write("state", teamChatEnabled);
+
+        Library.get().getMessageBus().fire(SuperiorSkyblockPlugin.INSTANCE, MessageType.TEAM_CHAT_TOGGLE_SYNC, data);
         SuperiorSkyblockPlugin.debug("Action: Toggle Chat, Player: " + getName() + ", Chat: " + teamChatEnabled);
     }
 

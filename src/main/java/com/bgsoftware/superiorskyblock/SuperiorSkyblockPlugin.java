@@ -39,6 +39,7 @@ import com.bgsoftware.superiorskyblock.nms.NMSHolograms;
 import com.bgsoftware.superiorskyblock.nms.NMSTags;
 import com.bgsoftware.superiorskyblock.sync.IslandLevelCache;
 import com.bgsoftware.superiorskyblock.sync.MessageConsumers;
+import com.bgsoftware.superiorskyblock.sync.TeamChatToggle;
 import com.bgsoftware.superiorskyblock.tutorial.TutorialCommand;
 import com.bgsoftware.superiorskyblock.utils.FileUtils;
 import com.bgsoftware.superiorskyblock.utils.ServerVersion;
@@ -158,6 +159,7 @@ public final class SuperiorSkyblockPlugin extends BukkitPlugin implements Superi
         // MAIN_SERVER = getLibrary().getNetworkManager().getServerData().get("dev3");
         Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         new IslandLevelCache();
+        new TeamChatToggle();
 
         try {
             // TODO don't init a lot of this shit on client servers

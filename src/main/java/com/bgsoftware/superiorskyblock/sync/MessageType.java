@@ -21,5 +21,6 @@ public enum MessageType {
 
     ISLAND_ACCEPT_JOIN,
 
-    ISLAND_LEVEL_SYNC
+    ISLAND_LEVEL_SYNC,
+    TEAM_CHAT_TOGGLE_SYNC
 }

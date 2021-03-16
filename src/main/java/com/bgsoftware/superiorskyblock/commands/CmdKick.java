@@ -68,15 +68,11 @@ public final class CmdKick implements IPermissibleCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, Island island, String[] args) {
-        var buffer = DataBuffer.create()
-                .write("uuid", superiorPlayer.asPlayer().getUniqueId())
-                .write("island", island.getUniqueId())
-                .write("name", args[1]);
-
         if (SuperiorSkyblockPlugin.isClient) {
-            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.KICK_ISLAND_PLAYER, buffer);
+            superiorPlayer.asPlayer().sendMessage(SuperiorSkyblockPlugin.WRONG_SERVER);
         } else {
-            executeKick(plugin, buffer);
+            executeKick(plugin, superiorPlayer.getUniqueId(), island, args[1]);
+            return;
         }
         SuperiorPlayer targetPlayer = CommandArguments.getPlayer(plugin, superiorPlayer, args[1]);
 
@@ -94,15 +90,9 @@ public final class CmdKick implements IPermissibleCommand {
         }
     }
 
-    public static void executeKick(SuperiorSkyblockPlugin plugin, DataBuffer dataBuffer) {
-        var uuid = UUID.fromString(dataBuffer.readString("uuid"));
-        var islandUUID = UUID.fromString(dataBuffer.readString("island"));
-        var name  = dataBuffer.readString("name");
-
+    public static void executeKick(SuperiorSkyblockPlugin plugin, UUID uuid, Island island, String name) {
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(uuid);
         SuperiorPlayer targetPlayer = plugin.getPlayers().getSuperiorPlayer(name);
-
-        Island island = plugin.getGrid().getIsland(islandUUID);
 
         if(targetPlayer == null)
             return;
