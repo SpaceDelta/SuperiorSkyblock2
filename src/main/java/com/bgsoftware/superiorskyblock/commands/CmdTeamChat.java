@@ -78,6 +78,7 @@ public final class CmdTeamChat implements ISuperiorCommand {
         SuperiorPlayer superiorPlayer = arguments.getValue();
 
         if (args.length == 1) {
+            // TODO make toggle apply on every server
             toggleOnServer(superiorPlayer);
         } else {
             var message = CommandArguments.buildLongString(args, 1, true);

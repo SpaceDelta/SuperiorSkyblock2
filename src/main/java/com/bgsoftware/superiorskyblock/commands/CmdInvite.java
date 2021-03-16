@@ -81,6 +81,7 @@ public final class CmdInvite implements IPermissibleCommand {
             return;
         }
 
+        // TODO this shows as null for cross server
         SuperiorPlayer targetPlayer = plugin.getPlayers().getSuperiorPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
 
         if(targetPlayer == null) {
