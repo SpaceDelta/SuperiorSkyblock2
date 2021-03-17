@@ -11,6 +11,7 @@ import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import net.spacedelta.lib.Library;
 import net.spacedelta.lib.data.DataBuffer;
+import net.spacedelta.lib.util.ConcurrentUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -109,10 +110,13 @@ public final class CmdAccept implements ISuperiorCommand {
         else
             Locale.JOINED_ISLAND.send(superiorPlayer, targetPlayer.getName());
 
-        if(plugin.getSettings().teleportOnJoin)
-            superiorPlayer.teleport(island);
-        if(plugin.getSettings().clearOnJoin)
-            plugin.getNMSAdapter().clearInventory(superiorPlayer.asPlayer());
+        // async tp -> catch for ChunkMapDistance addPriorityTicket
+        ConcurrentUtils.ensureMain(() -> {
+            if(plugin.getSettings().teleportOnJoin)
+                superiorPlayer.teleport(island);
+            if(plugin.getSettings().clearOnJoin)
+                plugin.getNMSAdapter().clearInventory(superiorPlayer.asPlayer());
+        });
     }
 
     @Override

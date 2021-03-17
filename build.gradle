@@ -68,6 +68,8 @@ repositories {
     maven { url 'https://repo.bg-software.com/repository/common/' }
     maven { url 'https://repo.bg-software.com/repository/public-libs/' }
     maven { url 'https://mvn.intellectualsites.com/content/repositories/releases/' }
+    /* Kyuaki */
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 
     String mavenUsername = project.hasProperty('mavenUsername') ? project.mavenUsername : System.getenv('mavenUsername');
     String mavenPassword = project.hasProperty('mavenPassword') ? project.mavenPassword : System.getenv('mavenPassword');
@@ -125,12 +127,16 @@ dependencies {
     compileOnly 'net.milkbowl:Vault:latest'
     compileOnly 'com.bgsoftware:WildStackerAPI:latest'
     compileOnly 'com.grinderwolf:SlimeWorldManager:latest'
+
     compileOnly 'net.spacedelta:library:1.1-SNAPSHOT'
-    compileOnly 'net.spacedelta:starship:2.0.1-SNAPSHOT'
+    compileOnly ('net.spacedelta:starship:2.0.1-SNAPSHOT') {
+        exclude group: 'net.kyori'
+    }
 
     compileOnly ('net.spacedelta:runes:1.2.18-SNAPSHOT') {
         exclude group: 'com.zaxxer'
     }
+
 }
 
 jar {
