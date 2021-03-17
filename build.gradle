@@ -95,9 +95,8 @@ dependencies {
     implementation 'com.zaxxer:HikariCP:latest'
     implementation 'org.slf4j:SLF4J:latest'
 
-    // Spigot jars
-    compileOnly "org.spigotmc:v1_8_R3-Taco:latest"
-    compileOnly 'org.spigotmc:v1_16_R3-Tuinity:latest'
+    // Nebula
+    compileOnly group: 'net.spacedelta', name: 'nebula', version: '1.16.5-R0.1-SNAPSHOT'
 
     // Plugin hooks
     // compileOnly 'gcspawners:AdvancedSpawners:latest'
