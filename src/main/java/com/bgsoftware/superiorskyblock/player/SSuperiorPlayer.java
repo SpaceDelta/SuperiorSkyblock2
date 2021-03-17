@@ -353,7 +353,7 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
         if(!isOnline())
             return;
 
-        Location islandTeleportLocation = island.getTeleportLocation(World.Environment.NORMAL);
+        Location islandTeleportLocation = island.getTeleportLocation(World.Environment.NORMAL); //
         Block islandTeleportBlock = islandTeleportLocation.getBlock();
         Block islandCenterBlock = island.getCenter(World.Environment.NORMAL).getBlock();
 

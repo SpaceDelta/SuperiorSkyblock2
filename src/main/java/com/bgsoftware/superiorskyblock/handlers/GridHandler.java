@@ -47,6 +47,7 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -239,8 +240,14 @@ public final class GridHandler extends AbstractHandler implements GridManager {
         SuperiorSkyblockPlugin.debug("Action: Disband Island, Island: " + island.getOwner().getName());
         island.getAllPlayersInside().forEach(superiorPlayer -> {
             SuperiorMenu.killMenu(superiorPlayer);
-            superiorPlayer.teleport(plugin.getGrid().getSpawnIsland());
+
+            // superiorPlayer.teleport(plugin.getGrid().getSpawnIsland());
             Locale.ISLAND_GOT_DELETED_WHILE_INSIDE.send(superiorPlayer);
+
+            final Player player = superiorPlayer.asPlayer();
+            if (player != null)
+                player.chat("/spawn");
+
         });
         islands.remove(island.getOwner().getUniqueId());
         plugin.getDataHandler().deleteIsland(island, !pluginDisable);

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public final class CmdTeamChat implements ISuperiorCommand {
 
@@ -65,12 +66,11 @@ public final class CmdTeamChat implements ISuperiorCommand {
                 return;
             }
 
-            var message = CommandArguments.buildLongString(args, 1, true);
-            var data = DataBuffer.create()
-                    .write("uuid", ((Player) sender).getUniqueId())
-                    .write("message", message);
+            broadcastTeamMessage(
+                    ((Player) sender).getUniqueId(),
+                    CommandArguments.buildLongString(args, 1, true)
+            );
 
-            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.TEAM_CHAT_MESSAGE, data);
             return;
         }
 
@@ -78,7 +78,6 @@ public final class CmdTeamChat implements ISuperiorCommand {
         SuperiorPlayer superiorPlayer = arguments.getValue();
 
         if (args.length == 1) {
-            // TODO make toggle apply on every server
             toggleOnServer(superiorPlayer);
         } else {
             var message = CommandArguments.buildLongString(args, 1, true);
@@ -96,10 +95,23 @@ public final class CmdTeamChat implements ISuperiorCommand {
         player.toggleTeamChat();
     }
 
+    public static void broadcastTeamMessage(@NotNull UUID uuid, @NotNull String message) {
+        var data = DataBuffer.create()
+                .write("uuid", uuid.toString())
+                .write("message", message);
+
+        SuperiorSkyblockPlugin.INSTANCE.getLibrary().getMessageBus().fire(SuperiorSkyblockPlugin.INSTANCE, MessageType.TEAM_CHAT_MESSAGE, data);
+    }
+
     public static void sendMessageOnServer(@NotNull SuperiorPlayer player, @NotNull String message) {
         var island = player.getIsland();
+        if (island == null)
+            return;
+
         IslandUtils.sendMessage(island, Locale.TEAM_CHAT_FORMAT, new ArrayList<>(), player.getPlayerRole(), player.getName(), message);
     }
+
+
 
     @Override
     public List<String> tabComplete(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {

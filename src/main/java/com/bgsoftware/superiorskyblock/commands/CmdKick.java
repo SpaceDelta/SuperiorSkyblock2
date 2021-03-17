@@ -12,7 +12,6 @@ import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
 import com.bgsoftware.superiorskyblock.Locale;
 import net.spacedelta.lib.data.DataBuffer;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,12 +67,18 @@ public final class CmdKick implements IPermissibleCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, Island island, String[] args) {
+        var buffer = DataBuffer.create()
+                .write("uuid", superiorPlayer.asPlayer().getUniqueId().toString())
+                .write("island", superiorPlayer.getIslandLeader().getUniqueId().toString()) // this has to be the leader
+                .write("name", args[1]);
+
         if (SuperiorSkyblockPlugin.isClient) {
             superiorPlayer.asPlayer().sendMessage(SuperiorSkyblockPlugin.WRONG_SERVER);
         } else {
             executeKick(plugin, superiorPlayer.getUniqueId(), island, args[1]);
             return;
         }
+        /*
         SuperiorPlayer targetPlayer = CommandArguments.getPlayer(plugin, superiorPlayer, args[1]);
 
         if(targetPlayer == null)
@@ -88,6 +93,8 @@ public final class CmdKick implements IPermissibleCommand {
         else {
             IslandUtils.handleKickPlayer(superiorPlayer, island, targetPlayer);
         }
+
+         */
     }
 
     public static void executeKick(SuperiorSkyblockPlugin plugin, UUID uuid, Island island, String name) {

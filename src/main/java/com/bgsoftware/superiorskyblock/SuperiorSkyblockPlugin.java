@@ -157,7 +157,7 @@ public final class SuperiorSkyblockPlugin extends BukkitPlugin implements Superi
     public void enable() {
         isClient = getSide() == PluginSide.CLIENT;
         // MAIN_SERVER = getLibrary().getNetworkManager().getServerData().get("dev3");
-        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        // Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord"); //no need for this
         new IslandLevelCache();
         new TeamChatToggle();
 
