@@ -30,6 +30,7 @@ import com.bgsoftware.superiorskyblock.player.SuperiorNPCPlayer;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.spacedelta.lib.network.data.event.PlayerQuitNetworkEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -185,14 +186,14 @@ public final class PlayersListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent e){
-        SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(e.getPlayer());
+    public void onPlayerQuit(PlayerQuitNetworkEvent e){
+        SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(e.getUuid());
 
         if(superiorPlayer instanceof SuperiorNPCPlayer)
             return;
 
-        if(!plugin.getProviders().isVanished(e.getPlayer()))
-            handlePlayerQuit(superiorPlayer);
+        /*if(!plugin.getProviders().isVanished(e.getPlayer()))
+            handlePlayerQuit(superiorPlayer);*/
 
         for(Island _island : plugin.getGrid().getIslands()){
             if(_island.isCoop(superiorPlayer)) {
