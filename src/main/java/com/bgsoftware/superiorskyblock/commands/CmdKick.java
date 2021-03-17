@@ -101,12 +101,6 @@ public final class CmdKick implements IPermissibleCommand {
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(uuid);
         SuperiorPlayer targetPlayer = plugin.getPlayers().getSuperiorPlayer(name);
 
-        Island island = plugin.getGrid().getIsland(islandUUID); // TODO this is null
-
-        System.out.println("SUP " + superiorPlayer);
-        System.out.println("TAR " + targetPlayer);
-        System.out.println("IS " + island);
-
         if(targetPlayer == null)
             return;
 

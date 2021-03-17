@@ -359,11 +359,12 @@ public final class PlayersListener implements Listener {
             e.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerAsyncChat(AsyncPlayerChatEvent e){
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(e.getPlayer());
         Island island = superiorPlayer.getIsland();
 
+        /*
         if(superiorPlayer.hasTeamChatEnabled()){
             if (island == null) {
                 superiorPlayer.toggleTeamChat();
@@ -380,7 +381,10 @@ public final class PlayersListener implements Listener {
             }
         }
 
+                 Moved to sync/TeamChatToggle
         else{
+
+         */
             String islandNameFormat = Locale.NAME_CHAT_FORMAT.getMessage(LocaleUtils.getDefault(), island == null ? "" :
                     plugin.getSettings().islandNamesColorSupport ? StringUtils.translateColors(island.getName()) : island.getName());
 
@@ -395,7 +399,6 @@ public final class PlayersListener implements Listener {
                     .replace("{island-position-rating}", island == null ? "" : (plugin.getGrid().getIslandPosition(island, SortingTypes.BY_RATING) + 1) + "")
                     .replace("{island-position-players}", island == null ? "" : (plugin.getGrid().getIslandPosition(island, SortingTypes.BY_PLAYERS) + 1) + "")
             );
-        }
     }
 
     @EventHandler
