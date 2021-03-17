@@ -1,2 +1,3 @@
 [submodule "missions"]
+    path = missions
 	url = https://github.com/SpaceDelta/SuperiorSkyblock2-Missions
