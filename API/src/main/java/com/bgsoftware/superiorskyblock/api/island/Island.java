@@ -1006,6 +1006,12 @@ public interface Island extends Comparable<Island> {
     BigDecimal getIslandLevel();
 
     /**
+     * Get the level of the island without broadcasting
+     * pub/sub level updates.
+     */
+    BigDecimal getIslandLevelNoBroadcast();
+
+    /**
      * Get the level value of the island, excluding the bonus level.
      */
     BigDecimal getRawLevel();

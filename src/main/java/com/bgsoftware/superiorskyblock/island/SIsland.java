@@ -2004,6 +2004,22 @@ public final class SIsland implements Island {
 
     @Override
     public BigDecimal getIslandLevel() {
+        var islandLevel = getIslandLevelNoBroadcast();
+
+        // broadcast level
+        getIslandMembers(true).forEach(member -> {
+            var data = DataBuffer.create()
+                    .write("uuid", member.getUniqueId().toString())
+                    .write("level", islandLevel.longValue());
+
+            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.ISLAND_LEVEL_SYNC, data);
+        });
+
+        return islandLevel;
+    }
+
+    @Override
+    public BigDecimal getIslandLevelNoBroadcast() {
         BigDecimal bonusLevel = this.bonusLevel.get(), islandLevel = this.islandLevel.get().add(bonusLevel);
 
         if(plugin.getSettings().roundedIslandLevel) {
@@ -2012,16 +2028,6 @@ public final class SIsland implements Island {
 
         if(!plugin.getSettings().negativeLevel && islandLevel.compareTo(BigDecimal.ZERO) < 0)
             islandLevel = BigDecimal.ZERO;
-
-        // broadcast level
-        BigDecimal finalIslandLevel = islandLevel;
-        getIslandMembers(true).forEach(member -> {
-            var data = DataBuffer.create()
-                    .write("uuid", member.getUniqueId().toString())
-                    .write("level", finalIslandLevel.longValue());
-
-            plugin.getLibrary().getMessageBus().fire(plugin, MessageType.ISLAND_LEVEL_SYNC, data);
-        });
 
         return islandLevel;
     }

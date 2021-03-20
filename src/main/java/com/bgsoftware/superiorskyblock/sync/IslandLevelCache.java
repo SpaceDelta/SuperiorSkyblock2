@@ -31,11 +31,6 @@ public class IslandLevelCache implements Listener {
     }
 
     @EventHandler
-    public void onChangeLevel() {
-
-    }
-
-    @EventHandler
     public void onLeave(PlayerQuitNetworkEvent event) {
         LEVEL_CACHE.remove(event.getUuid());
     }

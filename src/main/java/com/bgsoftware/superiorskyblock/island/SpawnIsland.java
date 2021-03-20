@@ -905,6 +905,11 @@ public final class SpawnIsland implements Island {
     }
 
     @Override
+    public BigDecimal getIslandLevelNoBroadcast() {
+        return getRawLevel();
+    }
+
+    @Override
     public BigDecimal getRawLevel() {
         return BigDecimal.ZERO;
     }

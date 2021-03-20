@@ -26,7 +26,7 @@ public final class SortingComparators {
     };
 
     public final static Comparator<Island> LEVEL_COMPARATOR = (o1, o2) -> {
-        int compare = o2.getIslandLevel().compareTo(o1.getIslandLevel());
+        int compare = o2.getIslandLevelNoBroadcast().compareTo(o1.getIslandLevelNoBroadcast());
         return compare == 0 ? ISLAND_NAMES_COMPARATOR.compare(o1, o2) : compare;
     };
 
