@@ -7,6 +7,8 @@ import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.commands.ISuperiorCommand;
 import com.bgsoftware.superiorskyblock.utils.StringUtils;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
+import net.spacedelta.lib.Environment;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -30,7 +32,7 @@ public final class CmdAdminRecalc implements ISuperiorCommand {
     public String getUsage(java.util.Locale locale) {
         return "admin recalc [" +
                 Locale.COMMAND_ARGUMENT_PLAYER_NAME.getMessage(locale) + "/" +
-                Locale.COMMAND_ARGUMENT_ISLAND_NAME.getMessage(locale) + "]";
+                Locale.COMMAND_ARGUMENT_ISLAND_NAME.getMessage(locale) + "] [-f[orce] (if stuck)]";
     }
 
     @Override
@@ -45,7 +47,7 @@ public final class CmdAdminRecalc implements ISuperiorCommand {
 
     @Override
     public int getMaxArgs() {
-        return 3;
+        return 4;
     }
 
     @Override
@@ -55,12 +57,14 @@ public final class CmdAdminRecalc implements ISuperiorCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
-        if(args.length == 2){
+        if (args.length == 2) {
             Locale.RECALC_ALL_ISLANDS.send(sender);
-            plugin.getGrid().calcAllIslands(() -> Locale.RECALC_ALL_ISLANDS_DONE.send(sender));
-        }
 
-        else {
+            if (SuperiorSkyblockPlugin.INSTANCE.getLibrary().getEnvironment().getStage() == Environment.Stage.DEVELOPMENT) {
+                plugin.getGrid().calcAllIslands(() -> Locale.RECALC_ALL_ISLANDS_DONE.send(sender));
+            } else
+                sender.sendMessage(ChatColor.RED + "This command is disabled on production environments.");
+        } else {
             SuperiorPlayer targetPlayer = plugin.getPlayers().getSuperiorPlayer(args[2]);
             Island island = targetPlayer == null ? plugin.getGrid().getIsland(args[2]) : targetPlayer.getIsland();
 
@@ -74,8 +78,11 @@ public final class CmdAdminRecalc implements ISuperiorCommand {
                 return;
             }
 
-            if(island.isBeingRecalculated()){
+            if (args.length == 4 && args[3].startsWith("-f")) {
+                sender.sendMessage(ChatColor.RED + "Forcing!");
+            } else if (island.isBeingRecalculated()) {
                 Locale.RECALC_ALREADY_RUNNING_OTHER.send(sender);
+                sender.sendMessage(ChatColor.RED + "If stuck, do /is recalc " + args[2] + " -f");
                 return;
             }
 
