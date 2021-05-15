@@ -16,24 +16,29 @@ public class IslandEnterProtectedEvent extends IslandEnterEvent {
 
     /**
      * The constructor of the event.
-     * @param superiorPlayer The player who entered to the island's protected area.
-     * @param island The island that the player entered into.
      *
+     * @param superiorPlayer The player who entered to the island's protected area.
+     * @param island         The island that the player entered into.
      * @deprecated See IslandEnterProtectedEvent(SuperiorPlayer, Island, EnterCause)
      */
     @Deprecated
-    public IslandEnterProtectedEvent(SuperiorPlayer superiorPlayer, Island island){
+    public IslandEnterProtectedEvent(SuperiorPlayer superiorPlayer, Island island) {
         super(superiorPlayer, island, EnterCause.INVALID);
     }
 
     /**
      * The constructor of the event.
+     *
      * @param superiorPlayer The player who entered to the island's area.
-     * @param island The island that the player entered into.
-     * @param enterCause The cause of entering into the island.
+     * @param island         The island that the player entered into.
+     * @param enterCause     The cause of entering into the island.
      */
-    public IslandEnterProtectedEvent(SuperiorPlayer superiorPlayer, Island island, EnterCause enterCause){
+    public IslandEnterProtectedEvent(SuperiorPlayer superiorPlayer, Island island, EnterCause enterCause) {
         super(superiorPlayer, island, enterCause);
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     @Override
@@ -48,10 +53,6 @@ public class IslandEnterProtectedEvent extends IslandEnterEvent {
 
     @Override
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
         return handlers;
     }
 

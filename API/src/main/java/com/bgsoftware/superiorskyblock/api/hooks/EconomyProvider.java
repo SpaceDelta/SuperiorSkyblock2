@@ -13,14 +13,14 @@ public interface EconomyProvider {
      * @deprecated not used anymore.
      */
     @Deprecated
-    default boolean isEnabled(){
+    default boolean isEnabled() {
         return true;
     }
 
     /**
      * Get the amount of money a specific user has in his bank.
-     * @param superiorPlayer The player to check.
      *
+     * @param superiorPlayer The player to check.
      * @deprecated See getBalance
      */
     @Deprecated
@@ -28,24 +28,27 @@ public interface EconomyProvider {
 
     /**
      * Get the amount of money a specific user has in his bank.
+     *
      * @param superiorPlayer The player to check.
      */
     BigDecimal getBalance(SuperiorPlayer superiorPlayer);
 
     /**
      * Deposit money into a player's bank.
+     *
      * @param superiorPlayer The player to deposit money to.
-     * @param amount The amount to deposit.
+     * @param amount         The amount to deposit.
      * @return The error message if needed. Otherwise, empty string.
      */
     String depositMoney(SuperiorPlayer superiorPlayer, double amount);
 
     /**
      * Withdraw money from a player's bank.
+     *
      * @param superiorPlayer The player to withdraw money from.
-     * @param amount The amount to withdraw.
+     * @param amount         The amount to withdraw.
      * @return The error message if needed. Otherwise, empty string.
      */
     String withdrawMoney(SuperiorPlayer superiorPlayer, double amount);
-    
+
 }

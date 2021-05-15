@@ -2,11 +2,7 @@ package com.bgsoftware.superiorskyblock.handlers;
 
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.handlers.MenusManager;
-import com.bgsoftware.superiorskyblock.api.island.Island;
-import com.bgsoftware.superiorskyblock.api.island.IslandFlag;
-import com.bgsoftware.superiorskyblock.api.island.IslandPrivilege;
-import com.bgsoftware.superiorskyblock.api.island.PlayerRole;
-import com.bgsoftware.superiorskyblock.api.island.SortingType;
+import com.bgsoftware.superiorskyblock.api.island.*;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.menu.*;
 import com.bgsoftware.superiorskyblock.utils.exceptions.HandlerLoadException;
@@ -15,12 +11,12 @@ import java.io.File;
 
 public final class MenusHandler extends AbstractHandler implements MenusManager {
 
-    public MenusHandler(SuperiorSkyblockPlugin plugin){
+    public MenusHandler(SuperiorSkyblockPlugin plugin) {
         super(plugin);
     }
 
     @Override
-    public void loadData(){
+    public void loadData() {
         SuperiorMenuCustom.resetMenus();
 
         //Reload all menus
@@ -65,7 +61,7 @@ public final class MenusHandler extends AbstractHandler implements MenusManager 
         loadMenu(MenuWarps::init);
 
         File guiFolder = new File(plugin.getDataFolder(), "guis");
-        if(guiFolder.exists()){
+        if (guiFolder.exists()) {
             File oldGuisFolder = new File(plugin.getDataFolder(), "old-guis");
             //noinspection ResultOfMethodCallIgnored
             guiFolder.renameTo(oldGuisFolder);
@@ -73,7 +69,7 @@ public final class MenusHandler extends AbstractHandler implements MenusManager 
 
         File customMenusFolder = new File(plugin.getDataFolder(), "menus/custom");
 
-        if(!customMenusFolder.exists()){
+        if (!customMenusFolder.exists()) {
             //noinspection ResultOfMethodCallIgnored
             customMenusFolder.mkdirs();
             return;
@@ -81,9 +77,9 @@ public final class MenusHandler extends AbstractHandler implements MenusManager 
 
         //noinspection ConstantConditions
         for (File menuFile : customMenusFolder.listFiles()) {
-            try{
+            try {
                 SuperiorMenuCustom.createMenu(menuFile);
-            }catch(Exception ex){
+            } catch (Exception ex) {
                 new HandlerLoadException(ex, HandlerLoadException.ErrorLevel.CONTINUE).printStackTrace();
             }
         }
@@ -131,7 +127,7 @@ public final class MenusHandler extends AbstractHandler implements MenusManager 
 
     @Override
     public void openIslandMissionsMenu(SuperiorPlayer superiorPlayer, boolean islandMissions) {
-        if(islandMissions)
+        if (islandMissions)
             MenuIslandMissions.openInventory(superiorPlayer, null);
         else
             MenuPlayerMissions.openInventory(superiorPlayer, null);
@@ -223,10 +219,10 @@ public final class MenusHandler extends AbstractHandler implements MenusManager 
         MenuMemberRole.openInventory(superiorPlayer, null, targetPlayer);
     }
 
-    private void loadMenu(Runnable runnable){
-        try{
+    private void loadMenu(Runnable runnable) {
+        try {
             runnable.run();
-        }catch(Exception ex){
+        } catch (Exception ex) {
             new HandlerLoadException(ex, HandlerLoadException.ErrorLevel.CONTINUE).printStackTrace();
         }
     }

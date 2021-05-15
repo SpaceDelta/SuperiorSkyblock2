@@ -6,7 +6,6 @@ import com.bgsoftware.superiorskyblock.api.missions.Mission;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.utils.LocaleUtils;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -58,9 +57,9 @@ public final class CmdMission implements ISuperiorCommand {
         }
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(sender);
 
-        if(!args[1].equalsIgnoreCase("complete")){
+        if (!args[1].equalsIgnoreCase("complete")) {
             String description = getDescription(LocaleUtils.getLocale(sender));
-            if(description == null)
+            if (description == null)
                 new NullPointerException("The description of the command " + getAliases().get(0) + " is null.").printStackTrace();
             Locale.sendMessage(sender, description, false);
             return;
@@ -68,32 +67,32 @@ public final class CmdMission implements ISuperiorCommand {
 
         Mission<?> mission = CommandArguments.getMission(plugin, superiorPlayer, args[2]);
 
-        if(mission == null)
+        if (mission == null)
             return;
 
         List<String> requiredMissions = mission.getRequiredMissions();
 
-        if(!requiredMissions.isEmpty()){
+        if (!requiredMissions.isEmpty()) {
             StringBuilder stringBuilder = new StringBuilder();
             requiredMissions.forEach(requiredMission -> {
                 Mission<?> _mission = plugin.getMissions().getMission(requiredMission);
-                if(_mission != null && plugin.getMissions().canCompleteAgain(superiorPlayer, _mission))
+                if (_mission != null && plugin.getMissions().canCompleteAgain(superiorPlayer, _mission))
                     stringBuilder.append(_mission.getName()).append(", ");
             });
-            if(stringBuilder.length() != 0) {
+            if (stringBuilder.length() != 0) {
                 Locale.MISSION_NOT_COMPLETE_REQUIRED_MISSIONS.send(superiorPlayer, stringBuilder.substring(0, stringBuilder.length() - 2));
                 return;
             }
         }
 
-        if(!plugin.getMissions().canComplete(superiorPlayer, mission)){
+        if (!plugin.getMissions().canComplete(superiorPlayer, mission)) {
             Locale.MISSION_CANNOT_COMPLETE.send(superiorPlayer);
             return;
         }
 
         try {
             plugin.getMissions().rewardMission(mission, superiorPlayer, false);
-        }catch(IllegalStateException ex){
+        } catch (IllegalStateException ex) {
             Locale.INVALID_MISSION.send(superiorPlayer, args[2]);
         }
     }

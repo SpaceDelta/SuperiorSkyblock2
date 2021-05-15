@@ -1,11 +1,7 @@
 package com.bgsoftware.superiorskyblock.api;
 
 import com.bgsoftware.superiorskyblock.api.commands.SuperiorCommand;
-import com.bgsoftware.superiorskyblock.api.handlers.BlockValuesManager;
-import com.bgsoftware.superiorskyblock.api.handlers.GridManager;
-import com.bgsoftware.superiorskyblock.api.handlers.MissionsManager;
-import com.bgsoftware.superiorskyblock.api.handlers.PlayersManager;
-import com.bgsoftware.superiorskyblock.api.handlers.UpgradesManager;
+import com.bgsoftware.superiorskyblock.api.handlers.*;
 import com.bgsoftware.superiorskyblock.api.hooks.SpawnersProvider;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.schematic.Schematic;
@@ -32,7 +28,7 @@ public final class SuperiorSkyblockAPI {
      * @param player player instance
      * @return The superior player object. null if doesn't exist.
      */
-    public static SuperiorPlayer getPlayer(Player player){
+    public static SuperiorPlayer getPlayer(Player player) {
         return plugin.getPlayers().getSuperiorPlayer(player.getUniqueId());
     }
 
@@ -42,7 +38,7 @@ public final class SuperiorSkyblockAPI {
      * @param name player name
      * @return The superior player object. null if doesn't exist.
      */
-    public static SuperiorPlayer getPlayer(String name){
+    public static SuperiorPlayer getPlayer(String name) {
         return plugin.getPlayers().getSuperiorPlayer(name);
     }
 
@@ -52,7 +48,7 @@ public final class SuperiorSkyblockAPI {
      * @param uuid player uuid
      * @return The superior player object. null if doesn't exist.
      */
-    public static SuperiorPlayer getPlayer(UUID uuid){
+    public static SuperiorPlayer getPlayer(UUID uuid) {
         return plugin.getPlayers().getSuperiorPlayer(uuid);
     }
 
@@ -64,46 +60,48 @@ public final class SuperiorSkyblockAPI {
      * Create a new island.
      *
      * @param superiorPlayer owner of the island
-     * @param schemName the schematic of the island to be pasted
-     * @param bonus The default island bonus level
-     * @param biome The default island biome
-     * @param islandName The island name
+     * @param schemName      the schematic of the island to be pasted
+     * @param bonus          The default island bonus level
+     * @param biome          The default island biome
+     * @param islandName     The island name
      */
-    public static void createIsland(SuperiorPlayer superiorPlayer, String schemName, BigDecimal bonus, Biome biome, String islandName){
+    public static void createIsland(SuperiorPlayer superiorPlayer, String schemName, BigDecimal bonus, Biome biome, String islandName) {
         plugin.getGrid().createIsland(superiorPlayer, schemName, bonus, biome, islandName);
     }
 
     /**
      * Create a new island.
+     *
      * @param superiorPlayer The new owner for the island.
-     * @param schemName The schematic that should be used.
-     * @param bonus A starting worth for the island.
-     * @param biome A starting biome for the island.
-     * @param islandName The name of the new island.
-     * @param offset Should the island have an offset for it's values? If disabled, the bonus will be given.
+     * @param schemName      The schematic that should be used.
+     * @param bonus          A starting worth for the island.
+     * @param biome          A starting biome for the island.
+     * @param islandName     The name of the new island.
+     * @param offset         Should the island have an offset for it's values? If disabled, the bonus will be given.
      */
-    public static void createIsland(SuperiorPlayer superiorPlayer, String schemName, BigDecimal bonus, Biome biome, String islandName, boolean offset){
+    public static void createIsland(SuperiorPlayer superiorPlayer, String schemName, BigDecimal bonus, Biome biome, String islandName, boolean offset) {
         plugin.getGrid().createIsland(superiorPlayer, schemName, bonus, biome, islandName, offset);
     }
 
     /**
      * Create a new island.
+     *
      * @param superiorPlayer The new owner for the island.
-     * @param schemName The schematic that should be used.
-     * @param bonusWorth A starting worth for the island.
-     * @param bonusLevel A starting level for the island.
-     * @param biome A starting biome for the island.
-     * @param islandName The name of the new island.
-     * @param offset Should the island have an offset for it's values? If disabled, the bonus will be given.
+     * @param schemName      The schematic that should be used.
+     * @param bonusWorth     A starting worth for the island.
+     * @param bonusLevel     A starting level for the island.
+     * @param biome          A starting biome for the island.
+     * @param islandName     The name of the new island.
+     * @param offset         Should the island have an offset for it's values? If disabled, the bonus will be given.
      */
-    public static void createIsland(SuperiorPlayer superiorPlayer, String schemName, BigDecimal bonusWorth, BigDecimal bonusLevel, Biome biome, String islandName, boolean offset){
+    public static void createIsland(SuperiorPlayer superiorPlayer, String schemName, BigDecimal bonusWorth, BigDecimal bonusLevel, Biome biome, String islandName, boolean offset) {
         plugin.getGrid().createIsland(superiorPlayer, schemName, bonusWorth, bonusLevel, biome, islandName, offset);
     }
 
     /**
      * Delete an island
      */
-    public static void deleteIsland(Island island){
+    public static void deleteIsland(Island island) {
         plugin.getGrid().deleteIsland(island);
     }
 
@@ -114,7 +112,7 @@ public final class SuperiorSkyblockAPI {
      * @return the island at the index. might be null.
      */
     @Deprecated
-    public static Island getIsland(int index){
+    public static Island getIsland(int index) {
         return plugin.getGrid().getIsland(index);
     }
 
@@ -124,7 +122,7 @@ public final class SuperiorSkyblockAPI {
      * @param islandName The name to check.
      * @return The island with that name. May be null.
      */
-    public static Island getIsland(String islandName){
+    public static Island getIsland(String islandName) {
         return plugin.getGrid().getIsland(islandName);
     }
 
@@ -134,7 +132,7 @@ public final class SuperiorSkyblockAPI {
      * @param uuid The uuid of the island.
      * @return The island with that UUID. May be null.
      */
-    public static Island getIslandByUUID(UUID uuid){
+    public static Island getIslandByUUID(UUID uuid) {
         return plugin.getGrid().getIslandByUUID(uuid);
     }
 
@@ -143,7 +141,7 @@ public final class SuperiorSkyblockAPI {
      *
      * @return the spawn island.
      */
-    public static Island getSpawnIsland(){
+    public static Island getSpawnIsland() {
         return plugin.getGrid().getSpawnIsland();
     }
 
@@ -151,36 +149,34 @@ public final class SuperiorSkyblockAPI {
      * Get the islands normal world.
      *
      * @return the islands normal world.
-     *
      * @deprecated See WorldsManager#getIslandsWorld
      */
     @Deprecated
-    public static World getIslandsWorld(){
+    public static World getIslandsWorld() {
         return getIslandsWorld(World.Environment.NORMAL);
     }
 
     /**
      * Get the islands world by world's environment.
+     *
      * @param environment The environment.
-     *
      * @return the islands world.
-     *
      * @deprecated Unexpected behavior. Check getIslandsWorld(Island, Environment)
      */
     @Deprecated
-    public static World getIslandsWorld(World.Environment environment){
+    public static World getIslandsWorld(World.Environment environment) {
         return getIslandsWorld(null, environment);
     }
 
     /**
      * Get the world of an island by the world's environment.
-     * @param environment The environment.
-     * @param island The island to check.
      *
+     * @param environment The environment.
+     * @param island      The island to check.
      * @return the islands world.
      */
     @Deprecated
-    public static World getIslandsWorld(Island island, World.Environment environment){
+    public static World getIslandsWorld(Island island, World.Environment environment) {
         return plugin.getGrid().getIslandsWorld(island, environment);
     }
 
@@ -190,14 +186,14 @@ public final class SuperiorSkyblockAPI {
      * @param location the location to check
      * @return the island at the location. might be null.
      */
-    public static Island getIslandAt(Location location){
+    public static Island getIslandAt(Location location) {
         return plugin.getGrid().getIslandAt(location);
     }
 
     /**
      * Calculate all island worths on the server
      */
-    public static void calcAllIslands(){
+    public static void calcAllIslands() {
         plugin.getGrid().calcAllIslands();
     }
 
@@ -211,7 +207,7 @@ public final class SuperiorSkyblockAPI {
      * @param name the name to check
      * @return the schematic with this name. might be null.
      */
-    public static Schematic getSchematic(String name){
+    public static Schematic getSchematic(String name) {
         return plugin.getSchematics().getSchematic(name);
     }
 
@@ -219,7 +215,7 @@ public final class SuperiorSkyblockAPI {
      *  Providers Methods
      */
 
-    public static void setSpawnersProvider(SpawnersProvider spawnersProvider){
+    public static void setSpawnersProvider(SpawnersProvider spawnersProvider) {
         plugin.getProviders().setSpawnersProvider(spawnersProvider);
     }
 
@@ -230,50 +226,51 @@ public final class SuperiorSkyblockAPI {
     /**
      * Get the grid of the core.
      */
-    public static GridManager getGrid(){
+    public static GridManager getGrid() {
         return plugin.getGrid();
     }
 
     /**
      * Get the blocks manager of the core.
      */
-    public static BlockValuesManager getBlockValues(){
+    public static BlockValuesManager getBlockValues() {
         return plugin.getBlockValues();
     }
 
     /**
      * Get the players manager of the core.
      */
-    public static PlayersManager getPlayers(){
+    public static PlayersManager getPlayers() {
         return plugin.getPlayers();
     }
 
     /**
      * Get the missions manager of the core.
      */
-    public static MissionsManager getMissions(){
+    public static MissionsManager getMissions() {
         return plugin.getMissions();
     }
 
     /**
      * Get the upgrades manager of the core.
      */
-    public static UpgradesManager getUpgrades(){
+    public static UpgradesManager getUpgrades() {
         return plugin.getUpgrades();
     }
 
     /**
      * Register a sub-command.
+     *
      * @param superiorCommand The sub command to register.
      */
-    public static void registerCommand(SuperiorCommand superiorCommand){
+    public static void registerCommand(SuperiorCommand superiorCommand) {
         plugin.getCommands().registerCommand(superiorCommand);
     }
 
     /**
      * Get the superiorskyblock object.
      */
-    public static SuperiorSkyblock getSuperiorSkyblock(){
+    public static SuperiorSkyblock getSuperiorSkyblock() {
         return plugin;
     }
 

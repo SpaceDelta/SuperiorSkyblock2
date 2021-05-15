@@ -1,14 +1,9 @@
 package com.bgsoftware.superiorskyblock.hooks;
 
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
-import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
-import com.bgsoftware.superiorskyblock.utils.key.Key;
-import com.bgsoftware.superiorskyblock.utils.legacy.Materials;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,18 +11,22 @@ public final class BlocksProvider_MergedSpawner implements BlocksProvider {
 
     private static boolean registered = false;
 
-    public BlocksProvider_MergedSpawner(){
-        if(false && !registered) { // SpaceDelta
+    public BlocksProvider_MergedSpawner() {
+        if (false && !registered) { // SpaceDelta
             Bukkit.getPluginManager().registerEvents(new BlocksProvider_MergedSpawner.StackerListener(), SuperiorSkyblockPlugin.getPlugin());
             registered = true;
             SuperiorSkyblockPlugin.log("Using MergedSpawner as a spawners provider.");
         }
     }
 
+    public static boolean isRegistered() {
+        return registered;
+    }
+
     @Override
     public Pair<Integer, String> getSpawner(Location location) {
         int blockCount = -1;
-        if(Bukkit.isPrimaryThread()){
+        if (Bukkit.isPrimaryThread()) {
             // Start SpaceDelta
             // MergedSpawnerAPI spawnerAPI = MergedSpawnerAPI.getInstance();
             // blockCount = spawnerAPI.getCountFor(location.getBlock());
@@ -39,10 +38,6 @@ public final class BlocksProvider_MergedSpawner implements BlocksProvider {
     @Override
     public String getSpawnerType(ItemStack itemStack) {
         return "PIG"; // return MergedSpawnerAPI.getInstance().getEntityType(itemStack).name();
-    }
-
-    public static boolean isRegistered(){
-        return registered;
     }
 
     @SuppressWarnings("unused")

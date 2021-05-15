@@ -8,12 +8,14 @@ public interface CommandsManager {
 
     /**
      * Register a sub-command.
+     *
      * @param superiorCommand The sub command to register.
      */
     void registerCommand(SuperiorCommand superiorCommand);
 
     /**
      * Register a sub-command to the admin command.
+     *
      * @param superiorCommand The sub command to register.
      */
     void registerAdminCommand(SuperiorCommand superiorCommand);

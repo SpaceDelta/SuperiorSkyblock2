@@ -4,11 +4,7 @@ import com.bgsoftware.superiorskyblock.api.upgrades.Upgrade;
 import com.bgsoftware.superiorskyblock.utils.key.KeyMap;
 import com.bgsoftware.superiorskyblock.utils.upgrades.UpgradeValue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 public class SUpgrade implements Upgrade {
 
@@ -23,7 +19,7 @@ public class SUpgrade implements Upgrade {
     private SUpgradeLevel[] upgradeLevels = new SUpgradeLevel[0];
     private int slot = -1;
 
-    public SUpgrade(String name){
+    public SUpgrade(String name) {
         this.name = name;
     }
 
@@ -46,12 +42,12 @@ public class SUpgrade implements Upgrade {
         return slot;
     }
 
-    public void setMenuSlot(int slot){
+    public void setMenuSlot(int slot) {
         this.slot = slot;
     }
 
-    public void addUpgradeLevel(int level, SUpgradeLevel upgradeLevel){
-        if(level > upgradeLevels.length)
+    public void addUpgradeLevel(int level, SUpgradeLevel upgradeLevel) {
+        if (level > upgradeLevels.length)
             upgradeLevels = Arrays.copyOf(upgradeLevels, level);
 
         upgradeLevels[level - 1] = upgradeLevel;

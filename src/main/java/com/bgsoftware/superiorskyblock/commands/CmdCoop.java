@@ -66,42 +66,42 @@ public final class CmdCoop implements IPermissibleCommand {
     public void execute(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, Island island, String[] args) {
         SuperiorPlayer targetPlayer = CommandArguments.getPlayer(plugin, superiorPlayer, args[1]);
 
-        if(targetPlayer == null)
+        if (targetPlayer == null)
             return;
 
-        if(!targetPlayer.isOnline()){
+        if (!targetPlayer.isOnline()) {
             Locale.INVALID_PLAYER.send(superiorPlayer, args[1]);
             return;
         }
 
-        if(island.isMember(targetPlayer)){
+        if (island.isMember(targetPlayer)) {
             Locale.ALREADY_IN_ISLAND_OTHER.send(superiorPlayer);
             return;
         }
 
-        if(island.isCoop(targetPlayer)){
+        if (island.isCoop(targetPlayer)) {
             Locale.PLAYER_ALREADY_COOP.send(superiorPlayer);
             return;
         }
 
-        if(island.isBanned(targetPlayer)){
+        if (island.isBanned(targetPlayer)) {
             Locale.COOP_BANNED_PLAYER.send(superiorPlayer);
             return;
         }
 
-        if(island.getCoopPlayers().size() >= island.getCoopLimit()){
+        if (island.getCoopPlayers().size() >= island.getCoopLimit()) {
             Locale.COOP_LIMIT_EXCEED.send(superiorPlayer);
             return;
         }
 
-        if(!EventsCaller.callIslandCoopPlayerEvent(island, superiorPlayer, targetPlayer))
+        if (!EventsCaller.callIslandCoopPlayerEvent(island, superiorPlayer, targetPlayer))
             return;
 
         island.addCoop(targetPlayer);
 
         IslandUtils.sendMessage(island, Locale.COOP_ANNOUNCEMENT, new ArrayList<>(), superiorPlayer.getName(), targetPlayer.getName());
 
-        if(island.getName().isEmpty())
+        if (island.getName().isEmpty())
             Locale.JOINED_ISLAND_AS_COOP.send(targetPlayer, superiorPlayer.getName());
         else
             Locale.JOINED_ISLAND_AS_COOP_NAME.send(targetPlayer, island.getName());

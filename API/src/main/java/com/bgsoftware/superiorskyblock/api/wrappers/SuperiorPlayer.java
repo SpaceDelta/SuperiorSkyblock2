@@ -42,6 +42,7 @@ public interface SuperiorPlayer {
 
     /**
      * Set the skin-texture value for the player.
+     *
      * @param textureValue The skin texture.
      */
     void setTextureValue(String textureValue);
@@ -103,7 +104,7 @@ public interface SuperiorPlayer {
 
     /**
      * Check whether or not this player can hit another player.
-     *
+     * <p>
      * Players cannot hit each other if one of the followings is true:
      * 1) They are inside an island that has pvp disabled.
      * 2) One of them has pvp warm-up.
@@ -132,25 +133,29 @@ public interface SuperiorPlayer {
 
     /**
      * Teleport the player to a location.
+     *
      * @param location The location to teleport the player to.
      */
     void teleport(Location location);
 
     /**
      * Teleport the player to a location.
-     * @param location The location to teleport the player to.
+     *
+     * @param location       The location to teleport the player to.
      * @param teleportResult The result of the teleportation process. May be null.
      */
     void teleport(Location location, Consumer<Boolean> teleportResult);
 
     /**
      * Teleport the player to an island.
+     *
      * @param island The island to teleport the player to.
      */
     void teleport(Island island);
 
     /**
      * Teleport the player to an island.
+     *
      * @param island The island to teleport the player to.
      * @param result Consumer that will be ran when task is finished.
      */
@@ -174,6 +179,16 @@ public interface SuperiorPlayer {
     UUID getTeamLeader();
 
     /**
+     * Set the island owner of the player's island.
+     * !Can cause issues if not used properly!
+     *
+     * @param teamLeader The island owner's uuid.
+     * @deprecated See setIslandLeader(SuperiorPlayer)
+     */
+    @Deprecated
+    void setTeamLeader(UUID teamLeader);
+
+    /**
      * Get the island owner of the player's island.
      */
     SuperiorPlayer getIslandLeader();
@@ -181,16 +196,7 @@ public interface SuperiorPlayer {
     /**
      * Set the island owner of the player's island.
      * !Can cause issues if not used properly!
-     * @param teamLeader The island owner's uuid.
      *
-     * @deprecated See setIslandLeader(SuperiorPlayer)
-     */
-    @Deprecated
-    void setTeamLeader(UUID teamLeader);
-
-    /**
-     * Set the island owner of the player's island.
-     * !Can cause issues if not used properly!
      * @param superiorPlayer The island owner's player.
      */
     void setIslandLeader(SuperiorPlayer superiorPlayer);
@@ -207,6 +213,7 @@ public interface SuperiorPlayer {
 
     /**
      * Set the role of the player.
+     *
      * @param playerRole The role to give the player.
      */
     void setPlayerRole(PlayerRole playerRole);
@@ -217,14 +224,14 @@ public interface SuperiorPlayer {
     int getDisbands();
 
     /**
-     * Check whether or not the player has more disbands.
-     */
-    boolean hasDisbands();
-
-    /**
      * Check whether or not the player has a permission.
      */
     void setDisbands(int disbands);
+
+    /**
+     * Check whether or not the player has more disbands.
+     */
+    boolean hasDisbands();
 
     /*
      *   Preferences Methods
@@ -237,6 +244,7 @@ public interface SuperiorPlayer {
 
     /**
      * Set the locale of the player.
+     *
      * @param locale The locale to set.
      */
     void setUserLocale(Locale locale);
@@ -328,6 +336,7 @@ public interface SuperiorPlayer {
 
     /**
      * Set the border color for the player.
+     *
      * @param borderColor The color to set.
      */
     void setBorderColor(BorderColor borderColor);
@@ -343,6 +352,7 @@ public interface SuperiorPlayer {
 
     /**
      * Set the first schematic position of the player.
+     *
      * @param block The block to change the position to.
      */
     void setSchematicPos1(Block block);
@@ -354,6 +364,7 @@ public interface SuperiorPlayer {
 
     /**
      * Set the second schematic position of the player.
+     *
      * @param block The block to change the position to.
      */
     void setSchematicPos2(Block block);
@@ -364,30 +375,35 @@ public interface SuperiorPlayer {
 
     /**
      * Complete a mission.
+     *
      * @param mission The mission to complete.
      */
     void completeMission(Mission<?> mission);
 
     /**
      * Reset a mission.
+     *
      * @param mission The mission to reset.
      */
     void resetMission(Mission<?> mission);
 
     /**
      * Check whether the player has completed the mission before.
+     *
      * @param mission The mission to check.
      */
     boolean hasCompletedMission(Mission<?> mission);
 
     /**
      * Check whether the player can complete a mission again.
+     *
      * @param mission The mission to check.
      */
     boolean canCompleteMissionAgain(Mission<?> mission);
 
     /**
      * Get the amount of times mission was completed.
+     *
      * @param mission The mission to check.
      */
     int getAmountMissionCompleted(Mission<?> mission);

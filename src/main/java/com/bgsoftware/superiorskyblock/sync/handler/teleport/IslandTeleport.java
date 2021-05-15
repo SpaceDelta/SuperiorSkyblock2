@@ -1,6 +1,5 @@
 package com.bgsoftware.superiorskyblock.sync.handler.teleport;
 
-import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.player.SSuperiorPlayer;
 import com.bgsoftware.superiorskyblock.sync.MessageType;

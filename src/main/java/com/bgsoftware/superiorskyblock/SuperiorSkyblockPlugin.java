@@ -40,6 +40,7 @@ import com.bgsoftware.superiorskyblock.nms.NMSTags;
 import com.bgsoftware.superiorskyblock.sync.IslandLevelCache;
 import com.bgsoftware.superiorskyblock.sync.MessageConsumers;
 import com.bgsoftware.superiorskyblock.sync.TeamChatToggle;
+import com.bgsoftware.superiorskyblock.tasks.RegenerationCheckerTask;
 import com.bgsoftware.superiorskyblock.tutorial.TutorialCommand;
 import com.bgsoftware.superiorskyblock.utils.FileUtils;
 import com.bgsoftware.superiorskyblock.utils.ServerVersion;
@@ -253,6 +254,8 @@ public final class SuperiorSkyblockPlugin extends BukkitPlugin implements Superi
                             island.setPlayerInside(superiorPlayer, true);
                     }
                 }, 1L);
+
+                new RegenerationCheckerTask(); // SpaceDelta
             }
         }catch (Throwable ex){
             shouldEnable = false;
@@ -416,13 +419,6 @@ public final class SuperiorSkyblockPlugin extends BukkitPlugin implements Superi
                 }
                 //CropsTask.startTask();
             });
-
-            // Start SpaceDelta
-            Executor.sync(() -> {
-                log("Performing initial island worth calculations...");
-                gridHandler.calcAllIslands(() -> log("Initial island worth calculations completed."));
-            }, 8 * 20L);
-            // End SpaceDelta
 
             CalcTask.startTask();
         }

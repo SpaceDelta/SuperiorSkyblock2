@@ -11,34 +11,33 @@ public final class CompoundBuilder {
     private BaseComponent baseCompound;
     private BaseComponent lastCompound;
 
-    public CompoundBuilder addText(String text){
-        if(baseCompound == null) {
+    public CompoundBuilder addText(String text) {
+        if (baseCompound == null) {
             baseCompound = lastCompound = new TextComponent(StringUtils.translateColors(text));
-        }
-        else{
+        } else {
             baseCompound.addExtra((lastCompound = new TextComponent(StringUtils.translateColors(text))));
         }
 
         return this;
     }
 
-    public CompoundBuilder addCommand(String command){
+    public CompoundBuilder addCommand(String command) {
         lastCompound.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + command));
         return this;
     }
 
-    public CompoundBuilder addTooltip(String text){
+    public CompoundBuilder addTooltip(String text) {
         lastCompound.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                new BaseComponent[]{ new TextComponent(StringUtils.translateColors(text)) }));
+                new BaseComponent[]{new TextComponent(StringUtils.translateColors(text))}));
         return this;
     }
 
-    public CompoundBuilder addLink(String link){
+    public CompoundBuilder addLink(String link) {
         lastCompound.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, link));
         return this;
     }
 
-    public BaseComponent build(){
+    public BaseComponent build() {
         return baseCompound;
     }
 

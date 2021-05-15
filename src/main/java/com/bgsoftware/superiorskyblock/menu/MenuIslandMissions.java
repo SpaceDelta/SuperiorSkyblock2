@@ -29,16 +29,107 @@ public final class MenuIslandMissions extends PagedSuperiorMenu<Mission<?>> {
 
     private List<Mission<?>> missions;
 
-    private MenuIslandMissions(SuperiorPlayer superiorPlayer){
+    private MenuIslandMissions(SuperiorPlayer superiorPlayer) {
         super("menuIslandMissions", superiorPlayer);
-        if(superiorPlayer != null) {
+        if (superiorPlayer != null) {
             this.missions = plugin.getMissions().getIslandMissions().stream()
                     .filter(mission -> (!mission.isOnlyShowIfRequiredCompleted() || plugin.getMissions().hasAllRequiredMissions(superiorPlayer, mission) &&
                             (!removeCompleted || superiorPlayer.getIsland().canCompleteMissionAgain(mission))))
                     .collect(Collectors.toList());
-            if(sortByCompletion)
+            if (sortByCompletion)
                 this.missions.sort(Comparator.comparingInt(this::getCompletionStatus));
         }
+    }
+
+    public static void init() {
+        MenuIslandMissions menuIslandMissions = new MenuIslandMissions(null);
+
+        File file = new File(plugin.getDataFolder(), "menus/island-missions.yml");
+
+        if (!file.exists())
+            FileUtils.saveResource("menus/island-missions.yml");
+
+        CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
+
+        if (convertOldGUI(cfg)) {
+            try {
+                cfg.save(file);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        sortByCompletion = cfg.getBoolean("sort-by-completion", false);
+        removeCompleted = cfg.getBoolean("remove-completed", false);
+
+        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuIslandMissions, "island-missions.yml", cfg);
+
+        char slotsChar = cfg.getString("slots", " ").charAt(0);
+
+        if (cfg.contains("sounds." + slotsChar + ".completed"))
+            menuIslandMissions.addData("sound-completed", FileUtils.getSound(cfg.getConfigurationSection("sounds." + slotsChar + ".completed")));
+        if (cfg.contains("sounds." + slotsChar + ".not-completed"))
+            menuIslandMissions.addData("sound-not-completed", FileUtils.getSound(cfg.getConfigurationSection("sounds." + slotsChar + ".not-completed")));
+        if (cfg.contains("sounds." + slotsChar + ".can-complete"))
+            menuIslandMissions.addData("sound-can-complete", FileUtils.getSound(cfg.getConfigurationSection("sounds." + slotsChar + ".can-complete")));
+
+        menuIslandMissions.setPreviousSlot(getSlots(cfg, "previous-page", charSlots));
+        menuIslandMissions.setCurrentSlot(getSlots(cfg, "current-page", charSlots));
+        menuIslandMissions.setNextSlot(getSlots(cfg, "next-page", charSlots));
+        menuIslandMissions.setSlots(getSlots(cfg, "slots", charSlots));
+
+        charSlots.delete();
+
+        menuIslandMissions.markCompleted();
+    }
+
+    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu) {
+        new MenuIslandMissions(superiorPlayer).open(previousMenu);
+    }
+
+    public static void refreshMenus(Island island) {
+        refreshMenus(MenuIslandMissions.class, superiorMenu -> island.equals(superiorMenu.superiorPlayer.getIsland()));
+    }
+
+    private static boolean convertOldGUI(YamlConfiguration newMenu) {
+        File oldFile = new File(plugin.getDataFolder(), "guis/missions-gui.yml");
+
+        if (!oldFile.exists())
+            return false;
+
+        //We want to reset the items of newMenu.
+        ConfigurationSection itemsSection = newMenu.createSection("items");
+        ConfigurationSection soundsSection = newMenu.createSection("sounds");
+        ConfigurationSection commandsSection = newMenu.createSection("commands");
+
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(oldFile);
+
+        newMenu.set("title", cfg.getString("missions-panel.island-title"));
+
+        int size = cfg.getInt("missions-panel.size");
+
+        char[] patternChars = new char[size * 9];
+        Arrays.fill(patternChars, '\n');
+
+        int charCounter = 0;
+
+        if (cfg.contains("missions-panel.fill-items")) {
+            charCounter = MenuConverter.convertFillItems(cfg.getConfigurationSection("missions-panel.fill-items"),
+                    charCounter, patternChars, itemsSection, commandsSection, soundsSection);
+        }
+
+        char slotsChar = itemChars[charCounter++];
+
+        MenuConverter.convertPagedButtons(cfg.getConfigurationSection("missions-panel"), newMenu, patternChars,
+                slotsChar, itemChars[charCounter++], itemChars[charCounter++], itemChars[charCounter++],
+                itemsSection, commandsSection, soundsSection);
+
+        if (cfg.contains("missions-panel.sounds"))
+            newMenu.set("sounds." + slotsChar, cfg.getConfigurationSection("missions-panel.sounds"));
+
+        newMenu.set("pattern", MenuConverter.buildPattern(size, patternChars, itemChars[charCounter]));
+
+        return true;
     }
 
     @Override
@@ -48,15 +139,15 @@ public final class MenuIslandMissions extends PagedSuperiorMenu<Mission<?>> {
         boolean canComplete = plugin.getMissions().canComplete(superiorPlayer, mission);
 
         SoundWrapper sound = (SoundWrapper) getData(completed ? "sound-completed" : canComplete ? "sound-can-complete" : "sound-not-completed");
-        if(sound != null)
+        if (sound != null)
             sound.playSound(superiorPlayer.asPlayer());
 
-        if(canComplete && plugin.getMissions().hasAllRequiredMissions(superiorPlayer, mission)){
+        if (canComplete && plugin.getMissions().hasAllRequiredMissions(superiorPlayer, mission)) {
             plugin.getMissions().rewardMission(mission, superiorPlayer, false, false, result -> {
-               if(result){
-                   previousMove = false;
-                   openInventory(superiorPlayer, previousMenu);
-               }
+                if (result) {
+                    previousMove = false;
+                    openInventory(superiorPlayer, previousMenu);
+                }
             });
         }
     }
@@ -99,7 +190,7 @@ public final class MenuIslandMissions extends PagedSuperiorMenu<Mission<?>> {
             mission.formatItem(superiorPlayer, itemStack);
 
             return itemStack;
-        }catch(Exception ex){
+        } catch (Exception ex) {
             SuperiorSkyblockPlugin.log("Failed to load menu because of mission: " + mission.getName());
             throw ex;
         }
@@ -110,105 +201,14 @@ public final class MenuIslandMissions extends PagedSuperiorMenu<Mission<?>> {
         return missions;
     }
 
-    private int getPercentage(double progress){
+    private int getPercentage(double progress) {
         progress = Math.min(1.0, progress);
         return Math.round((float) progress * 100);
     }
 
-    private int getCompletionStatus(Mission<?> mission){
+    private int getCompletionStatus(Mission<?> mission) {
         return !superiorPlayer.getIsland().canCompleteMissionAgain(mission) ? 2 :
                 plugin.getMissions().canComplete(superiorPlayer, mission) ? 1 : 0;
-    }
-
-    public static void init(){
-        MenuIslandMissions menuIslandMissions = new MenuIslandMissions(null);
-
-        File file = new File(plugin.getDataFolder(), "menus/island-missions.yml");
-
-        if(!file.exists())
-            FileUtils.saveResource("menus/island-missions.yml");
-
-        CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
-
-        if(convertOldGUI(cfg)){
-            try {
-                cfg.save(file);
-            }catch (Exception ex){
-                ex.printStackTrace();
-            }
-        }
-
-        sortByCompletion = cfg.getBoolean("sort-by-completion", false);
-        removeCompleted = cfg.getBoolean("remove-completed", false);
-
-        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuIslandMissions, "island-missions.yml", cfg);
-
-        char slotsChar = cfg.getString("slots", " ").charAt(0);
-
-        if(cfg.contains("sounds." + slotsChar + ".completed"))
-            menuIslandMissions.addData("sound-completed", FileUtils.getSound(cfg.getConfigurationSection("sounds." + slotsChar + ".completed")));
-        if(cfg.contains("sounds." + slotsChar + ".not-completed"))
-            menuIslandMissions.addData("sound-not-completed", FileUtils.getSound(cfg.getConfigurationSection("sounds." + slotsChar + ".not-completed")));
-        if(cfg.contains("sounds." + slotsChar + ".can-complete"))
-            menuIslandMissions.addData("sound-can-complete", FileUtils.getSound(cfg.getConfigurationSection("sounds." + slotsChar + ".can-complete")));
-
-        menuIslandMissions.setPreviousSlot(getSlots(cfg, "previous-page", charSlots));
-        menuIslandMissions.setCurrentSlot(getSlots(cfg, "current-page", charSlots));
-        menuIslandMissions.setNextSlot(getSlots(cfg, "next-page", charSlots));
-        menuIslandMissions.setSlots(getSlots(cfg, "slots", charSlots));
-
-        charSlots.delete();
-
-        menuIslandMissions.markCompleted();
-    }
-
-    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu){
-        new MenuIslandMissions(superiorPlayer).open(previousMenu);
-    }
-
-    public static void refreshMenus(Island island){
-        refreshMenus(MenuIslandMissions.class, superiorMenu -> island.equals(superiorMenu.superiorPlayer.getIsland()));
-    }
-
-    private static boolean convertOldGUI(YamlConfiguration newMenu){
-        File oldFile = new File(plugin.getDataFolder(), "guis/missions-gui.yml");
-
-        if(!oldFile.exists())
-            return false;
-
-        //We want to reset the items of newMenu.
-        ConfigurationSection itemsSection = newMenu.createSection("items");
-        ConfigurationSection soundsSection = newMenu.createSection("sounds");
-        ConfigurationSection commandsSection = newMenu.createSection("commands");
-
-        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(oldFile);
-
-        newMenu.set("title", cfg.getString("missions-panel.island-title"));
-
-        int size = cfg.getInt("missions-panel.size");
-
-        char[] patternChars = new char[size * 9];
-        Arrays.fill(patternChars, '\n');
-
-        int charCounter = 0;
-
-        if(cfg.contains("missions-panel.fill-items")) {
-            charCounter = MenuConverter.convertFillItems(cfg.getConfigurationSection("missions-panel.fill-items"),
-                    charCounter, patternChars, itemsSection, commandsSection, soundsSection);
-        }
-
-        char slotsChar = itemChars[charCounter++];
-
-        MenuConverter.convertPagedButtons(cfg.getConfigurationSection("missions-panel"), newMenu, patternChars,
-                slotsChar, itemChars[charCounter++], itemChars[charCounter++], itemChars[charCounter++],
-                itemsSection, commandsSection, soundsSection);
-
-        if(cfg.contains("missions-panel.sounds"))
-            newMenu.set("sounds." + slotsChar, cfg.getConfigurationSection("missions-panel.sounds"));
-
-        newMenu.set("pattern", MenuConverter.buildPattern(size, patternChars, itemChars[charCounter]));
-
-        return true;
     }
 
 }

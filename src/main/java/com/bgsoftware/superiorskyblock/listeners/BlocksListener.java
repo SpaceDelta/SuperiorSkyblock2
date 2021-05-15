@@ -495,7 +495,7 @@ public final class BlocksListener implements Listener {
         plugin.getGrid().setBlockAmount(block, blockAmount + amount);
 
         if(plugin.getGrid().hasBlockFailed()) {
-            depositedAmount.accept(0);
+                depositedAmount.accept(0);
             return false;
         }
 

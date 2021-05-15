@@ -17,18 +17,17 @@ public final class SIslandPreview implements IslandPreview {
     private final String schematic;
     private final String islandName;
 
-    public SIslandPreview(SuperiorPlayer superiorPlayer, Location previewLocation, String schematic, String islandName){
+    public SIslandPreview(SuperiorPlayer superiorPlayer, Location previewLocation, String schematic, String islandName) {
         this.superiorPlayer = superiorPlayer;
         this.previewLocation = previewLocation;
         this.schematic = schematic;
         this.islandName = islandName;
 
         PlayerChat.listen(superiorPlayer.asPlayer(), message -> {
-            if(message.equalsIgnoreCase("CONFIRM")){
+            if (message.equalsIgnoreCase("CONFIRM")) {
                 handleConfirm();
                 return true;
-            }
-            else if(message.equalsIgnoreCase("CANCEL")){
+            } else if (message.equalsIgnoreCase("CANCEL")) {
                 handleCancel();
                 return true;
             }

@@ -1,12 +1,11 @@
 package com.bgsoftware.superiorskyblock.commands;
 
+import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
+import com.bgsoftware.superiorskyblock.utils.StringUtils;
 import com.bgsoftware.superiorskyblock.utils.key.Key;
 import com.bgsoftware.superiorskyblock.utils.legacy.Materials;
-import com.bgsoftware.superiorskyblock.Locale;
-import com.bgsoftware.superiorskyblock.utils.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
@@ -64,23 +63,22 @@ public final class CmdValue implements ISuperiorCommand {
         Key toCheck;
         String keyName = "";
 
-        if(args.length == 1){
+        if (args.length == 1) {
             ItemStack inHand = superiorPlayer.asPlayer().getItemInHand();
 
-            if(inHand == null){
+            if (inHand == null) {
                 inHand = new ItemStack(Material.AIR);
             }
 
             toCheck = Key.of(inHand);
 
-            if(inHand.getType() == Materials.SPAWNER.toBukkitType())
+            if (inHand.getType() == Materials.SPAWNER.toBukkitType())
                 keyName = StringUtils.format(toCheck.getSubKey() + "_Spawner");
-        }
-        else{
+        } else {
             toCheck = Key.of(args[1].toUpperCase());
         }
 
-        if(keyName.isEmpty())
+        if (keyName.isEmpty())
             keyName = StringUtils.format(toCheck.getGlobalKey());
 
         java.util.Locale locale = superiorPlayer.getUserLocale();

@@ -25,7 +25,7 @@ public final class SIslandWarp implements IslandWarp {
     private boolean privateFlag;
     private ItemStack icon;
 
-    public SIslandWarp(String name, Location location, WarpCategory warpCategory){
+    public SIslandWarp(String name, Location location, WarpCategory warpCategory) {
         this.name = name;
         this.location = new Location(location.getWorld(), location.getBlockX() + 0.5, location.getBlockY(),
                 location.getBlockZ() + 0.5, location.getYaw(), location.getPitch());
@@ -81,7 +81,7 @@ public final class SIslandWarp implements IslandWarp {
 
     @Override
     public ItemStack getIcon(SuperiorPlayer superiorPlayer) {
-        if(icon == null)
+        if (icon == null)
             return null;
 
         ItemBuilder itemBuilder = new ItemBuilder(icon)

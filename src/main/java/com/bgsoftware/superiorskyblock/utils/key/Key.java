@@ -21,10 +21,65 @@ public final class Key implements com.bgsoftware.superiorskyblock.api.key.Key {
     private final String subKey;
     private boolean apiKey = false;
 
-    private Key(String key){
+    private Key(String key) {
         String[] keySections = key.replace(";", ":").split(":");
         this.globalKey = keySections[0];
         this.subKey = keySections.length == 2 ? keySections[1] : "";
+    }
+
+    public static Key of(EntityType entityType) {
+        return of(entityType.name());
+    }
+
+    public static Key of(Entity entity) {
+        return of(EntityUtils.getLimitEntityType(entity), entity);
+    }
+
+    public static Key of(Block block) {
+        return of(block.getState());
+    }
+
+    public static Key of(BlockState blockState) {
+        if (blockState instanceof CreatureSpawner) {
+            CreatureSpawner creatureSpawner = (CreatureSpawner) blockState;
+            return of(Materials.SPAWNER.toBukkitType() + ":" + creatureSpawner.getSpawnedType(), blockState.getLocation());
+        }
+
+        //noinspection deprecation
+        return of(of(blockState.getType(), blockState.getRawData()).toString(), blockState.getLocation());
+    }
+
+    public static Key of(ItemStack itemStack) {
+        return of(Materials.SPAWNER.toBukkitType() == itemStack.getType() ? plugin.getProviders().getSpawnerKey(itemStack) :
+                of(itemStack.getType(), itemStack.getDurability()), itemStack);
+    }
+
+    public static Key of(Material material, short data) {
+        return of(of(material + ":" + data), new ItemStack(material, 1, data));
+    }
+
+    public static Key of(String key) {
+        return new Key(key.replace("LEGACY_", ""));
+    }
+
+    public static Key of(Material material, short data, Location location) {
+        return of(material + ":" + data, location);
+    }
+
+    public static Key of(String key, Location location) {
+        return of(Key.of(key), location);
+    }
+
+    public static Key of(Key key, Location location) {
+        return plugin.getBlockValues().convertKey(key, location);
+    }
+
+    public static Key of(Key key, ItemStack itemStack) {
+        return plugin.getBlockValues().convertKey(key, itemStack);
+    }
+
+    public static Key of(Key key, Entity entity) {
+        return plugin.getBlockValues().convertKey(key, entity);
     }
 
     @Override
@@ -60,61 +115,6 @@ public final class Key implements com.bgsoftware.superiorskyblock.api.key.Key {
     @SuppressWarnings("all")
     public boolean equals(Object obj) {
         return obj instanceof Key && toString().equals(obj.toString());
-    }
-
-    public static Key of(EntityType entityType){
-        return of(entityType.name());
-    }
-
-    public static Key of(Entity entity){
-        return of(EntityUtils.getLimitEntityType(entity), entity);
-    }
-
-    public static Key of(Block block){
-        return of(block.getState());
-    }
-
-    public static Key of(BlockState blockState){
-        if(blockState instanceof CreatureSpawner){
-            CreatureSpawner creatureSpawner = (CreatureSpawner) blockState;
-            return of(Materials.SPAWNER.toBukkitType() + ":" + creatureSpawner.getSpawnedType(), blockState.getLocation());
-        }
-
-        //noinspection deprecation
-        return of(of(blockState.getType(), blockState.getRawData()).toString(), blockState.getLocation());
-    }
-
-    public static Key of(ItemStack itemStack){
-        return of(Materials.SPAWNER.toBukkitType() == itemStack.getType() ? plugin.getProviders().getSpawnerKey(itemStack) :
-                of(itemStack.getType(), itemStack.getDurability()), itemStack);
-    }
-
-    public static Key of(Material material, short data){
-        return of(of(material + ":" + data), new ItemStack(material, 1, data));
-    }
-
-    public static Key of(String key){
-        return new Key(key.replace("LEGACY_", ""));
-    }
-
-    public static Key of(Material material, short data, Location location){
-        return of(material + ":" + data, location);
-    }
-
-    public static Key of(String key, Location location){
-        return of(Key.of(key), location);
-    }
-
-    public static Key of(Key key, Location location){
-        return plugin.getBlockValues().convertKey(key, location);
-    }
-
-    public static Key of(Key key, ItemStack itemStack){
-        return plugin.getBlockValues().convertKey(key, itemStack);
-    }
-
-    public static Key of(Key key, Entity entity){
-        return plugin.getBlockValues().convertKey(key, entity);
     }
 
 }

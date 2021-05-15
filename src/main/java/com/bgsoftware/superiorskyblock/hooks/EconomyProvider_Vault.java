@@ -15,12 +15,12 @@ public final class EconomyProvider_Vault implements EconomyProvider {
 
     private static Economy econ;
 
-    public static boolean isCompatible(){
+    public static boolean isCompatible() {
         RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
         if (rsp != null)
             econ = rsp.getProvider();
 
-        if(econ != null)
+        if (econ != null)
             SuperiorSkyblockPlugin.log("Using Vault as an economy provider.");
 
         return econ != null;

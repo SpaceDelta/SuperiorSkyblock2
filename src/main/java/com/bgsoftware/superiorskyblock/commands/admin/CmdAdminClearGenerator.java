@@ -63,14 +63,14 @@ public final class CmdAdminClearGenerator implements IAdminIslandCommand {
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, SuperiorPlayer targetPlayer, List<Island> islands, String[] args) {
         World.Environment environment = args.length == 4 ? World.Environment.NORMAL : CommandArguments.getEnvironment(sender, args[3]);
 
-        if(environment == null)
+        if (environment == null)
             return;
 
         Executor.data(() -> islands.forEach(island -> island.clearGeneratorAmounts(environment)));
 
-        if(islands.size() != 1)
+        if (islands.size() != 1)
             Locale.GENERATOR_CLEARED_ALL.send(sender);
-        else if(targetPlayer == null)
+        else if (targetPlayer == null)
             Locale.GENERATOR_CLEARED_NAME.send(sender, islands.get(0).getName());
         else
             Locale.GENERATOR_CLEARED.send(sender, targetPlayer.getName());

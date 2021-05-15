@@ -8,7 +8,6 @@ import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public final class CmdTransfer implements ISuperiorCommand {
 
         Island island = arguments.getKey();
 
-        if(island == null)
+        if (island == null)
             return;
 
         SuperiorPlayer superiorPlayer = arguments.getValue();
@@ -75,7 +74,7 @@ public final class CmdTransfer implements ISuperiorCommand {
 
         SuperiorPlayer targetPlayer = CommandArguments.getPlayer(plugin, superiorPlayer, args[1]);
 
-        if(targetPlayer == null)
+        if (targetPlayer == null)
             return;
 
         if (!island.isMember(targetPlayer)) {
@@ -88,7 +87,7 @@ public final class CmdTransfer implements ISuperiorCommand {
             return;
         }
 
-        if(island.transferIsland(targetPlayer))
+        if (island.transferIsland(targetPlayer))
             IslandUtils.sendMessage(island, Locale.TRANSFER_BROADCAST, new ArrayList<>(), targetPlayer.getName());
     }
 

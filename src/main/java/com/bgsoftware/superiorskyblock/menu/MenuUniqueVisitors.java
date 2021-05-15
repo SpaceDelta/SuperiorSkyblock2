@@ -21,9 +21,39 @@ public final class MenuUniqueVisitors extends PagedSuperiorMenu<Pair<SuperiorPla
 
     private final Island island;
 
-    private MenuUniqueVisitors(SuperiorPlayer superiorPlayer, Island island){
+    private MenuUniqueVisitors(SuperiorPlayer superiorPlayer, Island island) {
         super("menuUniqueVisitors", superiorPlayer);
         this.island = island;
+    }
+
+    public static void init() {
+        MenuUniqueVisitors menuUniqueVisitors = new MenuUniqueVisitors(null, null);
+
+        File file = new File(plugin.getDataFolder(), "menus/unique-visitors.yml");
+
+        if (!file.exists())
+            FileUtils.saveResource("menus/unique-visitors.yml");
+
+        CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
+
+        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuUniqueVisitors, "unique-visitors.yml", cfg);
+
+        menuUniqueVisitors.setPreviousSlot(getSlots(cfg, "previous-page", charSlots));
+        menuUniqueVisitors.setCurrentSlot(getSlots(cfg, "current-page", charSlots));
+        menuUniqueVisitors.setNextSlot(getSlots(cfg, "next-page", charSlots));
+        menuUniqueVisitors.setSlots(getSlots(cfg, "slots", charSlots));
+
+        charSlots.delete();
+
+        menuUniqueVisitors.markCompleted();
+    }
+
+    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, Island island) {
+        new MenuUniqueVisitors(superiorPlayer, island).open(previousMenu);
+    }
+
+    public static void refreshMenus(Island island) {
+        refreshMenus(MenuUniqueVisitors.class, superiorMenu -> superiorMenu.island.equals(island));
     }
 
     @Override
@@ -57,7 +87,7 @@ public final class MenuUniqueVisitors extends PagedSuperiorMenu<Pair<SuperiorPla
                     .replaceAll("{2}", islandName)
                     .replaceAll("{3}", StringUtils.formatDate(pair.getValue()))
                     .asSkullOf(pair.getKey()).build(pair.getKey());
-        }catch(Exception ex){
+        } catch (Exception ex) {
             SuperiorSkyblockPlugin.log("Failed to load menu because of player: " + pair.getKey().getName());
             throw ex;
         }
@@ -66,36 +96,6 @@ public final class MenuUniqueVisitors extends PagedSuperiorMenu<Pair<SuperiorPla
     @Override
     protected List<Pair<SuperiorPlayer, Long>> requestObjects() {
         return island.getUniqueVisitorsWithTimes();
-    }
-
-    public static void init(){
-        MenuUniqueVisitors menuUniqueVisitors = new MenuUniqueVisitors(null, null);
-
-        File file = new File(plugin.getDataFolder(), "menus/unique-visitors.yml");
-
-        if(!file.exists())
-            FileUtils.saveResource("menus/unique-visitors.yml");
-
-        CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
-
-        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuUniqueVisitors, "unique-visitors.yml", cfg);
-
-        menuUniqueVisitors.setPreviousSlot(getSlots(cfg, "previous-page", charSlots));
-        menuUniqueVisitors.setCurrentSlot(getSlots(cfg, "current-page", charSlots));
-        menuUniqueVisitors.setNextSlot(getSlots(cfg, "next-page", charSlots));
-        menuUniqueVisitors.setSlots(getSlots(cfg, "slots", charSlots));
-
-        charSlots.delete();
-
-        menuUniqueVisitors.markCompleted();
-    }
-
-    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, Island island){
-        new MenuUniqueVisitors(superiorPlayer, island).open(previousMenu);
-    }
-
-    public static void refreshMenus(Island island){
-        refreshMenus(MenuUniqueVisitors.class, superiorMenu -> superiorMenu.island.equals(island));
     }
 
 }

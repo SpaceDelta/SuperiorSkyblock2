@@ -69,26 +69,26 @@ public final class CmdAdminSetRoleLimit implements IAdminIslandCommand {
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, SuperiorPlayer targetPlayer, List<Island> islands, String[] args) {
         PlayerRole playerRole = CommandArguments.getPlayerRole(sender, args[3]);
 
-        if(playerRole == null)
+        if (playerRole == null)
             return;
 
-        if(!IslandUtils.isValidRoleForLimit(playerRole)){
+        if (!IslandUtils.isValidRoleForLimit(playerRole)) {
             Locale.INVALID_ROLE.send(sender, args[3], SPlayerRole.getValuesString());
             return;
         }
 
         Pair<Integer, Boolean> arguments = CommandArguments.getLimit(sender, args[4]);
 
-        if(!arguments.getValue())
+        if (!arguments.getValue())
             return;
 
         int limit = arguments.getKey();
 
         Executor.data(() -> islands.forEach(island -> island.setRoleLimit(playerRole, limit)));
 
-        if(islands.size() > 1)
+        if (islands.size() > 1)
             Locale.CHANGED_ROLE_LIMIT_ALL.send(sender, playerRole);
-        else if(targetPlayer == null)
+        else if (targetPlayer == null)
             Locale.CHANGED_ROLE_LIMIT_NAME.send(sender, playerRole, islands.get(0).getName());
         else
             Locale.CHANGED_ROLE_LIMIT.send(sender, playerRole, targetPlayer.getName());

@@ -15,11 +15,12 @@ public class IslandBankDepositEvent extends IslandEvent {
 
     /**
      * The constructor of the event.
+     *
      * @param superiorPlayer The player who entered to the island's area.
-     * @param island The island that the player entered into.
-     * @param amount The amount that was deposited.
+     * @param island         The island that the player entered into.
+     * @param amount         The amount that was deposited.
      */
-    public IslandBankDepositEvent(SuperiorPlayer superiorPlayer, Island island, BigDecimal amount){
+    public IslandBankDepositEvent(SuperiorPlayer superiorPlayer, Island island, BigDecimal amount) {
         super(island);
         this.superiorPlayer = superiorPlayer;
         this.amount = amount;

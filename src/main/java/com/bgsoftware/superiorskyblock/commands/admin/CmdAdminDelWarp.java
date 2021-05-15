@@ -68,28 +68,27 @@ public final class CmdAdminDelWarp implements IAdminIslandCommand {
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, SuperiorPlayer targetPlayer, Island island, String[] args) {
         IslandWarp islandWarp = CommandArguments.getWarp(sender, island, args, 3);
 
-        if(islandWarp == null)
+        if (islandWarp == null)
             return;
 
         boolean breakSign = false;
 
         Block signBlock = islandWarp.getLocation().getBlock();
-        if(signBlock.getState() instanceof Sign){
+        if (signBlock.getState() instanceof Sign) {
             signBlock.setType(Material.AIR);
             signBlock.getWorld().dropItemNaturally(signBlock.getLocation(), new ItemStack(Material.SIGN));
             breakSign = true;
         }
 
-        if(args[1].equalsIgnoreCase(IslandUtils.VISITORS_WARP_NAME)){
+        if (args[1].equalsIgnoreCase(IslandUtils.VISITORS_WARP_NAME)) {
             island.setVisitorsLocation(null);
-        }
-        else{
+        } else {
             island.deleteWarp(islandWarp.getName());
         }
 
         Locale.DELETE_WARP.send(sender, islandWarp.getName());
 
-        if(breakSign){
+        if (breakSign) {
             Locale.DELETE_WARP_SIGN_BROKE.send(sender);
         }
     }

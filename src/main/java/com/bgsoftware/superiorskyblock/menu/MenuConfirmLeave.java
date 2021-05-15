@@ -25,6 +25,30 @@ public final class MenuConfirmLeave extends SuperiorMenu {
         super("menuConfirmLeave", superiorPlayer);
     }
 
+    public static void init() {
+        MenuConfirmLeave menuConfirmLeave = new MenuConfirmLeave(null);
+
+        File file = new File(plugin.getDataFolder(), "menus/confirm-leave.yml");
+
+        if (!file.exists())
+            FileUtils.saveResource("menus/confirm-leave.yml");
+
+        CommentedConfiguration config = CommentedConfiguration.loadConfiguration(file);
+
+        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuConfirmLeave, "confirm-leave.yml", config);
+
+        confirmSlot = getSlots(config, "confirm", charSlots);
+        cancelSlot = getSlots(config, "cancel", charSlots);
+
+        charSlots.delete();
+
+        menuConfirmLeave.markCompleted();
+    }
+
+    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu) {
+        new MenuConfirmLeave(superiorPlayer).open(previousMenu);
+    }
+
     @Override
     protected void onPlayerClick(InventoryClickEvent event) {
         Island island = superiorPlayer.getIsland();
@@ -49,29 +73,5 @@ public final class MenuConfirmLeave extends SuperiorMenu {
     @Override
     protected void cloneAndOpen(SuperiorMenu previousMenu) {
         openInventory(superiorPlayer, previousMenu);
-    }
-
-    public static void init() {
-        MenuConfirmLeave menuConfirmLeave = new MenuConfirmLeave(null);
-
-        File file = new File(plugin.getDataFolder(), "menus/confirm-leave.yml");
-
-        if (!file.exists())
-            FileUtils.saveResource("menus/confirm-leave.yml");
-
-        CommentedConfiguration config = CommentedConfiguration.loadConfiguration(file);
-
-        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuConfirmLeave, "confirm-leave.yml", config);
-
-        confirmSlot = getSlots(config, "confirm", charSlots);
-        cancelSlot = getSlots(config, "cancel", charSlots);
-
-        charSlots.delete();
-
-        menuConfirmLeave.markCompleted();
-    }
-
-    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu) {
-        new MenuConfirmLeave(superiorPlayer).open(previousMenu);
     }
 }

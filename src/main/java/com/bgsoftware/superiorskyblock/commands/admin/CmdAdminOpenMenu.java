@@ -58,7 +58,7 @@ public final class CmdAdminOpenMenu implements IAdminPlayerCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, SuperiorPlayer targetPlayer, String[] args) {
-        if(!SuperiorMenuCustom.isValidMenu(args[3])){
+        if (!SuperiorMenuCustom.isValidMenu(args[3])) {
             return;
         }
 

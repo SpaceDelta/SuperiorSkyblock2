@@ -67,11 +67,11 @@ public final class CmdAdminSetBonus implements IAdminIslandCommand {
 
         BigDecimal bonus = CommandArguments.getBigDecimalAmount(sender, args[4]);
 
-        if(bonus == null)
+        if (bonus == null)
             return;
 
         Executor.data(() -> islands.forEach(island -> {
-            if(isWorthBonus)
+            if (isWorthBonus)
                 island.setBonusWorth(bonus);
             else
                 island.setBonusLevel(bonus);

@@ -9,7 +9,6 @@ import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
-import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,10 +70,10 @@ public final class CmdPardon implements IPermissibleCommand {
 
         SuperiorPlayer targetPlayer = CommandArguments.getPlayer(plugin, superiorPlayer, args[1]);
 
-        if(targetPlayer == null)
+        if (targetPlayer == null)
             return;
 
-        if(!island.isBanned(targetPlayer)){
+        if (!island.isBanned(targetPlayer)) {
             Locale.PLAYER_NOT_BANNED.send(superiorPlayer);
             return;
         }

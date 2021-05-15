@@ -12,10 +12,10 @@ import com.bgsoftware.superiorskyblock.api.key.Key;
 import com.bgsoftware.superiorskyblock.api.missions.Mission;
 import com.bgsoftware.superiorskyblock.api.wrappers.BlockPosition;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
-import com.bgsoftware.superiorskyblock.island.data.SPlayerDataHandler;
 import com.bgsoftware.superiorskyblock.handlers.MissionsHandler;
-import com.bgsoftware.superiorskyblock.island.SpawnIsland;
 import com.bgsoftware.superiorskyblock.island.SPlayerRole;
+import com.bgsoftware.superiorskyblock.island.SpawnIsland;
+import com.bgsoftware.superiorskyblock.island.data.SPlayerDataHandler;
 import com.bgsoftware.superiorskyblock.sync.MessageType;
 import com.bgsoftware.superiorskyblock.sync.ServerUtils;
 import com.bgsoftware.superiorskyblock.sync.TeamChatToggle;
@@ -27,33 +27,20 @@ import com.bgsoftware.superiorskyblock.utils.islands.IslandFlags;
 import com.bgsoftware.superiorskyblock.utils.registry.Registry;
 import com.bgsoftware.superiorskyblock.utils.teleport.TeleportUtils;
 import com.bgsoftware.superiorskyblock.utils.threads.Executor;
-
 import com.bgsoftware.superiorskyblock.wrappers.SBlockPosition;
 import com.google.common.base.Preconditions;
 import net.spacedelta.lib.Library;
 import net.spacedelta.lib.data.DataBuffer;
 import net.spacedelta.starship.StarshipPlugin;
 import net.spacedelta.starship.server.transfer.TransferMessage;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -93,9 +80,9 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
         name = resultSet.getString("name");
         textureValue = resultSet.getString("textureValue");
 
-        try{
+        try {
             playerRole = SPlayerRole.fromId(Integer.parseInt(resultSet.getString("islandRole")));
-        }catch(Exception ex){
+        } catch (Exception ex) {
             playerRole = SPlayerRole.of(resultSet.getString("islandRole"));
         }
 
@@ -109,7 +96,7 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
         worldBorderEnabled = resultSet.getBoolean("toggledBorder");
     }
 
-    public SSuperiorPlayer(UUID player){
+    public SSuperiorPlayer(UUID player) {
         OfflinePlayer offlinePlayer;
         this.uuid = player;
         this.name = (offlinePlayer = Bukkit.getOfflinePlayer(player)) == null || offlinePlayer.getName() == null ? "null" : offlinePlayer.getName();
@@ -123,8 +110,36 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
      *   General Methods
      */
 
+    private static HitActionResult checkPvPAllow(SuperiorPlayer player, boolean target) {
+        // Checks for online status
+        if (!player.isOnline())
+            return target ? HitActionResult.TARGET_NOT_ONLINE : HitActionResult.NOT_ONLINE;
+
+        // Checks for pvp warm-up
+        if (((SPlayerDataHandler) player.getDataHandler()).isImmunedToPvP())
+            return target ? HitActionResult.TARGET_PVP_WARMUP : HitActionResult.PVP_WARMUP;
+
+        Island standingIsland = plugin.getGrid().getIslandAt(player.getLocation());
+
+        if (standingIsland != null && (plugin.getSettings().spawnProtection || !standingIsland.isSpawn())) {
+            // Checks for pvp status
+            if (!standingIsland.hasSettingsEnabled(IslandFlags.PVP))
+                return target ? HitActionResult.TARGET_ISLAND_PVP_DISABLE : HitActionResult.ISLAND_PVP_DISABLE;
+
+            // Checks for coop damage
+            if (standingIsland.isCoop(player) && !plugin.getSettings().coopDamage)
+                return target ? HitActionResult.TARGET_COOP_DAMAGE : HitActionResult.COOP_DAMAGE;
+
+            // Checks for visitors damage
+            if (standingIsland.isVisitor(player, false) && !plugin.getSettings().visitorsDamage)
+                return target ? HitActionResult.TARGET_VISITOR_DAMAGE : HitActionResult.VISITOR_DAMAGE;
+        }
+
+        return HitActionResult.SUCCESS;
+    }
+
     @Override
-    public UUID getUniqueId(){
+    public UUID getUniqueId() {
         return uuid;
     }
 
@@ -145,7 +160,6 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
         playerDataHandler.saveTextureValue();
     }
 
-
     @Override
     public void updateLastTimeStatus() {
         lastTimeStatus = System.currentTimeMillis() / 1000;
@@ -161,23 +175,23 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
     }
 
     @Override
-    public void updateName(){
+    public void updateName() {
         this.name = asPlayer().getName();
         playerDataHandler.savePlayerName();
     }
 
     @Override
-    public Player asPlayer(){
+    public Player asPlayer() {
         return Bukkit.getPlayer(uuid);
     }
 
     @Override
-    public OfflinePlayer asOfflinePlayer(){
+    public OfflinePlayer asOfflinePlayer() {
         return Bukkit.getOfflinePlayer(uuid);
     }
 
     @Override
-    public boolean isOnline(){
+    public boolean isOnline() {
         OfflinePlayer offlinePlayer = asOfflinePlayer();
         return offlinePlayer != null && offlinePlayer.isOnline();
     }
@@ -195,7 +209,7 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
     }
 
     @Override
-    public boolean hasPermission(String permission){
+    public boolean hasPermission(String permission) {
         return permission.isEmpty() || asPlayer().hasPermission(permission);
     }
 
@@ -206,44 +220,16 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
     }
 
     @Override
-    public boolean hasPermission(IslandPrivilege permission){
+    public boolean hasPermission(IslandPrivilege permission) {
         Island island = getIsland();
         return island != null && island.hasPermission(this, permission);
-    }
-
-    private static HitActionResult checkPvPAllow(SuperiorPlayer player, boolean target){
-        // Checks for online status
-        if(!player.isOnline())
-            return target ? HitActionResult.TARGET_NOT_ONLINE : HitActionResult.NOT_ONLINE;
-
-        // Checks for pvp warm-up
-        if(((SPlayerDataHandler) player.getDataHandler()).isImmunedToPvP())
-            return target ? HitActionResult.TARGET_PVP_WARMUP : HitActionResult.PVP_WARMUP;
-
-        Island standingIsland = plugin.getGrid().getIslandAt(player.getLocation());
-
-        if(standingIsland != null && (plugin.getSettings().spawnProtection || !standingIsland.isSpawn())){
-            // Checks for pvp status
-            if(!standingIsland.hasSettingsEnabled(IslandFlags.PVP))
-                return target ? HitActionResult.TARGET_ISLAND_PVP_DISABLE : HitActionResult.ISLAND_PVP_DISABLE;
-
-            // Checks for coop damage
-            if(standingIsland.isCoop(player) && !plugin.getSettings().coopDamage)
-                return target ? HitActionResult.TARGET_COOP_DAMAGE : HitActionResult.COOP_DAMAGE;
-
-            // Checks for visitors damage
-            if(standingIsland.isVisitor(player, false) && !plugin.getSettings().visitorsDamage)
-                return target ? HitActionResult.TARGET_VISITOR_DAMAGE : HitActionResult.VISITOR_DAMAGE;
-        }
-
-        return HitActionResult.SUCCESS;
     }
 
     @Override
     @SuppressWarnings("all")
     public HitActionResult canHit(SuperiorPlayer other) {
         // Players can hit themselves
-        if(equals(other))
+        if (equals(other))
             return HitActionResult.SUCCESS;
 
         // Start SpaceDelta
@@ -252,7 +238,7 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
         // End SpaceDelta
 
         // Checks for island teammates pvp
-        if(getIslandLeader().equals(other.getIslandLeader()) &&
+        if (getIslandLeader().equals(other.getIslandLeader()) &&
                 !plugin.getSettings().pvpWorlds.contains(getWorld().getName()))
             return HitActionResult.ISLAND_TEAM_PVP;
 
@@ -278,12 +264,12 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
      */
 
     @Override
-    public World getWorld(){
+    public World getWorld() {
         return getLocation().getWorld();
     }
 
     @Override
-    public Location getLocation(){
+    public Location getLocation() {
         return asPlayer().getLocation();
     }
 
@@ -294,12 +280,12 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
 
     @Override
     public void teleport(Location location, Consumer<Boolean> teleportResult) {
-        if(isOnline()) {
+        if (isOnline()) {
             TeleportUtils.teleport(asPlayer(), location, teleportResult);
             return;
         }
 
-        if(teleportResult != null)
+        if (teleportResult != null)
             teleportResult.accept(false);
     }
 
@@ -350,17 +336,17 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
     }
 
     public void teleportOnServer(Island island, Consumer<Boolean> result) {
-        if(!isOnline())
+        if (!isOnline())
             return;
 
         Location islandTeleportLocation = island.getTeleportLocation(World.Environment.NORMAL); //
         Block islandTeleportBlock = islandTeleportLocation.getBlock();
         Block islandCenterBlock = island.getCenter(World.Environment.NORMAL).getBlock();
 
-        if(island instanceof SpawnIsland){
+        if (island instanceof SpawnIsland) {
             SuperiorSkyblockPlugin.debug("Action: Teleport Player, Player: " + getName() + ", Location: " + LocationUtils.getLocation(islandTeleportLocation));
             teleport(islandTeleportLocation.add(0, 0.5, 0));
-            if(result != null)
+            if (result != null)
                 result.accept(true);
             return;
         }
@@ -368,27 +354,27 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
         Location toTeleport = null;
 
         //We check if the island's teleport location is safe.
-        if(LocationUtils.isSafeBlock(islandTeleportBlock)){
+        if (LocationUtils.isSafeBlock(islandTeleportBlock)) {
             toTeleport = islandTeleportLocation;
         }
 
         //We check if the island's center location is safe.
-        else if(LocationUtils.isSafeBlock(islandCenterBlock)){
+        else if (LocationUtils.isSafeBlock(islandCenterBlock)) {
             toTeleport = islandCenterBlock.getLocation().add(0.5, 0, 0.5);
             island.setTeleportLocation(toTeleport);
         }
 
         //We check if the highest block at the island's center location is safe.
-        else if(LocationUtils.isSafeBlock((islandCenterBlock = islandCenterBlock.getWorld().getHighestBlockAt(islandCenterBlock.getLocation())))){
+        else if (LocationUtils.isSafeBlock((islandCenterBlock = islandCenterBlock.getWorld().getHighestBlockAt(islandCenterBlock.getLocation())))) {
             toTeleport = islandCenterBlock.getLocation().add(0.5, 0, 0.5);
             island.setTeleportLocation(toTeleport);
         }
 
         //Checking if one of the options above is safe.
-        if(toTeleport != null){
+        if (toTeleport != null) {
             SuperiorSkyblockPlugin.debug("Action: Teleport Player, Player: " + getName() + ", Location: " + LocationUtils.getLocation(toTeleport));
             teleport(toTeleport.add(0, 0.5, 0));
-            if(result != null)
+            if (result != null)
                 result.accept(true);
             return;
         }
@@ -401,12 +387,12 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
                 .stream().map(future -> future.thenApply(Chunk::getChunkSnapshot)).collect(Collectors.toList());
 
         Executor.createTask().runAsync(v -> {
-            for(CompletableFuture<ChunkSnapshot> chunkToLoad : chunksToLoad){
+            for (CompletableFuture<ChunkSnapshot> chunkToLoad : chunksToLoad) {
                 ChunkSnapshot chunkSnapshot;
 
                 try {
                     chunkSnapshot = chunkToLoad.get();
-                }catch(Exception ex){
+                } catch (Exception ex) {
                     SuperiorSkyblockPlugin.log("&cCouldn't load chunk!");
                     continue;
                 }
@@ -416,8 +402,8 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
 
                 int worldBuildLimit = Bukkit.getWorld(chunkSnapshot.getWorldName()).getMaxHeight();
 
-                for(int x = 0; x < 16; x++){
-                    for(int z = 0; z < 16; z++){
+                for (int x = 0; x < 16; x++) {
+                    for (int z = 0; z < 16; z++) {
                         int y = Math.min(chunkSnapshot.getHighestBlockYAt(x, z), worldBuildLimit);
                         Key blockKey = plugin.getNMSAdapter().getBlockKey(chunkSnapshot, x, y, z),
                                 belowKey = plugin.getNMSAdapter().getBlockKey(chunkSnapshot, x, y == 0 ? 0 : y - 1, z);
@@ -427,11 +413,11 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
                         try {
                             blockType = Material.valueOf(blockKey.getGlobalKey());
                             belowType = Material.valueOf(belowKey.getGlobalKey());
-                        }catch(IllegalArgumentException ex){
+                        } catch (IllegalArgumentException ex) {
                             continue;
                         }
 
-                        if(blockType.isSolid() || belowType.isSolid()){
+                        if (blockType.isSolid() || belowType.isSolid()) {
                             return new Location(Bukkit.getWorld(chunkSnapshot.getWorldName()),
                                     chunkSnapshot.getX() * 16 + x, y, chunkSnapshot.getZ() * 16 + z);
                         }
@@ -441,14 +427,13 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
 
             return null;
         }).runSync(location -> {
-            if(location != null){
+            if (location != null) {
                 island.setTeleportLocation(location);
                 SuperiorSkyblockPlugin.debug("Action: Teleport Player, Player: " + getName() + ", Location: " + LocationUtils.getLocation(location));
                 teleport(location.add(0.5, 0.5, 0.5));
-                if(result != null)
+                if (result != null)
                     result.accept(true);
-            }
-            else if(result != null){
+            } else if (result != null) {
                 result.accept(false);
             }
         });
@@ -469,18 +454,18 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
     }
 
     @Override
+    public void setTeamLeader(UUID teamLeader) {
+        setIslandLeader(plugin.getPlayers().getSuperiorPlayer(teamLeader));
+    }
+
+    @Override
     public SuperiorPlayer getIslandLeader() {
-        if(islandLeaderFromCache != null){
+        if (islandLeaderFromCache != null) {
             islandLeader = plugin.getPlayers().getSuperiorPlayer(islandLeaderFromCache);
             islandLeaderFromCache = null;
         }
 
         return islandLeader;
-    }
-
-    @Override
-    public void setTeamLeader(UUID teamLeader) {
-        setIslandLeader(plugin.getPlayers().getSuperiorPlayer(teamLeader));
     }
 
     @Override
@@ -491,7 +476,7 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
     }
 
     @Override
-    public Island getIsland(){
+    public Island getIsland() {
         return plugin.getGrid().getIsland(this);
     }
 
@@ -501,7 +486,7 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
             return SPlayerRole.guestRole();
         }
 
-        if(playerRole == null)
+        if (playerRole == null)
             setPlayerRole(SPlayerRole.guestRole());
 
         return playerRole;
@@ -520,15 +505,15 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
     }
 
     @Override
-    public boolean hasDisbands() {
-        return disbands > 0;
-    }
-
-    @Override
     public void setDisbands(int disbands) {
         SuperiorSkyblockPlugin.debug("Action: Set Disbands, Player: " + getName() + ", Amount: " + disbands);
         this.disbands = Math.max(disbands, 0);
         playerDataHandler.saveDisbands();
+    }
+
+    @Override
+    public boolean hasDisbands() {
+        return disbands > 0;
     }
 
     /*
@@ -537,7 +522,7 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
 
     @Override
     public java.util.Locale getUserLocale() {
-        if(userLocale == null)
+        if (userLocale == null)
             userLocale = LocaleUtils.getDefault();
         return userLocale;
     }
@@ -606,14 +591,14 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
 
     @Override
     public boolean hasBypassModeEnabled() {
-        if(bypassModeEnabled && isOnline() && !asPlayer().hasPermission("superior.admin.bypass"))
+        if (bypassModeEnabled && isOnline() && !asPlayer().hasPermission("superior.admin.bypass"))
             bypassModeEnabled = false;
 
         return bypassModeEnabled;
     }
 
     @Override
-    public void toggleBypassMode(){
+    public void toggleBypassMode() {
         bypassModeEnabled = !bypassModeEnabled;
         SuperiorSkyblockPlugin.debug("Action: Toggle Bypass, Player: " + getName() + ", Bypass: " + bypassModeEnabled);
     }
@@ -631,12 +616,12 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
     }
 
     @Override
-    public boolean hasIslandFlyEnabled(){
+    public boolean hasIslandFlyEnabled() {
         Player player = asPlayer();
 
-        if(islandFly && player != null && !player.hasPermission("superior.island.fly")) {
+        if (islandFly && player != null && !player.hasPermission("superior.island.fly")) {
             islandFly = false;
-            if(player.isFlying()){
+            if (player.isFlying()) {
                 player.setFlying(false);
                 player.setAllowFlight(false);
             }
@@ -646,7 +631,7 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
     }
 
     @Override
-    public void toggleIslandFly(){
+    public void toggleIslandFly() {
         islandFly = !islandFly;
         SuperiorSkyblockPlugin.debug("Action: Toggle Fly, Player: " + getName() + ", Fly: " + islandFly);
         playerDataHandler.saveIslandFly();
@@ -716,10 +701,9 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
     public void resetMission(Mission<?> mission) {
         SuperiorSkyblockPlugin.debug("Action: Reset Mission, Player: " + getName() + ", Mission: " + mission.getName());
 
-        if(completedMissions.get(mission, 0) > 0) {
+        if (completedMissions.get(mission, 0) > 0) {
             completedMissions.add(mission, completedMissions.get(mission) - 1);
-        }
-        else {
+        } else {
             completedMissions.remove(mission);
         }
 
@@ -750,7 +734,7 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
     }
 
     @Override
-    public Map<Mission<?>, Integer> getCompletedMissionsWithAmounts(){
+    public Map<Mission<?>, Integer> getCompletedMissionsWithAmounts() {
         return Collections.unmodifiableMap(completedMissions.toMap());
     }
 
@@ -759,7 +743,7 @@ public final class SSuperiorPlayer implements SuperiorPlayer {
      */
 
     @Override
-    public void merge(SuperiorPlayer other){
+    public void merge(SuperiorPlayer other) {
         this.name = other.getName();
         this.playerRole = other.getPlayerRole();
         this.userLocale = other.getUserLocale();

@@ -15,18 +15,18 @@ public final class TutorialCommand extends BukkitCommand {
 
     private final SuperiorSkyblockPlugin plugin;
 
-    public TutorialCommand(SuperiorSkyblockPlugin plugin){
+    public TutorialCommand(SuperiorSkyblockPlugin plugin) {
         super("sbt");
         this.plugin = plugin;
     }
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
-        if(args.length != 1 || !(sender instanceof Player)){
+        if (args.length != 1 || !(sender instanceof Player)) {
             return false;
         }
 
-        if(args[0].equalsIgnoreCase("confirm")){
+        if (args[0].equalsIgnoreCase("confirm")) {
             //noinspection ResultOfMethodCallIgnored
             plugin.getDataFolder().mkdirs();
             Bukkit.shutdown();
@@ -35,15 +35,15 @@ public final class TutorialCommand extends BukkitCommand {
 
         int stageNumber;
 
-        try{
+        try {
             stageNumber = Integer.parseInt(args[0]);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return false;
         }
 
         BaseComponent stageMessage;
 
-        switch (stageNumber){
+        switch (stageNumber) {
             case 1:
                 stageMessage = handleStage1();
                 break;
@@ -74,7 +74,7 @@ public final class TutorialCommand extends BukkitCommand {
         return false;
     }
 
-    private BaseComponent handleStage1(){
+    private BaseComponent handleStage1() {
         return new CompoundBuilder().addText("&8&m----------------------------------------------------\n&f" +
                 "  &9&lSuperiorSkyblock2\n\n&f" +
                 " SuperiorSkyblock2 is a new, modern and optimized Skyblock core. It's packed with all the features you " +
@@ -92,7 +92,7 @@ public final class TutorialCommand extends BukkitCommand {
                 .addText("&8&m----------------------").build();
     }
 
-    private BaseComponent handleStage2(){
+    private BaseComponent handleStage2() {
         return new CompoundBuilder().addText("&8&m----------------------------------------------------\n&f" +
                 "  &9&lSchematics\n\n&f" +
                 " Similar to WorldEdit, the plugin contains a built-in schematics plugin for your islands. " +
@@ -112,7 +112,7 @@ public final class TutorialCommand extends BukkitCommand {
                 .addText("&8&m----------------------").build();
     }
 
-    private BaseComponent handleStage3(){
+    private BaseComponent handleStage3() {
         return new CompoundBuilder().addText("&8&m----------------------------------------------------\n&f" +
                 "  &9&lWorth and levelling system\n\n&f" +
                 " The core contains a fast and reliable system to calculate the worth of blocks on your island. " +
@@ -131,7 +131,7 @@ public final class TutorialCommand extends BukkitCommand {
                 .addText("&8&m----------------------").build();
     }
 
-    private BaseComponent handleStage4(){
+    private BaseComponent handleStage4() {
         return new CompoundBuilder().addText("&8&m----------------------------------------------------\n&f" +
                 "  &9&lNether and end worlds\n\n&f" +
                 " You can enable two additional worlds for your players: nether and end worlds. Similar to vanilla, " +
@@ -149,7 +149,7 @@ public final class TutorialCommand extends BukkitCommand {
                 .addText("&8&m----------------------").build();
     }
 
-    private BaseComponent handleStage5(){
+    private BaseComponent handleStage5() {
         return new CompoundBuilder().addText("&8&m----------------------------------------------------\n&f" +
                 "  &9&lIsland permissions and settings\n\n&f" +
                 " The core is packed with a permissions system for players and roles. Island leaders and admins can " +
@@ -170,7 +170,7 @@ public final class TutorialCommand extends BukkitCommand {
                 .addText("&8&m----------------------").build();
     }
 
-    private BaseComponent handleStage6(){
+    private BaseComponent handleStage6() {
         return new CompoundBuilder().addText("&8&m----------------------------------------------------\n&f" +
                 "  &9&lAdmin tools\n\n&f" +
                 " As an admin, you get access to many powerful commands to help you with controlling islands on " +
@@ -191,7 +191,7 @@ public final class TutorialCommand extends BukkitCommand {
                 .addText("&8&m----------------------").build();
     }
 
-    private BaseComponent handleStage7(){
+    private BaseComponent handleStage7() {
         return new CompoundBuilder().addText("&8&m----------------------------------------------------\n&f" +
                 "               Thanks for using &9SuperiorSkyblock2&f!\n\n")
                 .addText("&9  " + BULLET + " ")

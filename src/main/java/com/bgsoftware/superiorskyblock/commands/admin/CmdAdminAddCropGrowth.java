@@ -63,16 +63,16 @@ public final class CmdAdminAddCropGrowth implements IAdminIslandCommand {
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, SuperiorPlayer targetPlayer, List<Island> islands, String[] args) {
         Pair<Double, Boolean> arguments = CommandArguments.getMultiplier(sender, args[3]);
 
-        if(!arguments.getValue())
+        if (!arguments.getValue())
             return;
 
         double multiplier = arguments.getKey();
 
         Executor.data(() -> islands.forEach(island -> island.setCropGrowthMultiplier(island.getCropGrowthMultiplier() + multiplier)));
 
-        if(islands.size() > 1)
+        if (islands.size() > 1)
             Locale.CHANGED_CROP_GROWTH_ALL.send(sender);
-        else if(targetPlayer == null)
+        else if (targetPlayer == null)
             Locale.CHANGED_CROP_GROWTH_NAME.send(sender, islands.get(0).getName());
         else
             Locale.CHANGED_CROP_GROWTH.send(sender, targetPlayer.getName());

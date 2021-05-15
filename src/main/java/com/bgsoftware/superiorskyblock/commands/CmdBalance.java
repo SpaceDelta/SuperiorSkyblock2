@@ -59,15 +59,15 @@ public final class CmdBalance implements ISuperiorCommand {
 
         Island island = arguments.getKey();
 
-        if(island == null)
+        if (island == null)
             return;
 
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(sender);
         SuperiorPlayer targetPlayer = arguments.getValue();
 
-        if(island == superiorPlayer.getIsland())
+        if (island == superiorPlayer.getIsland())
             Locale.ISLAND_BANK_SHOW.send(sender, island.getIslandBank().getBalance());
-        else if(targetPlayer == null)
+        else if (targetPlayer == null)
             Locale.ISLAND_BANK_SHOW_OTHER_NAME.send(sender, island.getName(), island.getIslandBank().getBalance());
         else
             Locale.ISLAND_BANK_SHOW_OTHER.send(sender, targetPlayer.getName(), island.getIslandBank().getBalance());

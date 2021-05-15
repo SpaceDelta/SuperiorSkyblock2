@@ -21,12 +21,12 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
 
     private BukkitTask teleportTask = null;
 
-    public SPlayerDataHandler(SuperiorPlayer superiorPlayer){
+    public SPlayerDataHandler(SuperiorPlayer superiorPlayer) {
         this.superiorPlayer = superiorPlayer;
     }
 
     @Override
-    public void saveTextureValue(){
+    public void saveTextureValue() {
         if (SuperiorSkyblockPlugin.isClient) {
             return;
         }
@@ -38,7 +38,7 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
     }
 
     @Override
-    public void savePlayerName(){
+    public void savePlayerName() {
         if (SuperiorSkyblockPlugin.isClient) {
             return;
         }
@@ -50,7 +50,7 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
     }
 
     @Override
-    public void saveUserLocale(){
+    public void saveUserLocale() {
         if (SuperiorSkyblockPlugin.isClient) {
             return;
         }
@@ -230,41 +230,41 @@ public final class SPlayerDataHandler extends DatabaseObject implements PlayerDa
                 .execute(async);
     }
 
-    public void setImmunedToPvP(boolean immunedToPvP){
-        SuperiorSkyblockPlugin.debug("Action: Set PvP Immune, Player: " + superiorPlayer.getName() + ", Immune: " + immunedToPvP);
-        this.immuneToPvP = immunedToPvP;
-    }
-
-    public boolean isImmunedToPvP(){
+    public boolean isImmunedToPvP() {
         return immuneToPvP;
     }
 
-    public void setLeavingFlag(boolean leavingFlag){
-        SuperiorSkyblockPlugin.debug("Action: Set Leaving Flag, Player: " + superiorPlayer.getName() + ", Flag: " + leavingFlag);
-        this.leavingFlag = leavingFlag;
+    public void setImmunedToPvP(boolean immunedToPvP) {
+        SuperiorSkyblockPlugin.debug("Action: Set PvP Immune, Player: " + superiorPlayer.getName() + ", Immune: " + immunedToPvP);
+        this.immuneToPvP = immunedToPvP;
     }
 
     public boolean isLeavingFlag() {
         return leavingFlag;
     }
 
-    public void setTeleportTask(BukkitTask teleportTask){
-        if(this.teleportTask != null)
+    public void setLeavingFlag(boolean leavingFlag) {
+        SuperiorSkyblockPlugin.debug("Action: Set Leaving Flag, Player: " + superiorPlayer.getName() + ", Flag: " + leavingFlag);
+        this.leavingFlag = leavingFlag;
+    }
+
+    public BukkitTask getTeleportTask() {
+        return teleportTask;
+    }
+
+    public void setTeleportTask(BukkitTask teleportTask) {
+        if (this.teleportTask != null)
             this.teleportTask.cancel();
         this.teleportTask = teleportTask;
     }
 
-    public BukkitTask getTeleportTask(){
-        return teleportTask;
+    public boolean isImmunedToTeleport() {
+        return immuneToTeleport;
     }
 
-    public void setImmunedToTeleport(boolean immuneToTeleport){
+    public void setImmunedToTeleport(boolean immuneToTeleport) {
         this.immuneToTeleport = immuneToTeleport;
         SuperiorSkyblockPlugin.debug("Action: Set Teleport Immune, Player: " + superiorPlayer.getName() + ", Immune: " + immuneToTeleport);
-    }
-
-    public boolean isImmunedToTeleport(){
-        return immuneToTeleport;
     }
 
 }

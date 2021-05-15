@@ -17,41 +17,24 @@ public final class MenuMissions extends SuperiorMenu {
 
     private static List<Integer> playerSlot, islandSlot;
 
-    private MenuMissions(SuperiorPlayer superiorPlayer){
+    private MenuMissions(SuperiorPlayer superiorPlayer) {
         super("menuMissions", superiorPlayer);
     }
 
-    @Override
-    public void onPlayerClick(InventoryClickEvent e) {
-        if(playerSlot.contains(e.getRawSlot())){
-            previousMove = false;
-            MenuPlayerMissions.openInventory(superiorPlayer, this);
-        }
-        else if(islandSlot.contains(e.getRawSlot())){
-            previousMove = false;
-            MenuIslandMissions.openInventory(superiorPlayer, this);
-        }
-    }
-
-    @Override
-    protected void cloneAndOpen(SuperiorMenu previousMenu) {
-        openInventory(superiorPlayer, previousMenu);
-    }
-
-    public static void init(){
+    public static void init() {
         MenuMissions menuMissions = new MenuMissions(null);
 
         File file = new File(plugin.getDataFolder(), "menus/missions.yml");
 
-        if(!file.exists())
+        if (!file.exists())
             FileUtils.saveResource("menus/missions.yml");
 
         CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
 
-        if(convertOldGUI(cfg)){
+        if (convertOldGUI(cfg)) {
             try {
                 cfg.save(file);
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
@@ -66,14 +49,14 @@ public final class MenuMissions extends SuperiorMenu {
         menuMissions.markCompleted();
     }
 
-    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu){
+    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu) {
         new MenuMissions(superiorPlayer).open(previousMenu);
     }
 
-    private static boolean convertOldGUI(YamlConfiguration newMenu){
+    private static boolean convertOldGUI(YamlConfiguration newMenu) {
         File oldFile = new File(plugin.getDataFolder(), "guis/missions-gui.yml");
 
-        if(!oldFile.exists())
+        if (!oldFile.exists())
             return false;
 
         //We want to reset the items of newMenu.
@@ -92,7 +75,7 @@ public final class MenuMissions extends SuperiorMenu {
 
         int charCounter = 0;
 
-        if(cfg.contains("main-panel.fill-items")) {
+        if (cfg.contains("main-panel.fill-items")) {
             charCounter = MenuConverter.convertFillItems(cfg.getConfigurationSection("main-panel.fill-items"),
                     charCounter, patternChars, itemsSection, commandsSection, soundsSection);
         }
@@ -110,6 +93,22 @@ public final class MenuMissions extends SuperiorMenu {
         newMenu.set("pattern", MenuConverter.buildPattern(size, patternChars, itemChars[charCounter]));
 
         return true;
+    }
+
+    @Override
+    public void onPlayerClick(InventoryClickEvent e) {
+        if (playerSlot.contains(e.getRawSlot())) {
+            previousMove = false;
+            MenuPlayerMissions.openInventory(superiorPlayer, this);
+        } else if (islandSlot.contains(e.getRawSlot())) {
+            previousMove = false;
+            MenuIslandMissions.openInventory(superiorPlayer, this);
+        }
+    }
+
+    @Override
+    protected void cloneAndOpen(SuperiorMenu previousMenu) {
+        openInventory(superiorPlayer, previousMenu);
     }
 
 }

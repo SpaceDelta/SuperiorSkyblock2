@@ -63,10 +63,36 @@ public final class IntArrayTag extends Tag<int[]> {
         super(value, CLASS, int[].class);
     }
 
+    public static IntArrayTag fromNBT(Object tag) {
+        Preconditions.checkArgument(tag.getClass().equals(CLASS), "Cannot convert " + tag.getClass() + " to IntArrayTag!");
+
+        try {
+            int[] value = plugin.getNMSTags().getNBTIntArrayValue(tag);
+            return new IntArrayTag(value);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public static IntArrayTag fromUUID(UUID uuid) {
+        long MSB = uuid.getMostSignificantBits(), LSB = uuid.getLeastSignificantBits();
+        return new IntArrayTag(new int[]{(int) (MSB >> 32), (int) MSB, (int) (LSB >> 32), (int) LSB});
+    }
+
+    public static IntArrayTag fromStream(DataInputStream is) throws IOException {
+        int length = is.readInt();
+        int[] data = new int[length];
+        for (int i = 0; i < length; i++) {
+            data[i] = is.readInt();
+        }
+        return new IntArrayTag(data);
+    }
+
     @Override
     protected void writeData(DataOutputStream os) throws IOException {
         os.writeInt(value.length);
-        for(int i : value)
+        for (int i : value)
             os.writeInt(i);
     }
 
@@ -112,32 +138,6 @@ public final class IntArrayTag extends Tag<int[]> {
             return false;
         }
         return true;
-    }
-
-    public static IntArrayTag fromNBT(Object tag){
-        Preconditions.checkArgument(tag.getClass().equals(CLASS), "Cannot convert " + tag.getClass() + " to IntArrayTag!");
-
-        try {
-            int[] value = plugin.getNMSTags().getNBTIntArrayValue(tag);
-            return new IntArrayTag(value);
-        }catch(Exception ex){
-            ex.printStackTrace();
-            return null;
-        }
-    }
-
-    public static IntArrayTag fromUUID(UUID uuid){
-        long MSB = uuid.getMostSignificantBits(), LSB = uuid.getLeastSignificantBits();
-        return new IntArrayTag(new int[]{(int)(MSB >> 32), (int)MSB, (int)(LSB >> 32), (int)LSB});
-    }
-
-    public static IntArrayTag fromStream(DataInputStream is) throws IOException{
-        int length = is.readInt();
-        int[] data = new int[length];
-        for (int i = 0; i < length; i++) {
-            data[i] = is.readInt();
-        }
-        return new IntArrayTag(data);
     }
 
 }

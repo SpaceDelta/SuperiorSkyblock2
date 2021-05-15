@@ -1,5 +1,6 @@
 package com.bgsoftware.superiorskyblock.commands;
 
+import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.island.bank.BankTransaction;
@@ -7,8 +8,6 @@ import com.bgsoftware.superiorskyblock.api.objects.Pair;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
-import com.bgsoftware.superiorskyblock.Locale;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.math.BigDecimal;
@@ -63,27 +62,26 @@ public final class CmdWithdraw implements ISuperiorCommand {
 
         Island island = arguments.getKey();
 
-        if(island == null)
+        if (island == null)
             return;
 
         SuperiorPlayer superiorPlayer = arguments.getValue();
 
         BigDecimal amount = BigDecimal.valueOf(-1);
 
-        if(args[1].equalsIgnoreCase("all") || args[1].equals("*")){
+        if (args[1].equalsIgnoreCase("all") || args[1].equals("*")) {
             amount = island.getIslandBank().getBalance();
-        }
-
-        else try{
+        } else try {
             amount = new BigDecimal(args[1]);
-        }catch(IllegalArgumentException ignored){}
+        } catch (IllegalArgumentException ignored) {
+        }
 
         BankTransaction transaction = island.getIslandBank().withdrawMoney(superiorPlayer, amount, null);
 
         String failureReason = transaction.getFailureReason();
 
-        if(!failureReason.isEmpty()){
-            switch (failureReason){
+        if (!failureReason.isEmpty()) {
+            switch (failureReason) {
                 case "No permission":
                     Locale.NO_WITHDRAW_PERMISSION.send(superiorPlayer, island.getRequiredPlayerRole(IslandPrivileges.WITHDRAW_MONEY));
                     break;

@@ -25,13 +25,13 @@ public interface NMSBlocks {
 
     void setBlock(Location location, Material material, byte data);
 
-    default CompoundTag readBlockStates(Location location){
+    default CompoundTag readBlockStates(Location location) {
         return null;
     }
 
     byte[] getLightLevels(Location location);
 
-    default void refreshLights(World bukkitWorld, List<BlockData> blockData){
+    default void refreshLights(World bukkitWorld, List<BlockData> blockData) {
 
     }
 
@@ -43,11 +43,11 @@ public interface NMSBlocks {
 
     int getCombinedId(Location location);
 
-    default int getCombinedId(Material material, byte data){
+    default int getCombinedId(Material material, byte data) {
         return 0;
     }
 
-    default int compareMaterials(Material o1, Material o2){
+    default int compareMaterials(Material o1, Material o2) {
         return Integer.compare(o1.ordinal(), o2.ordinal());
     }
 
@@ -72,13 +72,13 @@ public interface NMSBlocks {
         return (byte) (combinedId >> 12 & 15);
     }
 
-    default Key getMinecartBlock(Minecart minecart){
+    default Key getMinecartBlock(Minecart minecart) {
         MaterialData materialData = minecart.getDisplayBlock();
         //noinspection deprecation
         return Key.of(materialData.getItemType(), materialData.getData());
     }
 
-    default boolean isWaterLogged(Block block){
+    default boolean isWaterLogged(Block block) {
         return block.getType().name().contains("WATER");
     }
 

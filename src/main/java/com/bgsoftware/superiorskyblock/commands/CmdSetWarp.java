@@ -1,5 +1,6 @@
 package com.bgsoftware.superiorskyblock.commands;
 
+import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.island.IslandPrivilege;
@@ -8,8 +9,6 @@ import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
 import com.bgsoftware.superiorskyblock.wrappers.SBlockPosition;
-import com.bgsoftware.superiorskyblock.Locale;
-import org.bukkit.ChatColor;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +32,7 @@ public final class CmdSetWarp implements IPermissibleCommand {
         StringBuilder usage = new StringBuilder("setwarp <")
                 .append(Locale.COMMAND_ARGUMENT_WARP_NAME.getMessage(locale)).append(">");
 
-        if(plugin.getSettings().warpCategories)
+        if (plugin.getSettings().warpCategories)
             usage.append(" [").append(Locale.COMMAND_ARGUMENT_WARP_CATEGORY.getMessage(locale)).append("]");
 
         return usage.toString();
@@ -75,19 +74,19 @@ public final class CmdSetWarp implements IPermissibleCommand {
             superiorPlayer.asPlayer().sendMessage(SuperiorSkyblockPlugin.WRONG_SERVER);
             return;
         }
-        if(island.getIslandWarps().size() >= island.getWarpsLimit()) {
+        if (island.getIslandWarps().size() >= island.getWarpsLimit()) {
             Locale.NO_MORE_WARPS.send(superiorPlayer);
             return;
         }
 
         String warpName = IslandUtils.getWarpName(args[1]);
 
-        if(island.getWarp(warpName) != null){
+        if (island.getWarp(warpName) != null) {
             Locale.WARP_ALREADY_EXIST.send(superiorPlayer);
             return;
         }
 
-        if(!island.isInsideRange(superiorPlayer.getLocation())){
+        if (!island.isInsideRange(superiorPlayer.getLocation())) {
             Locale.SET_WARP_OUTSIDE.send(superiorPlayer);
             return;
         }

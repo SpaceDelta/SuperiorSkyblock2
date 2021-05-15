@@ -1,16 +1,14 @@
 package com.bgsoftware.superiorskyblock.commands;
 
+import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.island.IslandPrivilege;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.menu.MenuConfirmKick;
-import com.bgsoftware.superiorskyblock.sync.MessageType;
-import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
-import com.bgsoftware.superiorskyblock.Locale;
 import net.spacedelta.lib.data.DataBuffer;
 
 import java.util.ArrayList;
@@ -19,6 +17,23 @@ import java.util.List;
 import java.util.UUID;
 
 public final class CmdKick implements IPermissibleCommand {
+
+    public static void executeKick(SuperiorSkyblockPlugin plugin, UUID uuid, Island island, String name) {
+        SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(uuid);
+        SuperiorPlayer targetPlayer = plugin.getPlayers().getSuperiorPlayer(name);
+
+        if (targetPlayer == null)
+            return;
+
+        if (!IslandUtils.checkKickRestrictions(superiorPlayer, island, targetPlayer))
+            return;
+
+        if (plugin.getSettings().kickConfirm) {
+            MenuConfirmKick.openInventory(superiorPlayer, null, targetPlayer);
+        } else {
+            IslandUtils.handleKickPlayer(superiorPlayer, island, targetPlayer);
+        }
+    }
 
     @Override
     public List<String> getAliases() {
@@ -95,24 +110,6 @@ public final class CmdKick implements IPermissibleCommand {
         }
 
          */
-    }
-
-    public static void executeKick(SuperiorSkyblockPlugin plugin, UUID uuid, Island island, String name) {
-        SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(uuid);
-        SuperiorPlayer targetPlayer = plugin.getPlayers().getSuperiorPlayer(name);
-
-        if(targetPlayer == null)
-            return;
-
-        if(!IslandUtils.checkKickRestrictions(superiorPlayer, island, targetPlayer))
-            return;
-
-        if(plugin.getSettings().kickConfirm) {
-            MenuConfirmKick.openInventory(superiorPlayer, null, targetPlayer);
-        }
-        else {
-            IslandUtils.handleKickPlayer(superiorPlayer, island, targetPlayer);
-        }
     }
 
     @Override

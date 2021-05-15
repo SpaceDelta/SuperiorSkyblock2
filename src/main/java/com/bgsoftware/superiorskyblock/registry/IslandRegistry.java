@@ -17,29 +17,29 @@ public final class IslandRegistry extends SortedRegistry<UUID, Island, SortingTy
     private final Registry<IslandPosition, Island> islandsByPositions = createRegistry();
     private final Registry<UUID, Island> islandsByUUID = createRegistry();
 
-    public IslandRegistry(){
+    public IslandRegistry() {
         SortingType.values().forEach(sortingType -> registerSortingType(sortingType, false, ISLANDS_PREDICATE));
     }
 
-    public Island get(Location location){
+    public Island get(Location location) {
         Island island = islandsByPositions.get(IslandPosition.of(location));
         return island == null || !island.isInside(location) ? null : island;
     }
 
-    public Island getByUUID(UUID uuid){
+    public Island getByUUID(UUID uuid) {
         return islandsByUUID.get(uuid);
     }
 
-    public Island add(UUID uuid, Island island){
+    public Island add(UUID uuid, Island island) {
         islandsByPositions.add(IslandPosition.of(island), island);
         islandsByUUID.add(island.getUniqueId(), island);
         return super.add(uuid, island);
     }
 
     @Override
-    public Island remove(UUID uuid){
+    public Island remove(UUID uuid) {
         Island island = super.remove(uuid);
-        if(island != null) {
+        if (island != null) {
             islandsByPositions.remove(IslandPosition.of(island));
             islandsByUUID.remove(island.getUniqueId());
         }
@@ -54,7 +54,7 @@ public final class IslandRegistry extends SortedRegistry<UUID, Island, SortingTy
         super.registerSortingType(sortingType, sort, ISLANDS_PREDICATE);
     }
 
-    public void transferIsland(UUID oldOwner, UUID newOwner){
+    public void transferIsland(UUID oldOwner, UUID newOwner) {
         Island island = get(oldOwner);
         remove(oldOwner);
         add(newOwner, island);

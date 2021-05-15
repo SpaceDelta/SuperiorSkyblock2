@@ -33,7 +33,7 @@ public final class FactoriesHandler implements FactoriesManager {
         return islandsFactory == null ? island : islandsFactory.createIsland(island);
     }
 
-    public Island createIsland(SuperiorPlayer superiorPlayer, UUID uuid, Location location, String islandName, String schemName){
+    public Island createIsland(SuperiorPlayer superiorPlayer, UUID uuid, Location location, String islandName, String schemName) {
         SIsland island = new SIsland(superiorPlayer, uuid, location, islandName, schemName);
         return islandsFactory == null ? island : islandsFactory.createIsland(island);
     }

@@ -5,11 +5,11 @@ import java.util.PriorityQueue;
 
 public final class UniquePriorityQueue<E> extends PriorityQueue<E> {
 
-    public UniquePriorityQueue(){
+    public UniquePriorityQueue() {
 
     }
 
-    public UniquePriorityQueue(Comparator<E> comparator){
+    public UniquePriorityQueue(Comparator<E> comparator) {
         super(comparator);
     }
 

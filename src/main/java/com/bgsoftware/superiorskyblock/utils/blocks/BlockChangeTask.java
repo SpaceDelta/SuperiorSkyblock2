@@ -12,12 +12,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.bukkit.Location;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class BlockChangeTask {
 
@@ -29,17 +24,17 @@ public final class BlockChangeTask {
 
     private boolean submitted = false;
 
-    public BlockChangeTask(Island island){
+    public BlockChangeTask(Island island) {
         this.island = island;
     }
 
-    public void setBlock(Location location, int combinedId, byte skyLightLevel, byte blockLightLevel, CompoundTag statesTag, CompoundTag tileEntity){
+    public void setBlock(Location location, int combinedId, byte skyLightLevel, byte blockLightLevel, CompoundTag statesTag, CompoundTag tileEntity) {
         Preconditions.checkArgument(!submitted, "This MultiBlockChange was already submitted.");
         blocksCache.computeIfAbsent(ChunkPosition.of(location), pairs -> new ArrayList<>())
                 .add(new BlockData(location, combinedId, skyLightLevel, blockLightLevel, statesTag, tileEntity));
     }
 
-    public void submitUpdate(Runnable onFinish){
+    public void submitUpdate(Runnable onFinish) {
         try {
             Preconditions.checkArgument(!submitted, "This MultiBlockChange was already submitted.");
 
@@ -56,7 +51,7 @@ public final class BlockChangeTask {
 
                     IslandUtils.deleteChunk(island, entry.getKey(), null);
 
-                    if(island.isInsideRange(chunk))
+                    if (island.isInsideRange(chunk))
                         plugin.getNMSBlocks().startTickingChunk(island, chunk, false);
 
                     ChunksTracker.markDirty(island, chunk, false);
@@ -65,23 +60,23 @@ public final class BlockChangeTask {
 
                     plugin.getNMSBlocks().setBlocks(chunk, entry.getValue());
 
-                    if(island.getOwner().isOnline())
+                    if (island.getOwner().isOnline())
                         entry.getValue().forEach(blockData -> blockData.doPostPlace(island));
 
                     plugin.getNMSBlocks().refreshChunk(chunk);
 
-                    if(entryIndex == size && onFinish != null) {
+                    if (entryIndex == size && onFinish != null) {
                         onFinish.run();
                         Executor.sync(() -> plugin.getNMSBlocks().refreshLights(chunk.getWorld(), interactedBlocks), 10L);
                     }
                 });
             }
-        }finally {
+        } finally {
             blocksCache.clear();
         }
     }
 
-    public Set<ChunkPosition> getLoadedChunks(){
+    public Set<ChunkPosition> getLoadedChunks() {
         return Collections.unmodifiableSet(interactedChunks);
     }
 

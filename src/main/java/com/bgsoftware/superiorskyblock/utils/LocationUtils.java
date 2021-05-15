@@ -4,7 +4,6 @@ import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.utils.chunks.ChunksTracker;
 import com.bgsoftware.superiorskyblock.utils.locations.SmartLocation;
-import org.bukkit.Bukkit;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -12,16 +11,16 @@ import org.bukkit.block.BlockFace;
 
 public final class LocationUtils {
 
-    private LocationUtils(){
+    private LocationUtils() {
 
     }
 
-    public static boolean isSameBlock(Location loc1, Location loc2){
+    public static boolean isSameBlock(Location loc1, Location loc2) {
         return loc1.getWorld().getName().equals(loc2.getWorld().getName()) && loc1.getBlockX() == loc2.getBlockX() &&
                 loc1.getBlockY() == loc2.getBlockY() && loc1.getBlockZ() == loc2.getBlockZ();
     }
 
-    public static SmartLocation getLocation(String location){
+    public static SmartLocation getLocation(String location) {
         try {
             if (location == null || location.isEmpty())
                 return null;
@@ -35,25 +34,25 @@ public final class LocationUtils {
             float pitch = sections.length > 4 ? Float.parseFloat(sections[5]) : 0;
 
             return new SmartLocation(sections[0], x, y, z, yaw, pitch);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             SuperiorSkyblockPlugin.log("Error while parsing location: " + location);
             throw ex;
         }
     }
 
-    public static String getLocation(Location location){
+    public static String getLocation(Location location) {
         return location == null ? "" : location.getWorld().getName() + "," + location.getX() + "," + location.getY() + "," + location.getZ() + "," + location.getYaw() + "," + location.getPitch();
     }
 
-    public static boolean isSafeBlock(Block block){
+    public static boolean isSafeBlock(Block block) {
         Block underBlock = block.getRelative(BlockFace.DOWN), upperBlock = block.getRelative(BlockFace.UP);
         return !upperBlock.getType().isOccluding() && !block.getType().isOccluding() &&
                 (underBlock.getType().isSolid() || underBlock.getRelative(BlockFace.DOWN).getType().isSolid());
     }
 
-    public static boolean isChunkEmpty(Island island, ChunkSnapshot chunkSnapshot){
-        for(int i = 0; i < 16; i++){
-            if(!chunkSnapshot.isSectionEmpty(i)){
+    public static boolean isChunkEmpty(Island island, ChunkSnapshot chunkSnapshot) {
+        for (int i = 0; i < 16; i++) {
+            if (!chunkSnapshot.isSectionEmpty(i)) {
                 return false;
             }
         }
@@ -63,11 +62,11 @@ public final class LocationUtils {
         return true;
     }
 
-    public static Location getRelative(Location location, BlockFace face){
+    public static Location getRelative(Location location, BlockFace face) {
         return location.clone().add(face.getModX(), face.getModY(), face.getModZ());
     }
 
-    public static Location getBlockLocation(Location location){
+    public static Location getBlockLocation(Location location) {
         return new Location(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 

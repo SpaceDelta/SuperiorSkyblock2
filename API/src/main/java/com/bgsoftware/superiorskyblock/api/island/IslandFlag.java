@@ -12,8 +12,41 @@ public final class IslandFlag {
 
     private String name;
 
-    private IslandFlag(String name){
+    private IslandFlag(String name) {
         this.name = name.toUpperCase();
+    }
+
+    /**
+     * Get all the island flags.
+     */
+    public static Collection<IslandFlag> values() {
+        return islandFlags.values();
+    }
+
+    /**
+     * Get an island flag by it's name.
+     *
+     * @param name The name to check.
+     */
+    public static IslandFlag getByName(String name) {
+        IslandFlag islandFlag = islandFlags.get(name.toUpperCase());
+
+        Preconditions.checkArgument(islandFlag != null, "Couldn't find an IslandFlag with the name " + name + ".");
+
+        return islandFlag;
+    }
+
+    /**
+     * Register a new island flag.
+     *
+     * @param name The name for the island flag.
+     */
+    public static void register(String name) {
+        name = name.toUpperCase();
+
+        Preconditions.checkState(!islandFlags.containsKey(name), "IslandFlag with the name " + name + " already exists.");
+
+        islandFlags.put(name, new IslandFlag(name));
     }
 
     /**
@@ -23,40 +56,9 @@ public final class IslandFlag {
         return name;
     }
 
-    /**
-     * Get all the island flags.
-     */
-    public static Collection<IslandFlag> values(){
-        return islandFlags.values();
-    }
-
-    /**
-     * Get an island flag by it's name.
-     * @param name The name to check.
-     */
-    public static IslandFlag getByName(String name){
-        IslandFlag islandFlag = islandFlags.get(name.toUpperCase());
-
-        Preconditions.checkArgument(islandFlag != null, "Couldn't find an IslandFlag with the name " + name + ".");
-
-        return islandFlag;
-    }
-
     @Override
     public String toString() {
         return "IslandFlag{name=" + name + "}";
-    }
-
-    /**
-     * Register a new island flag.
-     * @param name The name for the island flag.
-     */
-    public static void register(String name){
-        name = name.toUpperCase();
-
-        Preconditions.checkState(!islandFlags.containsKey(name), "IslandFlag with the name " + name + " already exists.");
-
-        islandFlags.put(name, new IslandFlag(name));
     }
 
 }

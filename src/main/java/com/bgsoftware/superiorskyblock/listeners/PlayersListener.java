@@ -8,6 +8,7 @@ import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.island.IslandPreview;
 import com.bgsoftware.superiorskyblock.api.schematic.Schematic;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
+import com.bgsoftware.superiorskyblock.commands.admin.CmdAdminChaosTime;
 import com.bgsoftware.superiorskyblock.island.data.SPlayerDataHandler;
 import com.bgsoftware.superiorskyblock.hooks.SkinsRestorerHook;
 import com.bgsoftware.superiorskyblock.schematics.BaseSchematic;
@@ -49,7 +50,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
-import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -448,7 +448,8 @@ public final class PlayersListener implements Listener {
         superiorPlayer.teleport(island, result -> {
             if(!result){
                 Locale.TELEPORTED_FAILED.send(superiorPlayer);
-                superiorPlayer.teleport(plugin.getGrid().getSpawnIsland());
+                // superiorPlayer.teleport(plugin.getGrid().getSpawnIsland());
+                superiorPlayer.teleport(Bukkit.getWorlds().get(0).getSpawnLocation()); // SpaceDelta
             }
             Executor.sync(() -> noFallDamage.remove(e.getPlayer().getUniqueId()), 20L);
         });

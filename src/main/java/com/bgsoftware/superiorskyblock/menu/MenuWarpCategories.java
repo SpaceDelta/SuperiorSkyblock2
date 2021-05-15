@@ -25,24 +25,68 @@ public final class MenuWarpCategories extends SuperiorMenu {
     private final Island island;
     private final boolean hasManagePerms;
 
-    private MenuWarpCategories(SuperiorPlayer superiorPlayer, Island island){
+    private MenuWarpCategories(SuperiorPlayer superiorPlayer, Island island) {
         super("menuWarpCategories", superiorPlayer);
         this.island = island;
         hasManagePerms = island != null && island.hasPermission(superiorPlayer, IslandPrivileges.SET_WARP);
     }
 
+    public static void init() {
+        MenuWarpCategories menuWarpCategories = new MenuWarpCategories(null, null);
+
+        File file = new File(plugin.getDataFolder(), "menus/warp-categories.yml");
+
+        if (!file.exists())
+            FileUtils.saveResource("menus/warp-categories.yml");
+
+        CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
+
+        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuWarpCategories, "warp-categories.yml", cfg);
+
+        charSlots.delete();
+
+        rowsSize = menuWarpCategories.getRowsSize();
+        editLore = cfg.getStringList("edit-lore");
+
+        menuWarpCategories.markCompleted();
+    }
+
+    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, Island island) {
+        MenuWarpCategories menuWarpCategories = new MenuWarpCategories(superiorPlayer, island);
+        if (hasOnlyOneItem(island)) {
+            MenuWarps.openInventory(superiorPlayer, previousMenu, getOnlyOneItem(island));
+        } else {
+            menuWarpCategories.open(previousMenu);
+        }
+    }
+
+    public static void refreshMenus(Island island) {
+        refreshMenus(MenuWarpCategories.class, superiorMenu -> superiorMenu.island.equals(island));
+    }
+
+    public static void destroyMenus(Island island) {
+        destroyMenus(MenuWarpCategories.class, superiorMenu -> superiorMenu.island.equals(island));
+    }
+
+    private static boolean hasOnlyOneItem(Island island) {
+        return island.getWarpCategories().size() <= 1;
+    }
+
+    private static WarpCategory getOnlyOneItem(Island island) {
+        return island.getWarpCategories().values().stream().findFirst().orElseGet(() -> island.createWarpCategory("Default Category"));
+    }
+
     @Override
     protected void onPlayerClick(InventoryClickEvent e) {
-        if(e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR)
+        if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR)
             return;
 
-        for(WarpCategory warpCategory : island.getWarpCategories().values()){
-            if(e.getRawSlot() == warpCategory.getSlot()){
-                if(e.getClick().name().contains("RIGHT") && hasManagePerms){
+        for (WarpCategory warpCategory : island.getWarpCategories().values()) {
+            if (e.getRawSlot() == warpCategory.getSlot()) {
+                if (e.getClick().name().contains("RIGHT") && hasManagePerms) {
                     previousMove = false;
                     MenuWarpCategoryManage.openInventory(superiorPlayer, this, warpCategory);
-                }
-                else {
+                } else {
                     previousMove = false;
                     MenuWarps.openInventory(superiorPlayer, this, warpCategory);
                 }
@@ -59,21 +103,20 @@ public final class MenuWarpCategories extends SuperiorMenu {
     protected Inventory buildInventory(Function<String, String> titleReplacer) {
         Inventory inventory = super.buildInventory(titleReplacer);
 
-        for(WarpCategory warpCategory : island.getWarpCategories().values()) {
+        for (WarpCategory warpCategory : island.getWarpCategories().values()) {
             boolean isMember = island.isMember(superiorPlayer);
             long accessAmount = warpCategory.getWarps().stream().filter(
                     islandWarp -> isMember || !islandWarp.hasPrivateFlag()
             ).count();
 
-            if(accessAmount == 0)
+            if (accessAmount == 0)
                 continue;
 
             ItemStack iconItem;
 
-            if(!hasManagePerms || editLore.isEmpty()){
+            if (!hasManagePerms || editLore.isEmpty()) {
                 iconItem = warpCategory.getIcon(island.getOwner());
-            }
-            else {
+            } else {
                 iconItem = new ItemBuilder(warpCategory.getIcon(null))
                         .appendLore(editLore)
                         .build(island.getOwner());
@@ -83,52 +126,6 @@ public final class MenuWarpCategories extends SuperiorMenu {
         }
 
         return inventory;
-    }
-
-    public static void init(){
-        MenuWarpCategories menuWarpCategories = new MenuWarpCategories(null, null);
-
-        File file = new File(plugin.getDataFolder(), "menus/warp-categories.yml");
-
-        if(!file.exists())
-            FileUtils.saveResource("menus/warp-categories.yml");
-
-        CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
-
-        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuWarpCategories, "warp-categories.yml", cfg);
-
-        charSlots.delete();
-
-        rowsSize = menuWarpCategories.getRowsSize();
-        editLore = cfg.getStringList("edit-lore");
-
-        menuWarpCategories.markCompleted();
-    }
-
-    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, Island island){
-        MenuWarpCategories menuWarpCategories = new MenuWarpCategories(superiorPlayer, island);
-        if(hasOnlyOneItem(island)){
-            MenuWarps.openInventory(superiorPlayer, previousMenu, getOnlyOneItem(island));
-        }
-        else {
-            menuWarpCategories.open(previousMenu);
-        }
-    }
-
-    public static void refreshMenus(Island island){
-        refreshMenus(MenuWarpCategories.class, superiorMenu -> superiorMenu.island.equals(island));
-    }
-
-    public static void destroyMenus(Island island){
-        destroyMenus(MenuWarpCategories.class, superiorMenu -> superiorMenu.island.equals(island));
-    }
-
-    private static boolean hasOnlyOneItem(Island island){
-        return island.getWarpCategories().size() <= 1;
-    }
-
-    private static WarpCategory getOnlyOneItem(Island island){
-        return island.getWarpCategories().values().stream().findFirst().orElseGet(() -> island.createWarpCategory("Default Category"));
     }
 
 }

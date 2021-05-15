@@ -25,23 +25,22 @@ public final class ChunksProvider {
 
     private static BukkitTask chunksLoaderId;
 
-    private ChunksProvider(){
+    private ChunksProvider() {
 
     }
 
-    public static CompletableFuture<Chunk> loadChunk(ChunkPosition chunkPosition, Consumer<Chunk> onLoadConsumer){
+    public static CompletableFuture<Chunk> loadChunk(ChunkPosition chunkPosition, Consumer<Chunk> onLoadConsumer) {
         Pair<CompletableFuture<Chunk>, Set<Consumer<Chunk>>> chunkInfo = chunksInfo.get(chunkPosition);
 
-        if(chunkInfo != null){
-            if(onLoadConsumer != null)
+        if (chunkInfo != null) {
+            if (onLoadConsumer != null)
                 chunkInfo.getValue().add(onLoadConsumer);
             return chunkInfo.getKey();
-        }
-        else {
+        } else {
             CompletableFuture<Chunk> completableFuture = new CompletableFuture<>();
             Set<Consumer<Chunk>> chunkConsumers = new HashSet<>();
 
-            if(onLoadConsumer != null)
+            if (onLoadConsumer != null)
                 chunkConsumers.add(onLoadConsumer);
 
             chunksInfo.put(chunkPosition, new Pair<>(completableFuture, chunkConsumers));
@@ -50,26 +49,26 @@ public final class ChunksProvider {
         }
     }
 
-    public static int getSize(){
+    public static int getSize() {
         return pendingChunks.size();
     }
 
-    public static void stop(){
-        if(chunksLoaderId != null)
+    public static void stop() {
+        if (chunksLoaderId != null)
             chunksLoaderId.cancel();
     }
 
-    public static void init(){
+    public static void init() {
         chunksLoaderId = runChunksLoader();
     }
 
-    private static BukkitTask runChunksLoader(){
+    private static BukkitTask runChunksLoader() {
         return Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-            for(int i = 0; i < plugin.getSettings().chunksPerTick; i++) {
+            for (int i = 0; i < plugin.getSettings().chunksPerTick; i++) {
                 double[] tps = plugin.getNMSAdapter().getTPS();
                 double averageTPS = (tps[0] + tps[1] + tps[2]) / 3;
 
-                if(tps[0] < averageTPS * 0.8)
+                if (tps[0] < averageTPS * 0.8)
                     return;
 
                 ChunkPosition chunkPosition = pendingChunks.poll();
@@ -82,9 +81,9 @@ public final class ChunksProvider {
         }, 1L, 1L);
     }
 
-    private static void finishLoad(ChunkPosition chunkPosition, Chunk chunk){
+    private static void finishLoad(ChunkPosition chunkPosition, Chunk chunk) {
         Pair<CompletableFuture<Chunk>, Set<Consumer<Chunk>>> chunkInfo = chunksInfo.remove(chunkPosition);
-        if(chunkInfo != null) {
+        if (chunkInfo != null) {
             chunkInfo.getValue().forEach(chunkConsumer -> chunkConsumer.accept(chunk));
             chunkInfo.getKey().complete(chunk);
         }

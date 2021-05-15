@@ -1,14 +1,13 @@
 package com.bgsoftware.superiorskyblock.commands;
 
+import com.bgsoftware.superiorskyblock.Locale;
+import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.island.SPlayerRole;
 import com.bgsoftware.superiorskyblock.sync.MessageType;
-import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
 import com.bgsoftware.superiorskyblock.utils.events.EventsCaller;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
-import com.bgsoftware.superiorskyblock.Locale;
-import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import net.spacedelta.lib.Library;
 import net.spacedelta.lib.data.DataBuffer;
 import net.spacedelta.lib.util.ConcurrentUtils;
@@ -22,6 +21,55 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class CmdAccept implements ISuperiorCommand {
+
+    public static void executeOnServer(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, String otherPlayer) {
+        SuperiorPlayer targetPlayer = plugin.getPlayers().getSuperiorPlayer(otherPlayer);
+        Island island;
+
+        if (targetPlayer == null) {
+            if ((island = plugin.getGrid().getIsland(otherPlayer)) == null || !island.isInvited(superiorPlayer)) {
+                Locale.NO_ISLAND_INVITE.send(superiorPlayer);
+                return;
+            }
+        } else {
+            if ((island = plugin.getGrid().getIsland(targetPlayer)) == null || !island.isInvited(superiorPlayer)) {
+                Locale.NO_ISLAND_INVITE.send(superiorPlayer);
+                return;
+            }
+        }
+
+        if (superiorPlayer.getIsland() != null) {
+            Locale.JOIN_WHILE_IN_ISLAND.send(superiorPlayer);
+            return;
+        }
+
+        if (island.getTeamLimit() >= 0 && island.getIslandMembers(true).size() >= island.getTeamLimit()) {
+            Locale.JOIN_FULL_ISLAND.send(superiorPlayer);
+            island.revokeInvite(superiorPlayer);
+            return;
+        }
+
+        if (!EventsCaller.callIslandJoinEvent(superiorPlayer, island))
+            return;
+
+        IslandUtils.sendMessage(island, Locale.JOIN_ANNOUNCEMENT, new ArrayList<>(), superiorPlayer.getName());
+
+        island.revokeInvite(superiorPlayer);
+        island.addMember(superiorPlayer, SPlayerRole.defaultRole());
+
+        if (targetPlayer == null)
+            Locale.JOINED_ISLAND_NAME.send(superiorPlayer, island.getName());
+        else
+            Locale.JOINED_ISLAND.send(superiorPlayer, targetPlayer.getName());
+
+        // async tp -> catch for ChunkMapDistance addPriorityTicket
+        ConcurrentUtils.ensureMain(() -> {
+            if (plugin.getSettings().teleportOnJoin)
+                superiorPlayer.teleport(island);
+            if (plugin.getSettings().clearOnJoin)
+                plugin.getNMSAdapter().clearInventory(superiorPlayer.asPlayer());
+        });
+    }
 
     @Override
     public List<String> getAliases() {
@@ -67,56 +115,6 @@ public final class CmdAccept implements ISuperiorCommand {
                 .write("other-player", args[1]);
 
         plugin.getLibrary().getMessageBus().fire(plugin, MessageType.ISLAND_ACCEPT_JOIN, data);
-    }
-
-    public static void executeOnServer(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, String otherPlayer) {
-        SuperiorPlayer targetPlayer = plugin.getPlayers().getSuperiorPlayer(otherPlayer);
-        Island island;
-
-        if(targetPlayer == null){
-            if((island = plugin.getGrid().getIsland(otherPlayer)) == null || !island.isInvited(superiorPlayer)){
-                Locale.NO_ISLAND_INVITE.send(superiorPlayer);
-                return;
-            }
-        }
-        else{
-            if((island = plugin.getGrid().getIsland(targetPlayer)) == null || !island.isInvited(superiorPlayer)) {
-                Locale.NO_ISLAND_INVITE.send(superiorPlayer);
-                return;
-            }
-        }
-
-        if(superiorPlayer.getIsland() != null){
-            Locale.JOIN_WHILE_IN_ISLAND.send(superiorPlayer);
-            return;
-        }
-
-        if(island.getTeamLimit() >= 0 && island.getIslandMembers(true).size() >= island.getTeamLimit()){
-            Locale.JOIN_FULL_ISLAND.send(superiorPlayer);
-            island.revokeInvite(superiorPlayer);
-            return;
-        }
-
-        if(!EventsCaller.callIslandJoinEvent(superiorPlayer, island))
-            return;
-
-        IslandUtils.sendMessage(island, Locale.JOIN_ANNOUNCEMENT, new ArrayList<>(), superiorPlayer.getName());
-
-        island.revokeInvite(superiorPlayer);
-        island.addMember(superiorPlayer, SPlayerRole.defaultRole());
-
-        if(targetPlayer == null)
-            Locale.JOINED_ISLAND_NAME.send(superiorPlayer, island.getName());
-        else
-            Locale.JOINED_ISLAND.send(superiorPlayer, targetPlayer.getName());
-
-        // async tp -> catch for ChunkMapDistance addPriorityTicket
-        ConcurrentUtils.ensureMain(() -> {
-            if(plugin.getSettings().teleportOnJoin)
-                superiorPlayer.teleport(island);
-            if(plugin.getSettings().clearOnJoin)
-                plugin.getNMSAdapter().clearInventory(superiorPlayer.asPlayer());
-        });
     }
 
     @Override

@@ -1,71 +1,12 @@
 package com.bgsoftware.superiorskyblock.handlers;
 
+import com.bgsoftware.superiorskyblock.Locale;
+import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.commands.SuperiorCommand;
 import com.bgsoftware.superiorskyblock.api.handlers.CommandsManager;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
-import com.bgsoftware.superiorskyblock.commands.CmdAccept;
-import com.bgsoftware.superiorskyblock.commands.CmdAdmin;
-import com.bgsoftware.superiorskyblock.commands.CmdBalance;
-import com.bgsoftware.superiorskyblock.commands.CmdBan;
-import com.bgsoftware.superiorskyblock.commands.CmdBank;
-import com.bgsoftware.superiorskyblock.commands.CmdBiome;
-import com.bgsoftware.superiorskyblock.commands.CmdBorder;
-import com.bgsoftware.superiorskyblock.commands.CmdChest;
-import com.bgsoftware.superiorskyblock.commands.CmdClose;
-import com.bgsoftware.superiorskyblock.commands.CmdCoop;
-import com.bgsoftware.superiorskyblock.commands.CmdCoops;
-import com.bgsoftware.superiorskyblock.commands.CmdCounts;
-import com.bgsoftware.superiorskyblock.commands.CmdCreate;
-import com.bgsoftware.superiorskyblock.commands.CmdDelWarp;
-import com.bgsoftware.superiorskyblock.commands.CmdDemote;
-import com.bgsoftware.superiorskyblock.commands.CmdDeposit;
-import com.bgsoftware.superiorskyblock.commands.CmdDisband;
-import com.bgsoftware.superiorskyblock.commands.CmdExpel;
-import com.bgsoftware.superiorskyblock.commands.CmdFly;
-import com.bgsoftware.superiorskyblock.commands.CmdHelp;
-import com.bgsoftware.superiorskyblock.commands.CmdInvite;
-import com.bgsoftware.superiorskyblock.commands.CmdKick;
-import com.bgsoftware.superiorskyblock.commands.CmdLang;
-import com.bgsoftware.superiorskyblock.commands.CmdLeave;
-import com.bgsoftware.superiorskyblock.commands.CmdMembers;
-import com.bgsoftware.superiorskyblock.commands.CmdMission;
-import com.bgsoftware.superiorskyblock.commands.CmdMissions;
-import com.bgsoftware.superiorskyblock.commands.CmdName;
-import com.bgsoftware.superiorskyblock.commands.CmdOpen;
-import com.bgsoftware.superiorskyblock.commands.CmdPanel;
-import com.bgsoftware.superiorskyblock.commands.CmdPardon;
-import com.bgsoftware.superiorskyblock.commands.CmdPermissions;
-import com.bgsoftware.superiorskyblock.commands.CmdPromote;
-import com.bgsoftware.superiorskyblock.commands.CmdRankup;
-import com.bgsoftware.superiorskyblock.commands.CmdRate;
-import com.bgsoftware.superiorskyblock.commands.CmdRatings;
-import com.bgsoftware.superiorskyblock.commands.CmdRecalc;
-import com.bgsoftware.superiorskyblock.commands.CmdSetDiscord;
-import com.bgsoftware.superiorskyblock.commands.CmdSetPaypal;
-import com.bgsoftware.superiorskyblock.commands.CmdSetRole;
-import com.bgsoftware.superiorskyblock.commands.CmdSetTeleport;
-import com.bgsoftware.superiorskyblock.commands.CmdSetWarp;
-import com.bgsoftware.superiorskyblock.commands.CmdSettings;
-import com.bgsoftware.superiorskyblock.commands.CmdShow;
-import com.bgsoftware.superiorskyblock.commands.CmdTeam;
-import com.bgsoftware.superiorskyblock.commands.CmdTeamChat;
-import com.bgsoftware.superiorskyblock.commands.CmdTeleport;
-import com.bgsoftware.superiorskyblock.commands.CmdToggle;
-import com.bgsoftware.superiorskyblock.commands.CmdTop;
-import com.bgsoftware.superiorskyblock.commands.CmdTransfer;
-import com.bgsoftware.superiorskyblock.commands.CmdUncoop;
-import com.bgsoftware.superiorskyblock.commands.CmdUpgrade;
-import com.bgsoftware.superiorskyblock.commands.CmdValue;
-import com.bgsoftware.superiorskyblock.commands.CmdValues;
-import com.bgsoftware.superiorskyblock.commands.CmdVisit;
-import com.bgsoftware.superiorskyblock.commands.CmdVisitors;
-import com.bgsoftware.superiorskyblock.commands.CmdWarp;
-import com.bgsoftware.superiorskyblock.commands.CmdWarps;
-import com.bgsoftware.superiorskyblock.commands.CmdWithdraw;
-import com.bgsoftware.superiorskyblock.Locale;
-import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
-
+import com.bgsoftware.superiorskyblock.commands.*;
 import com.bgsoftware.superiorskyblock.utils.FileUtils;
 import com.bgsoftware.superiorskyblock.utils.LocaleUtils;
 import com.bgsoftware.superiorskyblock.utils.StringUtils;
@@ -78,13 +19,7 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public final class CommandsHandler extends AbstractHandler implements CommandsManager {
 
@@ -95,7 +30,7 @@ public final class CommandsHandler extends AbstractHandler implements CommandsMa
     private CmdAdmin adminCommand = null;
     private String label = null;
 
-    public CommandsHandler(SuperiorSkyblockPlugin plugin){
+    public CommandsHandler(SuperiorSkyblockPlugin plugin) {
         super(plugin);
     }
 
@@ -108,7 +43,7 @@ public final class CommandsHandler extends AbstractHandler implements CommandsMa
 
         String[] commandSections = islandCommand.split(",");
 
-        if(commandSections.length > 1){
+        if (commandSections.length > 1) {
             pluginCommand.setAliases(Arrays.asList(Arrays.copyOfRange(commandSections, 1, commandSections.length)));
         }
 
@@ -197,31 +132,31 @@ public final class CommandsHandler extends AbstractHandler implements CommandsMa
         return adminCommand.getSubCommands();
     }
 
-    public String getLabel(){
+    public String getLabel() {
         return label;
     }
 
-    private SuperiorCommand getCommand(String label){
+    private SuperiorCommand getCommand(String label) {
         label = label.toLowerCase();
         return subCommands.get(label, aliasesToCommand.get(label));
     }
 
-    private void registerCommand(SuperiorCommand superiorCommand, boolean sort){
+    private void registerCommand(SuperiorCommand superiorCommand, boolean sort) {
         List<String> aliases = new ArrayList<>(superiorCommand.getAliases());
         String label = aliases.get(0).toLowerCase();
         aliases.addAll(plugin.getSettings().commandAliases.getOrDefault(label, new ArrayList<>()));
 
-        if(subCommands.containsKey(label)){
+        if (subCommands.containsKey(label)) {
             subCommands.remove(label);
             aliasesToCommand.values().removeIf(sC -> sC.getAliases().get(0).equals(aliases.get(0)));
         }
         subCommands.add(label, superiorCommand);
 
-        for(int i = 1; i < aliases.size(); i++){
+        for (int i = 1; i < aliases.size(); i++) {
             aliasesToCommand.add(aliases.get(i).toLowerCase(), superiorCommand);
         }
 
-        if(sort){
+        if (sort) {
             List<SuperiorCommand> superiorCommands = new ArrayList<>(subCommands.values());
             superiorCommands.sort(Comparator.comparing(o -> o.getAliases().get(0)));
             subCommands.clear();
@@ -230,49 +165,48 @@ public final class CommandsHandler extends AbstractHandler implements CommandsMa
     }
 
     @SuppressWarnings({"ResultOfMethodCallIgnored", "ConstantConditions"})
-    private void loadCommands(){
+    private void loadCommands() {
         File commandsFolder = new File(plugin.getDataFolder(), "commands");
 
-        if(!commandsFolder.exists()){
+        if (!commandsFolder.exists()) {
             commandsFolder.mkdirs();
             return;
         }
 
-        for(File file : commandsFolder.listFiles()){
-            if(!file.getName().endsWith(".jar"))
+        for (File file : commandsFolder.listFiles()) {
+            if (!file.getName().endsWith(".jar"))
                 continue;
 
             try {
                 //noinspection deprecation
                 Optional<Class<?>> commandClass = FileUtils.getClasses(file.toURL(), SuperiorCommand.class).stream().findFirst();
 
-                if(!commandClass.isPresent())
+                if (!commandClass.isPresent())
                     continue;
 
                 SuperiorCommand superiorCommand = createInstance(commandClass.get());
 
-                if(file.getName().toLowerCase().contains("admin")) {
+                if (file.getName().toLowerCase().contains("admin")) {
                     registerAdminCommand(superiorCommand);
                     SuperiorSkyblockPlugin.log("Successfully loaded external admin command: " + file.getName().split("\\.")[0]);
-                }
-                else {
+                } else {
                     registerCommand(superiorCommand);
                     SuperiorSkyblockPlugin.log("Successfully loaded external command: " + file.getName().split("\\.")[0]);
                 }
 
-            }catch(Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
 
     }
 
-    private SuperiorCommand createInstance(Class<?> clazz) throws Exception{
+    private SuperiorCommand createInstance(Class<?> clazz) throws Exception {
         Preconditions.checkArgument(SuperiorCommand.class.isAssignableFrom(clazz), "Class " + clazz + " is not a SuperiorCommand.");
 
-        for(Constructor<?> constructor : clazz.getConstructors()){
-            if(constructor.getParameterCount() == 0) {
-                if(!constructor.isAccessible())
+        for (Constructor<?> constructor : clazz.getConstructors()) {
+            if (constructor.getParameterCount() == 0) {
+                if (!constructor.isAccessible())
                     constructor.setAccessible(true);
 
                 return (SuperiorCommand) constructor.newInstance();
@@ -282,9 +216,9 @@ public final class CommandsHandler extends AbstractHandler implements CommandsMa
         throw new IllegalArgumentException("Class " + clazz + " has no valid constructors.");
     }
 
-    private class PluginCommand extends BukkitCommand{
+    private class PluginCommand extends BukkitCommand {
 
-        PluginCommand(String islandCommandLabel){
+        PluginCommand(String islandCommandLabel) {
             super(islandCommandLabel);
         }
 
@@ -292,27 +226,27 @@ public final class CommandsHandler extends AbstractHandler implements CommandsMa
         public boolean execute(CommandSender sender, String label, String[] args) {
             java.util.Locale locale = LocaleUtils.getLocale(sender);
 
-            if(args.length > 0){
+            if (args.length > 0) {
                 SuperiorCommand command = getCommand(args[0]);
-                if(command != null){
-                    if(!(sender instanceof Player) && !command.canBeExecutedByConsole()){
+                if (command != null) {
+                    if (!(sender instanceof Player) && !command.canBeExecutedByConsole()) {
                         Locale.sendMessage(sender, "&cCan be executed only by players!", true);
                         return false;
                     }
 
-                    if(!command.getPermission().isEmpty() && !sender.hasPermission(command.getPermission())) {
+                    if (!command.getPermission().isEmpty() && !sender.hasPermission(command.getPermission())) {
                         Locale.NO_COMMAND_PERMISSION.send(sender, locale);
                         return false;
                     }
 
-                    if(args.length < command.getMinArgs() || args.length > command.getMaxArgs()){
+                    if (args.length < command.getMinArgs() || args.length > command.getMaxArgs()) {
                         Locale.COMMAND_USAGE.send(sender, locale, getLabel() + " " + command.getUsage(locale));
                         return false;
                     }
 
                     String commandLabel = command.getAliases().get(0);
 
-                    if(sender instanceof Player && plugin.getSettings().commandsCooldown.containsKey(commandLabel)) {
+                    if (sender instanceof Player && plugin.getSettings().commandsCooldown.containsKey(commandLabel)) {
                         UUID uuid = ((Player) sender).getUniqueId();
 
                         long timeToExecute = commandsCooldown.containsKey(uuid) && commandsCooldown.get(uuid).containsKey(commandLabel) ?
@@ -320,12 +254,12 @@ public final class CommandsHandler extends AbstractHandler implements CommandsMa
 
                         long timeNow = System.currentTimeMillis();
 
-                        if(timeNow < timeToExecute){
+                        if (timeNow < timeToExecute) {
                             Locale.COMMAND_COOLDOWN_FORMAT.send(sender, locale, StringUtils.formatTime(locale, timeToExecute - timeNow));
                             return false;
                         }
 
-                        if(!commandsCooldown.containsKey(uuid)){
+                        if (!commandsCooldown.containsKey(uuid)) {
                             commandsCooldown.add(uuid, Registry.createRegistry());
                         }
 
@@ -338,22 +272,19 @@ public final class CommandsHandler extends AbstractHandler implements CommandsMa
                 }
             }
 
-            if(sender instanceof Player){
+            if (sender instanceof Player) {
                 SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(sender);
 
-                if(superiorPlayer != null){
+                if (superiorPlayer != null) {
                     Island island = superiorPlayer.getIsland();
 
-                    if(args.length != 0){
+                    if (args.length != 0) {
                         Bukkit.dispatchCommand(sender, label + " help");
-                    }
-                    else if(island == null){
+                    } else if (island == null) {
                         Bukkit.dispatchCommand(sender, label + " create");
-                    }
-                    else if(superiorPlayer.hasToggledPanel()){
+                    } else if (superiorPlayer.hasToggledPanel()) {
                         Bukkit.dispatchCommand(sender, label + " panel");
-                    }
-                    else{
+                    } else {
                         Bukkit.dispatchCommand(sender, label + " tp");
                     }
 
@@ -369,9 +300,9 @@ public final class CommandsHandler extends AbstractHandler implements CommandsMa
 
         @Override
         public List<String> tabComplete(CommandSender sender, String label, String[] args) {
-            if(args.length > 0){
+            if (args.length > 0) {
                 SuperiorCommand command = getCommand(args[0]);
-                if(command != null){
+                if (command != null) {
                     return command.getPermission() != null && !sender.hasPermission(command.getPermission()) ?
                             new ArrayList<>() : command.tabComplete(plugin, sender, args);
                 }
@@ -379,7 +310,7 @@ public final class CommandsHandler extends AbstractHandler implements CommandsMa
 
             List<String> list = new ArrayList<>();
 
-            for(SuperiorCommand subCommand : getSubCommands()) {
+            for (SuperiorCommand subCommand : getSubCommands()) {
                 if (subCommand.getPermission() == null || sender.hasPermission(subCommand.getPermission())) {
                     List<String> aliases = new ArrayList<>(subCommand.getAliases());
                     aliases.addAll(plugin.getSettings().commandAliases.getOrDefault(aliases.get(0).toLowerCase(), new ArrayList<>()));

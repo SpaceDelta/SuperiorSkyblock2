@@ -20,31 +20,31 @@ public final class HeadUtils {
     private static final String NULL_PLAYER_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmFkYzA0OGE3Y2U3OGY3ZGFkNzJhMDdkYTI3ZDg1YzA5MTY4ODFlNTUyMmVlZWQxZTNkYWYyMTdhMzhjMWEifX19";
     private static final Registry<String, String> entitySkullTextures = Registry.createRegistry();
 
-    private HeadUtils(){
+    private HeadUtils() {
 
     }
 
-    public static void readTextures(SuperiorSkyblockPlugin plugin){
+    public static void readTextures(SuperiorSkyblockPlugin plugin) {
         entitySkullTextures.clear();
 
         File file = new File(plugin.getDataFolder(), "heads.yml");
 
-        if(!file.exists())
+        if (!file.exists())
             plugin.saveResource("heads.yml", false);
 
         CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
 
         try {
             cfg.syncWithConfig(file, plugin.getResource("heads.yml"));
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        for(String entityType : cfg.getConfigurationSection("").getKeys(false))
+        for (String entityType : cfg.getConfigurationSection("").getKeys(false))
             entitySkullTextures.add(entityType, cfg.getString(entityType));
     }
 
-    public static ItemStack getPlayerHead(ItemStack itemStack, String texture){
+    public static ItemStack getPlayerHead(ItemStack itemStack, String texture) {
         CompoundTag compoundTag = TagUtils.itemToCompound(itemStack);
 
         CompoundTag nbtTag = (CompoundTag) compoundTag.getValue().getOrDefault("NBT", new CompoundTag());
@@ -53,10 +53,9 @@ public final class HeadUtils {
 
         UUID ownerUUID = new UUID(texture.hashCode(), texture.hashCode());
 
-        if(ServerVersion.isAtLeast(ServerVersion.v1_16)){
+        if (ServerVersion.isAtLeast(ServerVersion.v1_16)) {
             skullOwner.setTag("Id", IntArrayTag.fromUUID(ownerUUID));
-        }
-        else {
+        } else {
             skullOwner.setString("Id", ownerUUID.toString());
         }
 
@@ -78,11 +77,11 @@ public final class HeadUtils {
         return TagUtils.compoundToItem(compoundTag);
     }
 
-    public static String getNullPlayerTexture(){
+    public static String getNullPlayerTexture() {
         return NULL_PLAYER_TEXTURE;
     }
 
-    public static String getTexture(String entityType){
+    public static String getTexture(String entityType) {
         return entitySkullTextures.get(entityType, "");
     }
 

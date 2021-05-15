@@ -1,5 +1,6 @@
 package com.bgsoftware.superiorskyblock.commands;
 
+import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.island.IslandPrivilege;
@@ -8,8 +9,6 @@ import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
-import com.bgsoftware.superiorskyblock.Locale;
-import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,15 +69,15 @@ public final class CmdDemote implements IPermissibleCommand {
         }
         SuperiorPlayer targetPlayer = CommandArguments.getPlayer(plugin, superiorPlayer, args[1]);
 
-        if(targetPlayer == null)
+        if (targetPlayer == null)
             return;
 
-        if(!island.isMember(targetPlayer)){
+        if (!island.isMember(targetPlayer)) {
             Locale.PLAYER_NOT_INSIDE_ISLAND.send(superiorPlayer);
             return;
         }
 
-        if(!targetPlayer.getPlayerRole().isLessThan(superiorPlayer.getPlayerRole())){
+        if (!targetPlayer.getPlayerRole().isLessThan(superiorPlayer.getPlayerRole())) {
             Locale.DEMOTE_PLAYERS_WITH_LOWER_ROLE.send(superiorPlayer);
             return;
         }
@@ -89,7 +88,7 @@ public final class CmdDemote implements IPermissibleCommand {
         do {
             previousRole = previousRole.getPreviousRole();
             roleLimit = previousRole == null ? -1 : island.getRoleLimit(previousRole);
-        }while (previousRole != null && !previousRole.isFirstRole() && roleLimit >= 0 && roleLimit >= island.getIslandMembers(previousRole).size());
+        } while (previousRole != null && !previousRole.isFirstRole() && roleLimit >= 0 && roleLimit >= island.getIslandMembers(previousRole).size());
 
         if (previousRole == null) {
             Locale.LAST_ROLE_DEMOTE.send(superiorPlayer);

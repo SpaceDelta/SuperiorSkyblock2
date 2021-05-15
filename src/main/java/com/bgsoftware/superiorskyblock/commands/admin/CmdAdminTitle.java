@@ -8,7 +8,6 @@ import com.bgsoftware.superiorskyblock.commands.IAdminPlayerCommand;
 import com.bgsoftware.superiorskyblock.utils.StringUtils;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
@@ -64,31 +63,31 @@ public final class CmdAdminTitle implements IAdminPlayerCommand {
 
     @Override
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, SuperiorPlayer targetPlayer, String[] args) {
-        if(!targetPlayer.isOnline()){
+        if (!targetPlayer.isOnline()) {
             Locale.PLAYER_NOT_ONLINE.send(sender);
             return;
         }
 
         Pair<Integer, Boolean> fadeIn = CommandArguments.getInterval(sender, args[3]);
 
-        if(!fadeIn.getValue())
+        if (!fadeIn.getValue())
             return;
 
         Pair<Integer, Boolean> duration = CommandArguments.getInterval(sender, args[4]);
 
-        if(!duration.getValue())
+        if (!duration.getValue())
             return;
 
         Pair<Integer, Boolean> fadeOut = CommandArguments.getInterval(sender, args[5]);
 
-        if(!fadeOut.getValue())
+        if (!fadeOut.getValue())
             return;
 
         Map<String, String> parsedArguments = CommandArguments.parseArguments(args);
 
         String title = parsedArguments.get("title"), subtitle = parsedArguments.get("subtitle");
 
-        if(title == null && subtitle == null){
+        if (title == null && subtitle == null) {
             Locale.INVALID_TITLE.send(sender);
             return;
         }

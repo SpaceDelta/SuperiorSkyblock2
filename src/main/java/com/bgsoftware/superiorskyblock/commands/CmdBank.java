@@ -57,15 +57,14 @@ public final class CmdBank implements ISuperiorCommand {
 
         Island island = arguments.getKey();
 
-        if(island == null)
+        if (island == null)
             return;
 
         SuperiorPlayer superiorPlayer = arguments.getValue();
 
-        if(args.length == 2 && args[1].equalsIgnoreCase("logs")){
+        if (args.length == 2 && args[1].equalsIgnoreCase("logs")) {
             MenuBankLogs.openInventory(superiorPlayer, null, island);
-        }
-        else {
+        } else {
             MenuIslandBank.openInventory(superiorPlayer, null, island);
         }
     }

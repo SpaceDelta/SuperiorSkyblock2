@@ -9,7 +9,6 @@ import dev.rosewood.rosestacker.api.RoseStackerAPI;
 import dev.rosewood.rosestacker.event.SpawnerStackEvent;
 import dev.rosewood.rosestacker.event.SpawnerUnstackEvent;
 import dev.rosewood.rosestacker.stack.StackedSpawner;
-import dev.rosewood.rosestacker.utils.StackerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -21,18 +20,22 @@ public final class BlocksProvider_RoseStacker implements BlocksProvider {
 
     private static boolean registered = false;
 
-    public BlocksProvider_RoseStacker(){
-        if(!registered) {
+    public BlocksProvider_RoseStacker() {
+        if (!registered) {
             Bukkit.getPluginManager().registerEvents(new BlocksProvider_RoseStacker.StackerListener(), SuperiorSkyblockPlugin.getPlugin());
             registered = true;
             SuperiorSkyblockPlugin.log("Using RoseStacker as a spawners provider.");
         }
     }
 
+    public static boolean isRegistered() {
+        return registered;
+    }
+
     @Override
     public Pair<Integer, String> getSpawner(Location location) {
         int blockCount = -1;
-        if(Bukkit.isPrimaryThread()){
+        if (Bukkit.isPrimaryThread()) {
             StackedSpawner stackedSpawner = RoseStackerAPI.getInstance().getStackedSpawner(location.getBlock());
             blockCount = stackedSpawner == null ? 1 : stackedSpawner.getStackSize();
         }
@@ -45,30 +48,26 @@ public final class BlocksProvider_RoseStacker implements BlocksProvider {
         // return StackerUtils.getStackedItemEntityType(itemStack).name();
     }
 
-    public static boolean isRegistered(){
-        return registered;
-    }
-
     @SuppressWarnings("unused")
     private static class StackerListener implements Listener {
 
         private final SuperiorSkyblockPlugin plugin = SuperiorSkyblockPlugin.getPlugin();
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSpawnerStack(SpawnerStackEvent e){
+        public void onSpawnerStack(SpawnerStackEvent e) {
             Location location = e.getStack().getLocation();
             Island island = plugin.getGrid().getIslandAt(location);
-            if(island != null) {
+            if (island != null) {
                 Key spawnerKey = Key.of(Materials.SPAWNER.toBukkitType() + ":" + e.getStack().getSpawner().getSpawnedType());
                 island.handleBlockPlace(spawnerKey, e.getIncreaseAmount());
             }
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSpawnerUnstack(SpawnerUnstackEvent e){
+        public void onSpawnerUnstack(SpawnerUnstackEvent e) {
             Location location = e.getStack().getLocation();
             Island island = plugin.getGrid().getIslandAt(location);
-            if(island != null) {
+            if (island != null) {
                 Key spawnerKey = Key.of(Materials.SPAWNER.toBukkitType() + ":" + e.getStack().getSpawner().getSpawnedType());
                 island.handleBlockBreak(spawnerKey, e.getDecreaseAmount());
             }

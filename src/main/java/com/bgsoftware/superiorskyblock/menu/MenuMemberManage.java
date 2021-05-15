@@ -24,70 +24,26 @@ public final class MenuMemberManage extends SuperiorMenu {
 
     private final SuperiorPlayer targetPlayer;
 
-    private MenuMemberManage(SuperiorPlayer superiorPlayer, SuperiorPlayer targetPlayer){
+    private MenuMemberManage(SuperiorPlayer superiorPlayer, SuperiorPlayer targetPlayer) {
         super("menuMemberManage", superiorPlayer);
         this.targetPlayer = targetPlayer;
         updateTargetPlayer(targetPlayer);
     }
 
-    @Override
-    public void onPlayerClick(InventoryClickEvent e) {
-        if(rolesSlot.contains(e.getRawSlot())){
-            previousMove = false;
-            MenuMemberRole.openInventory(plugin.getPlayers().getSuperiorPlayer(e.getWhoClicked()), this, targetPlayer);
-        }
-
-        else if(banSlot.contains(e.getRawSlot())){
-            if(plugin.getSettings().banConfirm){
-                Island island = superiorPlayer.getIsland();
-                if(IslandUtils.checkBanRestrictions(superiorPlayer, island, targetPlayer)) {
-                    previousMove = false;
-                    MenuConfirmBan.openInventory(superiorPlayer, this, targetPlayer);
-                }
-            }
-            else {
-                CommandUtils.dispatchSubCommand(e.getWhoClicked(), "ban " + targetPlayer.getName());
-            }
-        }
-
-        else if(kickSlot.contains(e.getRawSlot())){
-            if(plugin.getSettings().kickConfirm){
-                Island island = superiorPlayer.getIsland();
-                if(IslandUtils.checkKickRestrictions(superiorPlayer, island, targetPlayer)) {
-                    previousMove = false;
-                    MenuConfirmKick.openInventory(superiorPlayer, this, targetPlayer);
-                }
-            }
-            else {
-                CommandUtils.dispatchSubCommand(e.getWhoClicked(), "kick " + targetPlayer.getName());
-            }
-        }
-    }
-
-    @Override
-    protected void cloneAndOpen(SuperiorMenu previousMenu) {
-        openInventory(superiorPlayer, previousMenu, targetPlayer);
-    }
-
-    @Override
-    public Inventory getInventory() {
-        return buildInventory(title -> PlaceholderHook.parse(targetPlayer.asOfflinePlayer(), title.replace("{}", targetPlayer.getName())));
-    }
-
-    public static void init(){
+    public static void init() {
         MenuMemberManage menuMemberManage = new MenuMemberManage(null, null);
 
         File file = new File(plugin.getDataFolder(), "menus/member-manage.yml");
 
-        if(!file.exists())
+        if (!file.exists())
             FileUtils.saveResource("menus/member-manage.yml");
 
         CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
 
-        if(convertOldGUI(cfg)){
+        if (convertOldGUI(cfg)) {
             try {
                 cfg.save(file);
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
@@ -103,18 +59,18 @@ public final class MenuMemberManage extends SuperiorMenu {
         menuMemberManage.markCompleted();
     }
 
-    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, SuperiorPlayer targetPlayer){
+    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, SuperiorPlayer targetPlayer) {
         new MenuMemberManage(superiorPlayer, targetPlayer).open(previousMenu);
     }
 
-    public static void destroyMenus(SuperiorPlayer targetPlayer){
+    public static void destroyMenus(SuperiorPlayer targetPlayer) {
         destroyMenus(MenuMemberManage.class, menuMemberManage -> menuMemberManage.targetPlayer.equals(targetPlayer));
     }
 
-    private static boolean convertOldGUI(YamlConfiguration newMenu){
+    private static boolean convertOldGUI(YamlConfiguration newMenu) {
         File oldFile = new File(plugin.getDataFolder(), "guis/panel-gui.yml");
 
-        if(!oldFile.exists())
+        if (!oldFile.exists())
             return false;
 
         //We want to reset the items of newMenu.
@@ -133,7 +89,7 @@ public final class MenuMemberManage extends SuperiorMenu {
 
         int charCounter = 0;
 
-        if(cfg.contains("players-panel.fill-items")) {
+        if (cfg.contains("players-panel.fill-items")) {
             charCounter = MenuConverter.convertFillItems(cfg.getConfigurationSection("players-panel.fill-items"),
                     charCounter, patternChars, itemsSection, commandsSection, soundsSection);
         }
@@ -154,6 +110,44 @@ public final class MenuMemberManage extends SuperiorMenu {
         newMenu.set("pattern", MenuConverter.buildPattern(size, patternChars, itemChars[charCounter]));
 
         return true;
+    }
+
+    @Override
+    public void onPlayerClick(InventoryClickEvent e) {
+        if (rolesSlot.contains(e.getRawSlot())) {
+            previousMove = false;
+            MenuMemberRole.openInventory(plugin.getPlayers().getSuperiorPlayer(e.getWhoClicked()), this, targetPlayer);
+        } else if (banSlot.contains(e.getRawSlot())) {
+            if (plugin.getSettings().banConfirm) {
+                Island island = superiorPlayer.getIsland();
+                if (IslandUtils.checkBanRestrictions(superiorPlayer, island, targetPlayer)) {
+                    previousMove = false;
+                    MenuConfirmBan.openInventory(superiorPlayer, this, targetPlayer);
+                }
+            } else {
+                CommandUtils.dispatchSubCommand(e.getWhoClicked(), "ban " + targetPlayer.getName());
+            }
+        } else if (kickSlot.contains(e.getRawSlot())) {
+            if (plugin.getSettings().kickConfirm) {
+                Island island = superiorPlayer.getIsland();
+                if (IslandUtils.checkKickRestrictions(superiorPlayer, island, targetPlayer)) {
+                    previousMove = false;
+                    MenuConfirmKick.openInventory(superiorPlayer, this, targetPlayer);
+                }
+            } else {
+                CommandUtils.dispatchSubCommand(e.getWhoClicked(), "kick " + targetPlayer.getName());
+            }
+        }
+    }
+
+    @Override
+    protected void cloneAndOpen(SuperiorMenu previousMenu) {
+        openInventory(superiorPlayer, previousMenu, targetPlayer);
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return buildInventory(title -> PlaceholderHook.parse(targetPlayer.asOfflinePlayer(), title.replace("{}", targetPlayer.getName())));
     }
 
 }

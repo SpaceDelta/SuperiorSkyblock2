@@ -4,21 +4,17 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.AbstractSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public final class KeySet extends AbstractSet<com.bgsoftware.superiorskyblock.api.key.Key> implements Set<com.bgsoftware.superiorskyblock.api.key.Key> {
 
     private final Set<String> set;
 
-    public KeySet(){
+    public KeySet() {
         this.set = new HashSet<>();
     }
 
-    public KeySet(List<String> keys){
+    public KeySet(List<String> keys) {
         this.set = new HashSet<>(keys);
     }
 
@@ -36,6 +32,7 @@ public final class KeySet extends AbstractSet<com.bgsoftware.superiorskyblock.ap
     public boolean contains(Block block) {
         return contains(com.bgsoftware.superiorskyblock.utils.key.Key.of(block));
     }
+
     public boolean contains(ItemStack itemStack) {
         return contains(com.bgsoftware.superiorskyblock.utils.key.Key.of(itemStack));
     }
@@ -53,10 +50,10 @@ public final class KeySet extends AbstractSet<com.bgsoftware.superiorskyblock.ap
         return o instanceof Key && (set.contains(o.toString()) || (!((Key) o).getSubKey().isEmpty() && set.contains(((Key) o).getGlobalKey())));
     }
 
-    public Key getKey(com.bgsoftware.superiorskyblock.api.key.Key key){
-        if(set.contains(key.toString()))
+    public Key getKey(com.bgsoftware.superiorskyblock.api.key.Key key) {
+        if (set.contains(key.toString()))
             return (Key) key;
-        else if(set.contains(key.getGlobalKey()))
+        else if (set.contains(key.getGlobalKey()))
             return Key.of(key.getGlobalKey());
         else
             return (Key) key;
@@ -72,7 +69,7 @@ public final class KeySet extends AbstractSet<com.bgsoftware.superiorskyblock.ap
         return o instanceof Key ? set.remove(o.toString()) : set.remove(o);
     }
 
-    private Set<com.bgsoftware.superiorskyblock.api.key.Key> asKeySet(){
+    private Set<com.bgsoftware.superiorskyblock.api.key.Key> asKeySet() {
         Set<com.bgsoftware.superiorskyblock.api.key.Key> set = new HashSet<>();
         this.set.forEach(string -> set.add(Key.of(string)));
         return set;

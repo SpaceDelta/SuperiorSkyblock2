@@ -11,7 +11,6 @@ import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
 import com.bgsoftware.superiorskyblock.utils.events.EventsCaller;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
-import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,22 +71,22 @@ public final class CmdUncoop implements IPermissibleCommand {
         }
         SuperiorPlayer targetPlayer = CommandArguments.getPlayer(plugin, superiorPlayer, args[1]);
 
-        if(targetPlayer == null)
+        if (targetPlayer == null)
             return;
 
-        if(!island.isCoop(targetPlayer)){
+        if (!island.isCoop(targetPlayer)) {
             Locale.PLAYER_NOT_COOP.send(superiorPlayer);
             return;
         }
 
-        if(!EventsCaller.callIslandUncoopPlayerEvent(island, superiorPlayer, targetPlayer, IslandUncoopPlayerEvent.UncoopReason.PLAYER))
+        if (!EventsCaller.callIslandUncoopPlayerEvent(island, superiorPlayer, targetPlayer, IslandUncoopPlayerEvent.UncoopReason.PLAYER))
             return;
 
         island.removeCoop(targetPlayer);
 
         IslandUtils.sendMessage(island, Locale.UNCOOP_ANNOUNCEMENT, new ArrayList<>(), superiorPlayer.getName(), targetPlayer.getName());
 
-        if(island.getName().isEmpty())
+        if (island.getName().isEmpty())
             Locale.LEFT_ISLAND_COOP.send(targetPlayer, superiorPlayer.getName());
         else
             Locale.LEFT_ISLAND_COOP_NAME.send(targetPlayer, island.getName());

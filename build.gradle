@@ -118,7 +118,7 @@ dependencies {
     compileOnly 'dev.rosewood:RoseStacker:latest'
     compileOnly 'net.brcdev:shopgui:1.49.0' // from sd
     compileOnly 'de.candc:SilkSpawners:latest'
-    compileOnly 'skinsrestorer:SkinsRestorer:latest'
+    // compileOnly 'net.skinsrestorer:skinsrestorer:14.0.0-SNAPSHOT'
     compileOnly 'me.mrcookieslime:Slimefun4:latest'
     compileOnly 'me.mrcookieslime:Slimefun4-Dev:latest'
     compileOnly 'de.myzelyam:SuperVanish:latest'

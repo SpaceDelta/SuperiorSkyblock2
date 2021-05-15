@@ -1,14 +1,13 @@
 package com.bgsoftware.superiorskyblock.commands;
 
+import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.island.IslandPrivilege;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.utils.StringUtils;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
-import com.bgsoftware.superiorskyblock.Locale;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -70,7 +69,7 @@ public final class CmdName implements IPermissibleCommand {
             return;
         }
 
-        if(!StringUtils.isValidName(superiorPlayer, island, islandName))
+        if (!StringUtils.isValidName(superiorPlayer, island, islandName))
             return;
 
         island.setName(islandName);
@@ -78,7 +77,7 @@ public final class CmdName implements IPermissibleCommand {
         String coloredName = plugin.getSettings().islandNamesColorSupport ?
                 StringUtils.translateColors(islandName) : islandName;
 
-        for(Player player : Bukkit.getOnlinePlayers())
+        for (Player player : Bukkit.getOnlinePlayers())
             Locale.NAME_ANNOUNCEMENT.send(player, superiorPlayer.getName(), coloredName);
 
         Locale.CHANGED_NAME.send(superiorPlayer, coloredName);

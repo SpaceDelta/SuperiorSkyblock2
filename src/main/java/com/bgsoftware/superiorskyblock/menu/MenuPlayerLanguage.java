@@ -15,13 +15,50 @@ import java.util.List;
 
 public final class MenuPlayerLanguage extends SuperiorMenu {
 
-    private MenuPlayerLanguage(SuperiorPlayer superiorPlayer){
+    private MenuPlayerLanguage(SuperiorPlayer superiorPlayer) {
         super("menuPlayerLanguage", superiorPlayer);
+    }
+
+    public static void init() {
+        MenuPlayerLanguage menuPlayerLanguage = new MenuPlayerLanguage(null);
+
+        File file = new File(plugin.getDataFolder(), "menus/player-language.yml");
+
+        if (!file.exists())
+            FileUtils.saveResource("menus/player-language.yml");
+
+        CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
+
+        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuPlayerLanguage, "player-language.yml", cfg);
+
+        for (char ch : charSlots.keys()) {
+            if (cfg.contains("items." + ch + ".language")) {
+                String language = cfg.getString("items." + ch + ".language");
+                for (int slot : charSlots.get(ch)) {
+                    try {
+                        java.util.Locale locale = LocaleUtils.getLocale(language);
+                        if (Locale.isValidLocale(locale))
+                            menuPlayerLanguage.addData(slot + "", locale);
+                        else throw new IllegalArgumentException();
+                    } catch (IllegalArgumentException ex) {
+                        SuperiorSkyblockPlugin.log("&c[player-language.yml] The language " + language + " is not valid.");
+                    }
+                }
+            }
+        }
+
+        charSlots.delete();
+
+        menuPlayerLanguage.markCompleted();
+    }
+
+    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu) {
+        new MenuPlayerLanguage(superiorPlayer).open(previousMenu);
     }
 
     @Override
     public void onPlayerClick(InventoryClickEvent e) {
-        if(!containsData(e.getRawSlot() + ""))
+        if (!containsData(e.getRawSlot() + ""))
             return;
 
         java.util.Locale locale = (java.util.Locale) getData(e.getRawSlot() + "");
@@ -34,43 +71,6 @@ public final class MenuPlayerLanguage extends SuperiorMenu {
     @Override
     protected void cloneAndOpen(SuperiorMenu previousMenu) {
         openInventory(superiorPlayer, previousMenu);
-    }
-
-    public static void init(){
-        MenuPlayerLanguage menuPlayerLanguage = new MenuPlayerLanguage(null);
-
-        File file = new File(plugin.getDataFolder(), "menus/player-language.yml");
-
-        if(!file.exists())
-            FileUtils.saveResource("menus/player-language.yml");
-
-        CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
-
-        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuPlayerLanguage, "player-language.yml", cfg);
-
-        for(char ch : charSlots.keys()){
-            if(cfg.contains("items." + ch + ".language")) {
-                String language = cfg.getString("items." + ch + ".language");
-                for(int slot : charSlots.get(ch)) {
-                    try {
-                        java.util.Locale locale = LocaleUtils.getLocale(language);
-                        if(Locale.isValidLocale(locale))
-                            menuPlayerLanguage.addData(slot + "", locale);
-                        else throw new IllegalArgumentException();
-                    }catch(IllegalArgumentException ex){
-                        SuperiorSkyblockPlugin.log("&c[player-language.yml] The language " + language + " is not valid.");
-                    }
-                }
-            }
-        }
-
-        charSlots.delete();
-
-        menuPlayerLanguage.markCompleted();
-    }
-
-    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu){
-        new MenuPlayerLanguage(superiorPlayer).open(previousMenu);
     }
 
 }

@@ -1,11 +1,8 @@
 package com.bgsoftware.superiorskyblock.hooks;
 
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
-import com.bgsoftware.superiorskyblock.listeners.PlayersListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 public final class VanishProvider_CMI implements VanishProvider, Listener {
@@ -14,10 +11,10 @@ public final class VanishProvider_CMI implements VanishProvider, Listener {
 
     private final SuperiorSkyblockPlugin plugin;
 
-    public VanishProvider_CMI(SuperiorSkyblockPlugin plugin){
+    public VanishProvider_CMI(SuperiorSkyblockPlugin plugin) {
         this.plugin = plugin;
 
-        if(false && !alreadyEnabled){
+        if (false && !alreadyEnabled) {
             alreadyEnabled = true;
             Bukkit.getPluginManager().registerEvents(this, plugin);
         }

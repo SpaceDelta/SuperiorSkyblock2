@@ -17,23 +17,24 @@ public class IslandEnterEvent extends IslandEvent implements Cancellable {
 
     /**
      * The constructor of the event.
-     * @param superiorPlayer The player who entered to the island's area.
-     * @param island The island that the player entered into.
      *
+     * @param superiorPlayer The player who entered to the island's area.
+     * @param island         The island that the player entered into.
      * @deprecated See IslandEnterEvent(SuperiorPlayer, Island, EnterCause)
      */
     @Deprecated
-    public IslandEnterEvent(SuperiorPlayer superiorPlayer, Island island){
+    public IslandEnterEvent(SuperiorPlayer superiorPlayer, Island island) {
         this(superiorPlayer, island, EnterCause.INVALID);
     }
 
     /**
      * The constructor of the event.
+     *
      * @param superiorPlayer The player who entered to the island's area.
-     * @param island The island that the player entered into.
-     * @param enterCause The cause of entering into the island.
+     * @param island         The island that the player entered into.
+     * @param enterCause     The cause of entering into the island.
      */
-    public IslandEnterEvent(SuperiorPlayer superiorPlayer, Island island, EnterCause enterCause){
+    public IslandEnterEvent(SuperiorPlayer superiorPlayer, Island island, EnterCause enterCause) {
         super(island);
         this.superiorPlayer = superiorPlayer;
         this.enterCause = enterCause;
@@ -54,17 +55,17 @@ public class IslandEnterEvent extends IslandEvent implements Cancellable {
     }
 
     /**
-     * Set the location the player would be teleported if the event is cancelled.
-     */
-    public void setCancelTeleport(Location cancelTeleport) {
-        this.cancelTeleport = cancelTeleport.clone();
-    }
-
-    /**
      * Get the location the player would be teleported if the event is cancelled.
      */
     public Location getCancelTeleport() {
         return cancelTeleport == null ? null : cancelTeleport.clone();
+    }
+
+    /**
+     * Set the location the player would be teleported if the event is cancelled.
+     */
+    public void setCancelTeleport(Location cancelTeleport) {
+        this.cancelTeleport = cancelTeleport.clone();
     }
 
     @Override
@@ -80,7 +81,7 @@ public class IslandEnterEvent extends IslandEvent implements Cancellable {
     /**
      * Used to determine the cause of entering.
      */
-    public enum EnterCause{
+    public enum EnterCause {
 
         PLAYER_MOVE,
         PLAYER_TELEPORT,

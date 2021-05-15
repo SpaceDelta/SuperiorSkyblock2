@@ -13,8 +13,8 @@ import java.util.Set;
 
 public interface BlocksProvider extends SpawnersProvider {
 
-    default String getSpawnerType(ItemStack itemStack){
-        if(itemStack.getItemMeta() instanceof BlockStateMeta){
+    default String getSpawnerType(ItemStack itemStack) {
+        if (itemStack.getItemMeta() instanceof BlockStateMeta) {
             CreatureSpawner creatureSpawner = (CreatureSpawner) ((BlockStateMeta) itemStack.getItemMeta()).getBlockState();
             return creatureSpawner.getSpawnedType().name();
         }
@@ -22,7 +22,7 @@ public interface BlocksProvider extends SpawnersProvider {
         return "PIG";
     }
 
-    default Set<Pair<Integer, Key>> getBlocks(ChunkPosition chunkPosition){
+    default Set<Pair<Integer, Key>> getBlocks(ChunkPosition chunkPosition) {
         return Collections.emptySet();
     }
 

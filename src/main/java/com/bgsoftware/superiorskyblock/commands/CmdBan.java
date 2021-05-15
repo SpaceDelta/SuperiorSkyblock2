@@ -1,5 +1,6 @@
 package com.bgsoftware.superiorskyblock.commands;
 
+import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.island.IslandPrivilege;
@@ -9,7 +10,6 @@ import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
-import com.bgsoftware.superiorskyblock.Locale;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,16 +66,15 @@ public final class CmdBan implements IPermissibleCommand {
     public void execute(SuperiorSkyblockPlugin plugin, SuperiorPlayer superiorPlayer, Island island, String[] args) {
         SuperiorPlayer targetPlayer = CommandArguments.getPlayer(plugin, superiorPlayer, args[1]);
 
-        if(targetPlayer == null)
+        if (targetPlayer == null)
             return;
 
-        if(!IslandUtils.checkBanRestrictions(superiorPlayer, island, targetPlayer))
+        if (!IslandUtils.checkBanRestrictions(superiorPlayer, island, targetPlayer))
             return;
 
-        if(plugin.getSettings().banConfirm){
+        if (plugin.getSettings().banConfirm) {
             MenuConfirmBan.openInventory(superiorPlayer, null, targetPlayer);
-        }
-        else {
+        } else {
             IslandUtils.handleBanPlayer(superiorPlayer, island, targetPlayer);
         }
     }

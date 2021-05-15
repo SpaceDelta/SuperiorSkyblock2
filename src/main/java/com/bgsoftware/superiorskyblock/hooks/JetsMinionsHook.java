@@ -7,7 +7,7 @@ public final class JetsMinionsHook implements Listener {
 
     private final SuperiorSkyblockPlugin plugin;
 
-    private JetsMinionsHook(SuperiorSkyblockPlugin plugin){
+    private JetsMinionsHook(SuperiorSkyblockPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -23,7 +23,7 @@ public final class JetsMinionsHook implements Listener {
     }
      */
 
-    public static void register(SuperiorSkyblockPlugin plugin){
+    public static void register(SuperiorSkyblockPlugin plugin) {
         // Bukkit.getPluginManager().registerEvents(new JetsMinionsHook(plugin), plugin);
     }
     // End SpaceDelta

@@ -7,18 +7,18 @@ import java.util.function.Consumer;
 
 public final class CompletableFutureList<E> extends ArrayList<CompletableFuture<E>> {
 
-    public CompletableFutureList(){
+    public CompletableFutureList() {
 
     }
 
-    public CompletableFutureList(ArrayList<CompletableFuture<E>> other){
+    public CompletableFutureList(ArrayList<CompletableFuture<E>> other) {
         super(other);
     }
 
-    public void forEachCompleted(Consumer<? super E> consumer, BiConsumer<CompletableFuture<E>, Throwable> onFailure){
-        for(CompletableFuture<E> completableFuture : this){
+    public void forEachCompleted(Consumer<? super E> consumer, BiConsumer<CompletableFuture<E>, Throwable> onFailure) {
+        for (CompletableFuture<E> completableFuture : this) {
             completableFuture.whenComplete((e, ex) -> {
-                if(ex == null)
+                if (ex == null)
                     consumer.accept(e);
                 else
                     onFailure.accept(completableFuture, ex);

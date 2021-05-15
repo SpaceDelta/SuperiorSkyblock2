@@ -1,5 +1,6 @@
 package com.bgsoftware.superiorskyblock.commands;
 
+import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
@@ -7,10 +8,8 @@ import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.menu.MenuControlPanel;
 import com.bgsoftware.superiorskyblock.menu.MenuMembers;
 import com.bgsoftware.superiorskyblock.menu.MenuVisitors;
-import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -64,23 +63,23 @@ public final class CmdPanel implements ISuperiorCommand {
 
         Island island = arguments.getKey();
 
-        if(island == null)
+        if (island == null)
             return;
 
         SuperiorPlayer superiorPlayer = arguments.getValue();
 
-        if(args.length > 1){
-            if(args[1].equalsIgnoreCase("members")){
+        if (args.length > 1) {
+            if (args[1].equalsIgnoreCase("members")) {
                 MenuMembers.openInventory(superiorPlayer, null, superiorPlayer.getIsland());
                 return;
-            }else if(args[1].equalsIgnoreCase("visitors")){
+            } else if (args[1].equalsIgnoreCase("visitors")) {
                 MenuVisitors.openInventory(superiorPlayer, null, superiorPlayer.getIsland());
                 return;
-            }else if(args[1].equalsIgnoreCase("toggle")){
-                if(superiorPlayer.hasToggledPanel()){
+            } else if (args[1].equalsIgnoreCase("toggle")) {
+                if (superiorPlayer.hasToggledPanel()) {
                     superiorPlayer.setToggledPanel(false);
                     Locale.PANEL_TOGGLE_OFF.send(superiorPlayer);
-                }else{
+                } else {
                     superiorPlayer.setToggledPanel(true);
                     Locale.PANEL_TOGGLE_ON.send(superiorPlayer);
                 }

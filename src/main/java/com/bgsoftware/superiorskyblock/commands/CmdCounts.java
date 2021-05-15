@@ -57,7 +57,7 @@ public final class CmdCounts implements ISuperiorCommand {
         Island island = (args.length == 1 ? CommandArguments.getSenderIsland(plugin, sender) :
                 CommandArguments.getIsland(plugin, sender, args[1])).getKey();
 
-        if(island == null)
+        if (island == null)
             return;
 
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(sender);

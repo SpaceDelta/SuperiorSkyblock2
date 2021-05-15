@@ -4,13 +4,13 @@ import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.island.PlayerRole;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
-import com.bgsoftware.superiorskyblock.island.data.SIslandDataHandler;
-import com.bgsoftware.superiorskyblock.island.data.SPlayerDataHandler;
+import com.bgsoftware.superiorskyblock.island.SPlayerRole;
 import com.bgsoftware.superiorskyblock.island.bank.SBankTransaction;
 import com.bgsoftware.superiorskyblock.island.bank.SIslandBank;
+import com.bgsoftware.superiorskyblock.island.data.SIslandDataHandler;
+import com.bgsoftware.superiorskyblock.island.data.SPlayerDataHandler;
 import com.bgsoftware.superiorskyblock.utils.database.Query;
 import com.bgsoftware.superiorskyblock.utils.database.SQLHelper;
-import com.bgsoftware.superiorskyblock.island.SPlayerRole;
 import com.bgsoftware.superiorskyblock.utils.database.StatementHolder;
 import com.bgsoftware.superiorskyblock.utils.exceptions.HandlerLoadException;
 import com.bgsoftware.superiorskyblock.utils.threads.Executor;
@@ -18,7 +18,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import java.io.File;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -27,7 +28,7 @@ public final class DataHandler extends AbstractHandler {
 
     private DatabaseType database = DatabaseType.SQLite;
 
-    public DataHandler(SuperiorSkyblockPlugin plugin){
+    public DataHandler(SuperiorSkyblockPlugin plugin) {
         super(plugin);
     }
 
@@ -41,7 +42,7 @@ public final class DataHandler extends AbstractHandler {
     public void loadDataWithException() throws HandlerLoadException {
         this.database = DatabaseType.fromName(plugin.getSettings().databaseType);
 
-        if(database == DatabaseType.SQLite){
+        if (database == DatabaseType.SQLite) {
             try {
                 File file = new File(plugin.getDataFolder(), "database.db");
                 if (!file.exists()) {
@@ -53,12 +54,12 @@ public final class DataHandler extends AbstractHandler {
                         return;
                     }
                 }
-            }catch(Exception ex){
+            } catch (Exception ex) {
                 throw new HandlerLoadException(ex, HandlerLoadException.ErrorLevel.SERVER_SHUTDOWN);
             }
         }
 
-        if(!SQLHelper.createConnection(plugin)){
+        if (!SQLHelper.createConnection(plugin)) {
             throw new HandlerLoadException("Couldn't connect to the database.\nMake sure all information is correct.", HandlerLoadException.ErrorLevel.SERVER_SHUTDOWN);
         }
 
@@ -71,17 +72,17 @@ public final class DataHandler extends AbstractHandler {
             return;
         }
 
-        try{
+        try {
             //Saving grid
             SQLHelper.executeUpdate("DELETE FROM {prefix}grid;");
             plugin.getGrid().executeGridInsertStatement(false);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void loadDatabase(){
+    public void loadDatabase() {
         //Creating default islands table
         createIslandsTable();
 
@@ -111,7 +112,7 @@ public final class DataHandler extends AbstractHandler {
                 "dirtyChunks TEXT" +
                 ");");
 
-        if(plugin.getSettings().bankLogs) {
+        if (plugin.getSettings().bankLogs) {
             //Creating default transactions table
             SQLHelper.executeUpdate("CREATE TABLE IF NOT EXISTS {prefix}bankTransactions (" +
                     "island VARCHAR(36), " +
@@ -124,7 +125,7 @@ public final class DataHandler extends AbstractHandler {
                     ");");
         }
 
-        if(!containsGrid())
+        if (!containsGrid())
             plugin.getGrid().executeGridInsertStatement(false);
 
         //Creating default stacked-blocks table
@@ -190,7 +191,7 @@ public final class DataHandler extends AbstractHandler {
             while (resultSet.next()) {
                 plugin.getPlayers().loadPlayer(resultSet);
 
-                if(!updateRoles) {
+                if (!updateRoles) {
                     try {
                         Integer.parseInt(resultSet.getString("islandRole"));
                     } catch (NumberFormatException ex) {
@@ -199,8 +200,8 @@ public final class DataHandler extends AbstractHandler {
                 }
             }
 
-            if(updateRoles){
-                for(PlayerRole playerRole : plugin.getPlayers().getRoles()){
+            if (updateRoles) {
+                for (PlayerRole playerRole : plugin.getPlayers().getRoles()) {
                     SQLHelper.executeUpdate("UPDATE {prefix}players SET islandRole = '" + playerRole.getId() + "' WHERE islandRole = '" + playerRole + "';");
                 }
             }
@@ -214,13 +215,13 @@ public final class DataHandler extends AbstractHandler {
         SQLHelper.executeQuery("SELECT * FROM {prefix}islands;", resultSet -> {
             while (resultSet.next()) {
                 String uuidRaw = resultSet.getString("uuid");
-                if(!updateUUIDs.get() && (uuidRaw == null || uuidRaw.isEmpty()))
+                if (!updateUUIDs.get() && (uuidRaw == null || uuidRaw.isEmpty()))
                     updateUUIDs.set(true);
                 plugin.getGrid().createIsland(resultSet);
             }
         });
 
-        if(updateUUIDs.get()){
+        if (updateUUIDs.get()) {
             StatementHolder uuidHolder = Query.ISLAND_SET_UUID.getStatementHolder(null);
             uuidHolder.prepareBatch();
             plugin.getGrid().getIslands().forEach(island -> uuidHolder
@@ -248,26 +249,27 @@ public final class DataHandler extends AbstractHandler {
             while (resultSet.next()) {
                 plugin.getGrid().loadStackedBlocks(resultSet);
                 String item = resultSet.getString("item");
-                if(item == null || item.isEmpty())
+                if (item == null || item.isEmpty())
                     updateBlockKeys.set(true);
             }
         });
 
-        if(updateBlockKeys.get()){
+        if (updateBlockKeys.get()) {
             Executor.sync(() -> plugin.getGrid().updateStackedBlockKeys());
         }
 
         SuperiorSkyblockPlugin.log("Finished stacked blocks!");
 
-        if(plugin.getSettings().bankLogs) {
+        if (plugin.getSettings().bankLogs) {
             SuperiorSkyblockPlugin.log("Starting to bank transactions...");
 
             SQLHelper.executeQuery("SELECT * FROM {prefix}bankTransactions;", resultSet -> {
                 while (resultSet.next()) {
-                    try{
+                    try {
                         Island island = plugin.getGrid().getIslandByUUID(UUID.fromString(resultSet.getString("island")));
                         ((SIslandBank) island.getIslandBank()).loadTransaction(new SBankTransaction(resultSet));
-                    }catch (Exception ignored){}
+                    } catch (Exception ignored) {
+                    }
                 }
             });
 
@@ -278,8 +280,8 @@ public final class DataHandler extends AbstractHandler {
          *  Because of a bug caused leaders to be guests, I am looping through all the players and trying to fix it here.
          */
 
-        for(SuperiorPlayer superiorPlayer : plugin.getPlayers().getAllPlayers()){
-            if(superiorPlayer.getIslandLeader().getUniqueId().equals(superiorPlayer.getUniqueId()) && superiorPlayer.getIsland() != null && !superiorPlayer.getPlayerRole().isLastRole()){
+        for (SuperiorPlayer superiorPlayer : plugin.getPlayers().getAllPlayers()) {
+            if (superiorPlayer.getIslandLeader().getUniqueId().equals(superiorPlayer.getUniqueId()) && superiorPlayer.getIsland() != null && !superiorPlayer.getPlayerRole().isLastRole()) {
                 SuperiorSkyblockPlugin.log("[WARN] Seems like " + superiorPlayer.getName() + " is an island leader, but have a guest role - fixing it...");
                 superiorPlayer.setPlayerRole(SPlayerRole.lastRole());
             }
@@ -287,7 +289,7 @@ public final class DataHandler extends AbstractHandler {
 
     }
 
-    private void createIslandsTable(){
+    private void createIslandsTable() {
         SQLHelper.executeUpdate("CREATE TABLE IF NOT EXISTS {prefix}islands (" +
                 "owner VARCHAR(36) PRIMARY KEY, " +
                 "center TEXT, " +
@@ -346,8 +348,8 @@ public final class DataHandler extends AbstractHandler {
 
     private String getDefaultGenerator() {
         StringBuilder generatorsBuilder = new StringBuilder();
-        for(int i = 0; i < plugin.getSettings().defaultGenerator.length; i++) {
-            if(plugin.getSettings().defaultGenerator[i] != null) {
+        for (int i = 0; i < plugin.getSettings().defaultGenerator.length; i++) {
+            if (plugin.getSettings().defaultGenerator[i] != null) {
                 StringBuilder generatorBuilder = new StringBuilder();
                 World.Environment environment = World.Environment.values()[i];
                 plugin.getSettings().defaultGenerator[i].forEach((key, value) ->
@@ -359,15 +361,15 @@ public final class DataHandler extends AbstractHandler {
         return generatorsBuilder.length() == 0 ? "" : generatorsBuilder.toString().substring(1);
     }
 
-    public void closeConnection(){
+    public void closeConnection() {
         SQLHelper.close();
     }
 
-    public void insertIsland(Island island){
+    public void insertIsland(Island island) {
         ((SIslandDataHandler) island.getDataHandler()).executeInsertStatement(true);
     }
 
-    public void deleteIsland(Island island, boolean async){
+    public void deleteIsland(Island island, boolean async) {
         if (async && Bukkit.isPrimaryThread()) {
             Executor.async(() -> deleteIsland(island, false));
             return;
@@ -376,27 +378,27 @@ public final class DataHandler extends AbstractHandler {
         SQLHelper.executeUpdate("DELETE FROM {prefix}islands WHERE owner = '" + island.getOwner().getUniqueId() + "';");
     }
 
-    public void insertPlayer(SuperiorPlayer player){
+    public void insertPlayer(SuperiorPlayer player) {
         ((SPlayerDataHandler) player.getDataHandler()).executeInsertStatement(true);
     }
 
-    private boolean containsGrid(){
+    private boolean containsGrid() {
         return SQLHelper.doesConditionExist("SELECT * FROM {prefix}grid;");
     }
 
     private void addColumnIfNotExists(String column, String table, String def, String type) {
         String defaultSection = " DEFAULT " + def;
 
-        if(database == DatabaseType.MySQL) {
+        if (database == DatabaseType.MySQL) {
             column = "COLUMN " + column;
-            if(type.equals("TEXT") || type.equals("LONGTEXT"))
+            if (type.equals("TEXT") || type.equals("LONGTEXT"))
                 defaultSection = "";
         }
 
         String statementStr = "ALTER TABLE {prefix}" + table + " ADD " + column + " " + type + defaultSection + ";";
 
         SQLHelper.buildStatement(statementStr, PreparedStatement::executeUpdate, ex -> {
-            if(!ex.getMessage().toLowerCase().contains("duplicate")) {
+            if (!ex.getMessage().toLowerCase().contains("duplicate")) {
                 System.out.println("Statement: " + statementStr);
                 ex.printStackTrace();
             }
@@ -405,54 +407,52 @@ public final class DataHandler extends AbstractHandler {
 
     @SuppressWarnings("all")
     private void editColumn(String column, String table, String newType) {
-        if(!isType(column, table, newType)){
-            if(database == DatabaseType.SQLite){
+        if (!isType(column, table, newType)) {
+            if (database == DatabaseType.SQLite) {
                 String tmpTable = "__tmp" + table;
                 SQLHelper.buildStatement("ALTER TABLE {prefix}" + table + " RENAME TO " + tmpTable + ";", preparedStatement -> {
-                    try{
+                    try {
                         preparedStatement.executeUpdate();
-                    }catch(Throwable ex){
+                    } catch (Throwable ex) {
                         preparedStatement.executeQuery();
                     }
                 }, Throwable::printStackTrace);
                 createIslandsTable();
                 SQLHelper.buildStatement("INSERT INTO {prefix}" + table + "  SELECT * FROM " + tmpTable + ";", PreparedStatement::executeUpdate, Throwable::printStackTrace);
                 SQLHelper.buildStatement("DROP TABLE " + tmpTable + ";", PreparedStatement::executeUpdate, Throwable::printStackTrace);
-            }
-            else {
+            } else {
                 String statementStr = "ALTER TABLE {prefix}" + table + " MODIFY COLUMN " + column + " " + newType + ";";
                 SQLHelper.buildStatement(statementStr, PreparedStatement::executeUpdate, Throwable::printStackTrace);
             }
         }
     }
 
-    private boolean isType(String column, String table, String type){
+    private boolean isType(String column, String table, String type) {
         AtomicBoolean sameType = new AtomicBoolean(false);
-        if(database == DatabaseType.SQLite){
+        if (database == DatabaseType.SQLite) {
             SQLHelper.buildStatement("PRAGMA table_info({prefix}" + table + ");", preparedStatement -> {
-                try(ResultSet resultSet = preparedStatement.executeQuery()){
-                    while(resultSet.next()){
-                        if(column.equals(resultSet.getString(2))){
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        if (column.equals(resultSet.getString(2))) {
                             sameType.set(type.equals(resultSet.getString(3)));
                             break;
                         }
                     }
-                }catch(Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }, Throwable::printStackTrace);
-        }
-        else{
+        } else {
             //SQLHelper.buildStatement("SELECT data_type FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{prefix}" + table + "' AND column_name = '" + column + "';", preparedStatement -> {
             SQLHelper.buildStatement("SHOW FIELDS FROM {prefix}" + table + ";", preparedStatement -> {
-                try(ResultSet resultSet = preparedStatement.executeQuery()){
-                    while (resultSet.next()){
-                        if(column.equals(resultSet.getString("Field"))){
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        if (column.equals(resultSet.getString("Field"))) {
                             sameType.set(type.equals(resultSet.getString("Type")));
                             break;
                         }
                     }
-                }catch(Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }, Throwable::printStackTrace);
@@ -460,12 +460,12 @@ public final class DataHandler extends AbstractHandler {
         return sameType.get();
     }
 
-    private enum DatabaseType{
+    private enum DatabaseType {
 
         MySQL,
         SQLite;
 
-        private static DatabaseType fromName(String name){
+        private static DatabaseType fromName(String name) {
             return name.equalsIgnoreCase("MySQL") ? MySQL : SQLite;
         }
 

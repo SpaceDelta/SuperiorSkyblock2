@@ -64,10 +64,10 @@ public final class CmdAdminUnlockWorld implements IAdminIslandCommand {
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, SuperiorPlayer targetPlayer, List<Island> islands, String[] args) {
         World.Environment environment = CommandArguments.getEnvironment(sender, args[3]);
 
-        if(environment == null)
+        if (environment == null)
             return;
 
-        if(environment == World.Environment.NORMAL){
+        if (environment == World.Environment.NORMAL) {
             Locale.INVALID_ENVIRONMENT.send(sender, args[3]);
             return;
         }
@@ -76,10 +76,9 @@ public final class CmdAdminUnlockWorld implements IAdminIslandCommand {
         boolean netherUnlock = environment == World.Environment.NETHER;
 
         islands.forEach(island -> {
-            if(netherUnlock){
+            if (netherUnlock) {
                 island.setNetherEnabled(enable);
-            }
-            else{
+            } else {
                 island.setEndEnabled(enable);
             }
         });

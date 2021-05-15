@@ -19,13 +19,14 @@ public class IslandUpgradeEvent extends IslandEvent implements Cancellable {
 
     /**
      * The constructor for the event.
-     * @param superiorPlayer The player who upgraded the island. Can be null if ran by the console.
-     * @param island The island object that was upgraded.
-     * @param upgradeName The name of the upgrade.
-     * @param commands The commands that will be ran upon upgrade.
+     *
+     * @param superiorPlayer   The player who upgraded the island. Can be null if ran by the console.
+     * @param island           The island object that was upgraded.
+     * @param upgradeName      The name of the upgrade.
+     * @param commands         The commands that will be ran upon upgrade.
      * @param amountToWithdraw The amount of money that will be withdrawn.
      */
-    public IslandUpgradeEvent(SuperiorPlayer superiorPlayer, Island island, String upgradeName, List<String> commands, double amountToWithdraw){
+    public IslandUpgradeEvent(SuperiorPlayer superiorPlayer, Island island, String upgradeName, List<String> commands, double amountToWithdraw) {
         super(island);
         this.superiorPlayer = superiorPlayer;
         this.upgradeName = upgradeName;

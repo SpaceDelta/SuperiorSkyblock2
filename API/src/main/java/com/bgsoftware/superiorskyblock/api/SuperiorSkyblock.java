@@ -1,16 +1,6 @@
 package com.bgsoftware.superiorskyblock.api;
 
-import com.bgsoftware.superiorskyblock.api.handlers.BlockValuesManager;
-import com.bgsoftware.superiorskyblock.api.handlers.CommandsManager;
-import com.bgsoftware.superiorskyblock.api.handlers.FactoriesManager;
-import com.bgsoftware.superiorskyblock.api.handlers.GridManager;
-import com.bgsoftware.superiorskyblock.api.handlers.KeysManager;
-import com.bgsoftware.superiorskyblock.api.handlers.MenusManager;
-import com.bgsoftware.superiorskyblock.api.handlers.MissionsManager;
-import com.bgsoftware.superiorskyblock.api.handlers.PlayersManager;
-import com.bgsoftware.superiorskyblock.api.handlers.ProvidersManager;
-import com.bgsoftware.superiorskyblock.api.handlers.SchematicManager;
-import com.bgsoftware.superiorskyblock.api.handlers.UpgradesManager;
+import com.bgsoftware.superiorskyblock.api.handlers.*;
 
 public interface SuperiorSkyblock {
 

@@ -1,16 +1,9 @@
 package com.bgsoftware.superiorskyblock.hooks;
 
-import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
-import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
-import com.bgsoftware.superiorskyblock.utils.StringUtils;
-import com.bgsoftware.superiorskyblock.utils.key.Key;
-import com.bgsoftware.superiorskyblock.utils.legacy.Materials;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,7 +14,7 @@ public final class BlocksProvider_EpicSpawners implements BlocksProvider {
     // private final EpicSpawners instance = EpicSpawners.getInstance();
 
     public BlocksProvider_EpicSpawners() {
-        if(false && !registered) { // SpaceDelta
+        if (false && !registered) { // SpaceDelta
             Bukkit.getPluginManager().registerEvents(new StackerListener(), SuperiorSkyblockPlugin.getPlugin());
             registered = true;
             SuperiorSkyblockPlugin.log("Using EpicSpawners as a spawners provider.");
@@ -31,7 +24,7 @@ public final class BlocksProvider_EpicSpawners implements BlocksProvider {
     @Override
     public Pair<Integer, String> getSpawner(Location location) {
         int blockCount = -1;
-        if(Bukkit.isPrimaryThread()){
+        if (Bukkit.isPrimaryThread()) {
             // Start SpaceDelta
             // blockCount = instance.getSpawnerManager().getSpawnerFromWorld(location).getFirstStack().getStackSize();
             // EndSpaceDelta
@@ -44,7 +37,7 @@ public final class BlocksProvider_EpicSpawners implements BlocksProvider {
         try {
             // return instance.getSpawnerManager().getSpawnerData(itemStack).getEntities().get(0).name();
             return "PIG";
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return "PIG";
         }
     }

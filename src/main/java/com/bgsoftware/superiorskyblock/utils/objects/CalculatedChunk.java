@@ -12,7 +12,7 @@ public final class CalculatedChunk {
     private final KeyMap<Integer> blockCounts;
     private final Set<Location> spawners;
 
-    public CalculatedChunk(ChunkPosition chunkPosition, KeyMap<Integer> blockCounts, Set<Location> spawners){
+    public CalculatedChunk(ChunkPosition chunkPosition, KeyMap<Integer> blockCounts, Set<Location> spawners) {
         this.chunkPosition = chunkPosition;
         this.blockCounts = blockCounts;
         this.spawners = spawners;

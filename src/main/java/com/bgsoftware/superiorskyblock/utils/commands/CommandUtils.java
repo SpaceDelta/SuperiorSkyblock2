@@ -8,20 +8,20 @@ public final class CommandUtils {
 
     private static final SuperiorSkyblockPlugin plugin = SuperiorSkyblockPlugin.getPlugin();
 
-    private CommandUtils(){
+    private CommandUtils() {
 
     }
 
-    public static void dispatchSubCommand(CommandSender sender, String subCommand){
+    public static void dispatchSubCommand(CommandSender sender, String subCommand) {
         dispatchSubCommand(sender, subCommand, "");
     }
 
-    public static void dispatchSubCommand(CommandSender sender, String subCommand, String args){
+    public static void dispatchSubCommand(CommandSender sender, String subCommand, String args) {
         String commandLabel = plugin.getSettings().islandCommand.split(",")[0];
         Bukkit.dispatchCommand(sender, commandLabel + " " + subCommand + (args.isEmpty() ? "" : " " + args));
     }
 
-    public static void dispatchAdminSubCommand(String subCommand, String args){
+    public static void dispatchAdminSubCommand(String subCommand, String args) {
         String commandLabel = plugin.getSettings().islandCommand.split(",")[0];
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandLabel + " admin " + subCommand + (args.isEmpty() ? "" : " " + args));
     }

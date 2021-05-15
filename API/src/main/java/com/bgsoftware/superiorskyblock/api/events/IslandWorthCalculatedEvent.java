@@ -15,10 +15,10 @@ public class IslandWorthCalculatedEvent extends IslandEvent {
 
     /**
      * The constructor of the event.
-     * @param island The island that it's worth was calculated.
-     * @param level The new level of the island.
-     * @param player The player who requested the recalculate (may be null).
      *
+     * @param island The island that it's worth was calculated.
+     * @param level  The new level of the island.
+     * @param player The player who requested the recalculate (may be null).
      * @deprecated See IslandWorthCalculatedEvent(Island, SuperiorPlayer, BigDecimal, BigDecimal)
      */
     @Deprecated
@@ -28,10 +28,11 @@ public class IslandWorthCalculatedEvent extends IslandEvent {
 
     /**
      * The constructor of the event.
+     *
      * @param island The island that it's worth was calculated.
      * @param player The player who requested the operation (may be null).
-     * @param level The new level of the island.
-     * @param worth The new worth value of the island.
+     * @param level  The new level of the island.
+     * @param worth  The new worth value of the island.
      */
     public IslandWorthCalculatedEvent(Island island, SuperiorPlayer player, BigDecimal level, BigDecimal worth) {
         super(island);

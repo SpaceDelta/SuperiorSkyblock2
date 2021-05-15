@@ -1,5 +1,6 @@
 package com.bgsoftware.superiorskyblock.commands;
 
+import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.island.PlayerRole;
@@ -11,16 +12,10 @@ import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
 import com.bgsoftware.superiorskyblock.utils.registry.Registry;
 import com.bgsoftware.superiorskyblock.wrappers.SBlockPosition;
-import com.bgsoftware.superiorskyblock.Locale;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public final class CmdShow implements ISuperiorCommand {
 
@@ -70,39 +65,39 @@ public final class CmdShow implements ISuperiorCommand {
         Island island = args.length == 1 ? CommandArguments.getIslandWhereStanding(plugin, sender).getKey() :
                 CommandArguments.getIsland(plugin, sender, args[1]).getKey();
 
-        if(island == null)
+        if (island == null)
             return;
 
         java.util.Locale locale = LocaleUtils.getLocale(sender);
 
         StringBuilder infoMessage = new StringBuilder();
 
-        if(!Locale.ISLAND_INFO_HEADER.isEmpty(locale))
+        if (!Locale.ISLAND_INFO_HEADER.isEmpty(locale))
             infoMessage.append(Locale.ISLAND_INFO_HEADER.getMessage(locale)).append("\n");
-        if(!Locale.ISLAND_INFO_OWNER.isEmpty(locale))
+        if (!Locale.ISLAND_INFO_OWNER.isEmpty(locale))
             infoMessage.append(Locale.ISLAND_INFO_OWNER.getMessage(locale, island.getOwner().getName())).append("\n");
-        if(!Locale.ISLAND_INFO_NAME.isEmpty(locale) && !island.getName().isEmpty())
+        if (!Locale.ISLAND_INFO_NAME.isEmpty(locale) && !island.getName().isEmpty())
             infoMessage.append(Locale.ISLAND_INFO_NAME.getMessage(locale, island.getName())).append("\n");
-        if(!Locale.ISLAND_INFO_LOCATION.isEmpty(locale))
+        if (!Locale.ISLAND_INFO_LOCATION.isEmpty(locale))
             infoMessage.append(Locale.ISLAND_INFO_LOCATION.getMessage(locale, SBlockPosition.of(island.getCenter(World.Environment.NORMAL)))).append("\n");
-        if(!Locale.ISLAND_INFO_CREATION_TIME.isEmpty(locale))
+        if (!Locale.ISLAND_INFO_CREATION_TIME.isEmpty(locale))
             infoMessage.append(Locale.ISLAND_INFO_CREATION_TIME.getMessage(locale, island.getCreationTimeDate())).append("\n");
-        if(!Locale.ISLAND_INFO_RATE.isEmpty(locale)) {
+        if (!Locale.ISLAND_INFO_RATE.isEmpty(locale)) {
             double rating = island.getTotalRating();
             infoMessage.append(Locale.ISLAND_INFO_RATE.getMessage(locale, StringUtils.formatRating(locale, rating), StringUtils.format(rating), island.getRatingAmount())).append("\n");
         }
-        if(!Locale.ISLAND_INFO_BANK.isEmpty(locale))
+        if (!Locale.ISLAND_INFO_BANK.isEmpty(locale))
             infoMessage.append(Locale.ISLAND_INFO_BANK.getMessage(locale, island.getIslandBank().getBalance())).append("\n");
-        if(!Locale.ISLAND_INFO_WORTH.isEmpty(locale))
+        if (!Locale.ISLAND_INFO_WORTH.isEmpty(locale))
             infoMessage.append(Locale.ISLAND_INFO_WORTH.getMessage(locale, island.getWorth())).append("\n");
-        if(!Locale.ISLAND_INFO_DISCORD.isEmpty(locale) && island.hasPermission(sender, IslandPrivileges.DISCORD_SHOW))
+        if (!Locale.ISLAND_INFO_DISCORD.isEmpty(locale) && island.hasPermission(sender, IslandPrivileges.DISCORD_SHOW))
             infoMessage.append(Locale.ISLAND_INFO_DISCORD.getMessage(locale, island.getDiscord())).append("\n");
-        if(!Locale.ISLAND_INFO_PAYPAL.isEmpty(locale) && island.hasPermission(sender, IslandPrivileges.PAYPAL_SHOW))
+        if (!Locale.ISLAND_INFO_PAYPAL.isEmpty(locale) && island.hasPermission(sender, IslandPrivileges.PAYPAL_SHOW))
             infoMessage.append(Locale.ISLAND_INFO_PAYPAL.getMessage(locale, island.getPaypal())).append("\n");
-        if(!Locale.ISLAND_INFO_VISITORS_COUNT.isEmpty(locale))
+        if (!Locale.ISLAND_INFO_VISITORS_COUNT.isEmpty(locale))
             infoMessage.append(Locale.ISLAND_INFO_VISITORS_COUNT.getMessage(locale, island.getUniqueVisitorsWithTimes().size())).append("\n");
 
-        if(!Locale.ISLAND_INFO_ROLES.isEmpty(locale)) {
+        if (!Locale.ISLAND_INFO_ROLES.isEmpty(locale)) {
             Registry<PlayerRole, StringBuilder> rolesStrings = Registry.createRegistry();
             plugin.getPlayers().getRoles().stream().filter(playerRole -> playerRole.isRoleLadder() && !playerRole.isLastRole())
                     .forEach(playerRole -> rolesStrings.add(playerRole, new StringBuilder()));
@@ -111,10 +106,10 @@ public final class CmdShow implements ISuperiorCommand {
 
             if (!Locale.ISLAND_INFO_PLAYER_LINE.isEmpty(locale)) {
                 members.forEach(superiorPlayer -> {
-                    try{
+                    try {
                         rolesStrings.get(superiorPlayer.getPlayerRole())
                                 .append(Locale.ISLAND_INFO_PLAYER_LINE.getMessage(locale, superiorPlayer.getName())).append("\n");
-                    }catch(NullPointerException ex){
+                    } catch (NullPointerException ex) {
                         SuperiorSkyblockPlugin.log("[Warn] It seems like " + superiorPlayer.getName() + " isn't part of the island of " + island.getOwner().getName() + ".");
                     }
                 });
@@ -123,12 +118,12 @@ public final class CmdShow implements ISuperiorCommand {
             rolesStrings.keys().stream()
                     .sorted(Collections.reverseOrder(Comparator.comparingInt(PlayerRole::getWeight)))
                     .forEach(playerRole ->
-                    infoMessage.append(Locale.ISLAND_INFO_ROLES.getMessage(locale, playerRole, rolesStrings.get(playerRole))));
+                            infoMessage.append(Locale.ISLAND_INFO_ROLES.getMessage(locale, playerRole, rolesStrings.get(playerRole))));
 
             rolesStrings.delete();
         }
 
-        if(!Locale.ISLAND_INFO_FOOTER.isEmpty(locale))
+        if (!Locale.ISLAND_INFO_FOOTER.isEmpty(locale))
             infoMessage.append(Locale.ISLAND_INFO_FOOTER.getMessage(locale));
 
         Locale.sendMessage(sender, infoMessage.toString(), false);

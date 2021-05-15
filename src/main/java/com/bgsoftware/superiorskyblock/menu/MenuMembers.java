@@ -21,9 +21,86 @@ public final class MenuMembers extends PagedSuperiorMenu<SuperiorPlayer> {
 
     private final Island island;
 
-    private MenuMembers(SuperiorPlayer superiorPlayer, Island island){
+    private MenuMembers(SuperiorPlayer superiorPlayer, Island island) {
         super("menuMembers", superiorPlayer);
         this.island = island;
+    }
+
+    public static void init() {
+        MenuMembers menuMembers = new MenuMembers(null, null);
+
+        File file = new File(plugin.getDataFolder(), "menus/members.yml");
+
+        if (!file.exists())
+            FileUtils.saveResource("menus/members.yml");
+
+        CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
+
+        if (convertOldGUI(cfg)) {
+            try {
+                cfg.save(file);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuMembers, "members.yml", cfg);
+
+        menuMembers.setPreviousSlot(getSlots(cfg, "previous-page", charSlots));
+        menuMembers.setCurrentSlot(getSlots(cfg, "current-page", charSlots));
+        menuMembers.setNextSlot(getSlots(cfg, "next-page", charSlots));
+        menuMembers.setSlots(getSlots(cfg, "slots", charSlots));
+
+        charSlots.delete();
+
+        menuMembers.markCompleted();
+    }
+
+    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, Island island) {
+        new MenuMembers(superiorPlayer, island).open(previousMenu);
+    }
+
+    public static void refreshMenus(Island island) {
+        SuperiorMenu.refreshMenus(MenuMembers.class, superiorMenu -> superiorMenu.island.equals(island));
+    }
+
+    private static boolean convertOldGUI(YamlConfiguration newMenu) {
+        File oldFile = new File(plugin.getDataFolder(), "guis/panel-gui.yml");
+
+        if (!oldFile.exists())
+            return false;
+
+        //We want to reset the items of newMenu.
+        ConfigurationSection itemsSection = newMenu.createSection("items");
+        ConfigurationSection soundsSection = newMenu.createSection("sounds");
+        ConfigurationSection commandsSection = newMenu.createSection("commands");
+
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(oldFile);
+
+        newMenu.set("title", cfg.getString("members-panel.title"));
+
+        int size = cfg.getInt("members-panel.size");
+
+        char[] patternChars = new char[size * 9];
+        Arrays.fill(patternChars, '\n');
+
+        int charCounter = 0;
+
+        if (cfg.contains("members-panel.fill-items")) {
+            charCounter = MenuConverter.convertFillItems(cfg.getConfigurationSection("members-panel.fill-items"),
+                    charCounter, patternChars, itemsSection, commandsSection, soundsSection);
+        }
+
+        char slotsChar = itemChars[charCounter++];
+
+        MenuConverter.convertPagedButtons(cfg.getConfigurationSection("members-panel"),
+                cfg.getConfigurationSection("members-panel.member-item"), newMenu, patternChars,
+                slotsChar, itemChars[charCounter++], itemChars[charCounter++], itemChars[charCounter++],
+                itemsSection, commandsSection, soundsSection);
+
+        newMenu.set("pattern", MenuConverter.buildPattern(size, patternChars, itemChars[charCounter]));
+
+        return true;
     }
 
     @Override
@@ -44,7 +121,7 @@ public final class MenuMembers extends PagedSuperiorMenu<SuperiorPlayer> {
                     .replaceAll("{0}", superiorPlayer.getName())
                     .replaceAll("{1}", superiorPlayer.getPlayerRole() + "")
                     .asSkullOf(superiorPlayer).build(superiorPlayer);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             SuperiorSkyblockPlugin.log("Failed to load menu because of player: " + superiorPlayer.getName());
             throw ex;
         }
@@ -53,83 +130,6 @@ public final class MenuMembers extends PagedSuperiorMenu<SuperiorPlayer> {
     @Override
     protected List<SuperiorPlayer> requestObjects() {
         return island.getIslandMembers(true);
-    }
-
-    public static void init(){
-        MenuMembers menuMembers = new MenuMembers(null, null);
-
-        File file = new File(plugin.getDataFolder(), "menus/members.yml");
-
-        if(!file.exists())
-            FileUtils.saveResource("menus/members.yml");
-
-        CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
-
-        if(convertOldGUI(cfg)){
-            try {
-                cfg.save(file);
-            }catch (Exception ex){
-                ex.printStackTrace();
-            }
-        }
-
-        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuMembers, "members.yml", cfg);
-
-        menuMembers.setPreviousSlot(getSlots(cfg, "previous-page", charSlots));
-        menuMembers.setCurrentSlot(getSlots(cfg, "current-page", charSlots));
-        menuMembers.setNextSlot(getSlots(cfg, "next-page", charSlots));
-        menuMembers.setSlots(getSlots(cfg, "slots", charSlots));
-
-        charSlots.delete();
-
-        menuMembers.markCompleted();
-    }
-
-    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, Island island){
-        new MenuMembers(superiorPlayer, island).open(previousMenu);
-    }
-
-    public static void refreshMenus(Island island){
-        SuperiorMenu.refreshMenus(MenuMembers.class, superiorMenu -> superiorMenu.island.equals(island));
-    }
-
-    private static boolean convertOldGUI(YamlConfiguration newMenu){
-        File oldFile = new File(plugin.getDataFolder(), "guis/panel-gui.yml");
-
-        if(!oldFile.exists())
-            return false;
-
-        //We want to reset the items of newMenu.
-        ConfigurationSection itemsSection = newMenu.createSection("items");
-        ConfigurationSection soundsSection = newMenu.createSection("sounds");
-        ConfigurationSection commandsSection = newMenu.createSection("commands");
-
-        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(oldFile);
-
-        newMenu.set("title", cfg.getString("members-panel.title"));
-
-        int size = cfg.getInt("members-panel.size");
-
-        char[] patternChars = new char[size * 9];
-        Arrays.fill(patternChars, '\n');
-
-        int charCounter = 0;
-
-        if(cfg.contains("members-panel.fill-items")) {
-            charCounter = MenuConverter.convertFillItems(cfg.getConfigurationSection("members-panel.fill-items"),
-                    charCounter, patternChars, itemsSection, commandsSection, soundsSection);
-        }
-
-        char slotsChar = itemChars[charCounter++];
-
-        MenuConverter.convertPagedButtons(cfg.getConfigurationSection("members-panel"),
-                cfg.getConfigurationSection("members-panel.member-item"), newMenu, patternChars,
-                slotsChar, itemChars[charCounter++], itemChars[charCounter++], itemChars[charCounter++],
-                itemsSection, commandsSection, soundsSection);
-
-        newMenu.set("pattern", MenuConverter.buildPattern(size, patternChars, itemChars[charCounter]));
-
-        return true;
     }
 
 }

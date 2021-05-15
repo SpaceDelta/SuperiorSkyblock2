@@ -65,15 +65,15 @@ public final class CmdAdminAdd implements IAdminIslandCommand {
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, SuperiorPlayer superiorPlayer, Island island, String[] args) {
         SuperiorPlayer targetPlayer = CommandArguments.getPlayer(plugin, sender, args[2]);
 
-        if(targetPlayer == null)
+        if (targetPlayer == null)
             return;
 
-        if(targetPlayer.getIsland() != null){
+        if (targetPlayer.getIsland() != null) {
             Locale.PLAYER_ALREADY_IN_ISLAND.send(sender);
             return;
         }
 
-        if(!EventsCaller.callIslandJoinEvent(targetPlayer, island))
+        if (!EventsCaller.callIslandJoinEvent(targetPlayer, island))
             return;
 
         IslandUtils.sendMessage(island, Locale.JOIN_ANNOUNCEMENT, new ArrayList<>(), targetPlayer.getName());
@@ -81,18 +81,17 @@ public final class CmdAdminAdd implements IAdminIslandCommand {
         island.revokeInvite(targetPlayer);
         island.addMember(targetPlayer, SPlayerRole.defaultRole());
 
-        if(superiorPlayer == null) {
+        if (superiorPlayer == null) {
             Locale.JOINED_ISLAND_NAME.send(targetPlayer, island.getName());
             Locale.ADMIN_ADD_PLAYER_NAME.send(sender, targetPlayer.getName(), island.getName());
-        }
-        else {
+        } else {
             Locale.JOINED_ISLAND.send(targetPlayer, superiorPlayer.getName());
             Locale.ADMIN_ADD_PLAYER.send(sender, targetPlayer.getName(), superiorPlayer.getName());
         }
 
-        if(plugin.getSettings().teleportOnJoin && targetPlayer.isOnline())
+        if (plugin.getSettings().teleportOnJoin && targetPlayer.isOnline())
             targetPlayer.teleport(island);
-        if(plugin.getSettings().clearOnJoin)
+        if (plugin.getSettings().clearOnJoin)
             plugin.getNMSAdapter().clearInventory(targetPlayer.asPlayer());
     }
 

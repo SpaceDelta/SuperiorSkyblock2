@@ -18,7 +18,6 @@ import com.bgsoftware.superiorskyblock.utils.events.EventsCaller;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
 import com.bgsoftware.superiorskyblock.wrappers.SoundWrapper;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -80,27 +79,26 @@ public final class CmdRankup implements IPermissibleCommand {
         }
         Upgrade upgrade = CommandArguments.getUpgrade(plugin, superiorPlayer, args[1]);
 
-        if(upgrade == null)
+        if (upgrade == null)
             return;
 
         UpgradeLevel upgradeLevel = island.getUpgradeLevel(upgrade), nextUpgradeLevel = upgrade.getUpgradeLevel(upgradeLevel.getLevel() + 1);
 
         String permission = nextUpgradeLevel == null ? "" : nextUpgradeLevel.getPermission();
 
-        if(!permission.isEmpty() && !superiorPlayer.hasPermission(permission)){
+        if (!permission.isEmpty() && !superiorPlayer.hasPermission(permission)) {
             Locale.NO_UPGRADE_PERMISSION.send(superiorPlayer);
             return;
         }
 
         boolean hasNextLevel;
 
-        if(island.hasActiveUpgradeCooldown()){
+        if (island.hasActiveUpgradeCooldown()) {
             long timeNow = System.currentTimeMillis(), lastUpgradeTime = island.getLastTimeUpgrade();
             Locale.UPGRADE_COOLDOWN_FORMAT.send(superiorPlayer, StringUtils.formatTime(superiorPlayer.getUserLocale(),
                     lastUpgradeTime + plugin.getSettings().upgradeCooldown - timeNow));
             hasNextLevel = false;
-        }
-        else {
+        } else {
             String requiredCheckFailure = nextUpgradeLevel == null ? "" : nextUpgradeLevel.checkRequirements(superiorPlayer);
 
             if (!requiredCheckFailure.isEmpty()) {
@@ -135,7 +133,7 @@ public final class CmdRankup implements IPermissibleCommand {
         SUpgradeLevel.ItemData itemData = ((SUpgradeLevel) upgradeLevel).getItemData();
         SoundWrapper sound = hasNextLevel ? itemData.hasNextLevelSound : itemData.noNextLevelSound;
 
-        if(sound != null)
+        if (sound != null)
             sound.playSound(superiorPlayer.asPlayer());
     }
 

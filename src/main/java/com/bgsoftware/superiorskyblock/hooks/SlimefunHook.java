@@ -24,9 +24,22 @@ public final class SlimefunHook implements ProtectionModule, Listener {
 
     private final SuperiorSkyblockPlugin plugin;
 
-    private SlimefunHook(SuperiorSkyblockPlugin plugin){
+    private SlimefunHook(SuperiorSkyblockPlugin plugin) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    public static void register(SuperiorSkyblockPlugin plugin) {
+        SlimefunHook slimefunHook = new SlimefunHook(plugin);
+        Executor.sync(() -> {
+            ProtectionManager protectionManager;
+            try {
+                protectionManager = me.mrCookieSlime.Slimefun.SlimefunPlugin.getProtectionManager();
+            } catch (Throwable ex) {
+                protectionManager = io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin.getProtectionManager();
+            }
+            protectionManager.registerModule(Bukkit.getServer(), plugin.getName(), pl -> slimefunHook);
+        }, 20L);
     }
 
     @Override
@@ -44,15 +57,15 @@ public final class SlimefunHook implements ProtectionModule, Listener {
         Island island = plugin.getGrid().getIslandAt(location);
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(offlinePlayer.getUniqueId());
 
-        if(!plugin.getGrid().isIslandsWorld(location.getWorld()))
+        if (!plugin.getGrid().isIslandsWorld(location.getWorld()))
             return true;
 
-        if(protectableAction == ProtectableAction.PVP)
+        if (protectableAction == ProtectableAction.PVP)
             return island != null && island.hasSettingsEnabled(IslandFlags.PVP);
 
         IslandPrivilege islandPrivilege;
 
-        switch (protectableAction.name()){
+        switch (protectableAction.name()) {
             case "BREAK_BLOCK":
                 islandPrivilege = IslandPrivileges.BREAK;
                 break;
@@ -72,25 +85,12 @@ public final class SlimefunHook implements ProtectionModule, Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onAndroidMiner(AndroidMineEvent e){
+    public void onAndroidMiner(AndroidMineEvent e) {
         SuperiorSkyblockPlugin.debug("Action: Android Break, Block: " + e.getBlock().getLocation() + ", Type: " + e.getBlock().getType());
-        if(BlocksListener.tryUnstack(null, e.getBlock(), plugin))
+        if (BlocksListener.tryUnstack(null, e.getBlock(), plugin))
             e.setCancelled(true);
         else
             BlocksListener.handleBlockBreak(plugin, e.getBlock());
-    }
-
-    public static void register(SuperiorSkyblockPlugin plugin){
-        SlimefunHook slimefunHook = new SlimefunHook(plugin);
-        Executor.sync(() -> {
-            ProtectionManager protectionManager;
-            try{
-                protectionManager = me.mrCookieSlime.Slimefun.SlimefunPlugin.getProtectionManager();
-            }catch (Throwable ex){
-                protectionManager = io.github.thebusybiscuit.slimefun4.implementation.SlimefunPlugin.getProtectionManager();
-            }
-            protectionManager.registerModule(Bukkit.getServer(), plugin.getName(), pl -> slimefunHook);
-        }, 20L);
     }
 
 }

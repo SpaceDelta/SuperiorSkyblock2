@@ -7,7 +7,6 @@ import com.bgsoftware.superiorskyblock.menu.MenuIslandMissions;
 import com.bgsoftware.superiorskyblock.menu.MenuMissions;
 import com.bgsoftware.superiorskyblock.menu.MenuPlayerMissions;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandTabCompletes;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -61,12 +60,11 @@ public final class CmdMissions implements ISuperiorCommand {
             return;
         }
 
-        if(args.length == 2){
-            if(args[1].equalsIgnoreCase(Locale.COMMAND_ARGUMENT_ISLAND.getMessage(superiorPlayer.getUserLocale()))){
+        if (args.length == 2) {
+            if (args[1].equalsIgnoreCase(Locale.COMMAND_ARGUMENT_ISLAND.getMessage(superiorPlayer.getUserLocale()))) {
                 MenuIslandMissions.openInventory(superiorPlayer, null);
                 return;
-            }
-            else if(args[1].equalsIgnoreCase(Locale.COMMAND_ARGUMENT_PLAYER.getMessage(superiorPlayer.getUserLocale()))){
+            } else if (args[1].equalsIgnoreCase(Locale.COMMAND_ARGUMENT_PLAYER.getMessage(superiorPlayer.getUserLocale()))) {
                 MenuPlayerMissions.openInventory(superiorPlayer, null);
                 return;
             }

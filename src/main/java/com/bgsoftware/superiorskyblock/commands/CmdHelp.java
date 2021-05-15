@@ -4,7 +4,6 @@ import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.commands.SuperiorCommand;
 import com.bgsoftware.superiorskyblock.utils.LocaleUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -57,16 +56,16 @@ public final class CmdHelp implements ISuperiorCommand {
         }
         int page = 1;
 
-        if(args.length == 2){
-            try{
+        if (args.length == 2) {
+            try {
                 page = Integer.parseInt(args[1]);
-            }catch(IllegalArgumentException ex){
+            } catch (IllegalArgumentException ex) {
                 Locale.INVALID_AMOUNT.send(sender, args[1]);
                 return;
             }
         }
 
-        if(page <= 0){
+        if (page <= 0) {
             Locale.INVALID_AMOUNT.send(sender, page);
             return;
         }
@@ -75,15 +74,15 @@ public final class CmdHelp implements ISuperiorCommand {
                 .filter(subCommand -> subCommand.getPermission().isEmpty() || sender.hasPermission(subCommand.getPermission()))
                 .collect(Collectors.toList());
 
-        if(subCommands.isEmpty()){
+        if (subCommands.isEmpty()) {
             Locale.NO_COMMAND_PERMISSION.send(sender);
             return;
         }
 
         int lastPage = subCommands.size() / 7;
-        if(subCommands.size() % 7 != 0) lastPage++;
+        if (subCommands.size() % 7 != 0) lastPage++;
 
-        if(page > lastPage){
+        if (page > lastPage) {
             Locale.INVALID_AMOUNT.send(sender, page);
             return;
         }
@@ -94,16 +93,16 @@ public final class CmdHelp implements ISuperiorCommand {
 
         java.util.Locale locale = LocaleUtils.getLocale(sender);
 
-        for(SuperiorCommand _subCommand : subCommands) {
-            if(_subCommand.displayCommand() && (_subCommand.getPermission().isEmpty() || sender.hasPermission(_subCommand.getPermission()))) {
+        for (SuperiorCommand _subCommand : subCommands) {
+            if (_subCommand.displayCommand() && (_subCommand.getPermission().isEmpty() || sender.hasPermission(_subCommand.getPermission()))) {
                 String description = _subCommand.getDescription(locale);
-                if(description == null)
+                if (description == null)
                     new NullPointerException("The description of the command " + _subCommand.getAliases().get(0) + " is null.").printStackTrace();
                 Locale.ISLAND_HELP_LINE.send(sender, plugin.getCommands().getLabel() + " " + _subCommand.getUsage(locale), description == null ? "" : description);
             }
         }
 
-        if(page != lastPage)
+        if (page != lastPage)
             Locale.ISLAND_HELP_NEXT_PAGE.send(sender, page + 1);
         else
             Locale.ISLAND_HELP_FOOTER.send(sender);
@@ -113,15 +112,15 @@ public final class CmdHelp implements ISuperiorCommand {
     public List<String> tabComplete(SuperiorSkyblockPlugin plugin, CommandSender sender, String[] args) {
         List<String> list = new ArrayList<>();
 
-        if(args.length == 2){
+        if (args.length == 2) {
             List<SuperiorCommand> subCommands = plugin.getCommands().getSubCommands().stream()
                     .filter(subCommand -> subCommand.displayCommand() && (subCommand.getPermission().isEmpty() || sender.hasPermission(subCommand.getPermission())))
                     .collect(Collectors.toList());
 
             int lastPage = subCommands.size() / 7;
-            if(subCommands.size() % 7 != 0) lastPage++;
+            if (subCommands.size() % 7 != 0) lastPage++;
 
-            for(int i = 1; i <= lastPage; i++)
+            for (int i = 1; i <= lastPage; i++)
                 list.add(i + "");
         }
 

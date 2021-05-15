@@ -2,8 +2,8 @@ package com.bgsoftware.superiorskyblock.handlers;
 
 import com.bgsoftware.common.config.CommentedConfiguration;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
-import com.bgsoftware.superiorskyblock.utils.FileUtils;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
+import com.bgsoftware.superiorskyblock.utils.FileUtils;
 import com.bgsoftware.superiorskyblock.utils.LocationUtils;
 import com.bgsoftware.superiorskyblock.utils.StringUtils;
 import com.bgsoftware.superiorskyblock.utils.key.Key;
@@ -23,11 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
@@ -180,12 +176,12 @@ public final class SettingsHandler extends AbstractHandler {
     public final double chargeOnWarp;
     public final boolean publicWarps;
 
-    public SettingsHandler(SuperiorSkyblockPlugin plugin){
+    public SettingsHandler(SuperiorSkyblockPlugin plugin) {
         super(plugin);
 
         File file = new File(plugin.getDataFolder(), "config.yml");
 
-        if(!file.exists())
+        if (!file.exists())
             plugin.saveResource("config.yml", false);
 
         CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
@@ -195,7 +191,7 @@ public final class SettingsHandler extends AbstractHandler {
         try {
             cfg.syncWithConfig(file, plugin.getResource("config.yml"), "config.yml",
                     "ladder", "commands-cooldown", "containers", "event-commands", "command-aliases", "preview-islands");
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -214,10 +210,10 @@ public final class SettingsHandler extends AbstractHandler {
         maxIslandSize = cfg.getInt("max-island-size", 200);
         defaultIslandSize = cfg.getInt("default-values.island-size", 20);
         defaultBlockLimits = new KeyMap<>();
-        for(String line : cfg.getStringList("default-values.block-limits")){
+        for (String line : cfg.getStringList("default-values.block-limits")) {
             String[] sections = line.split(":");
 
-            if(sections.length < 2){
+            if (sections.length < 2) {
                 SuperiorSkyblockPlugin.log("&cCouldn't parse block limit '" + line + "', skipping...");
                 continue;
             }
@@ -227,10 +223,10 @@ public final class SettingsHandler extends AbstractHandler {
             defaultBlockLimits.put(Key.of(key), new UpgradeValue<>(Integer.parseInt(limit), true));
         }
         defaultEntityLimits = new KeyMap<>();
-        for(String line : cfg.getStringList("default-values.entity-limits")){
+        for (String line : cfg.getStringList("default-values.entity-limits")) {
             String[] sections = line.split(":");
 
-            if(sections.length < 2){
+            if (sections.length < 2) {
                 SuperiorSkyblockPlugin.log("&cCouldn't parse entity limit '" + line + "', skipping...");
                 continue;
             }
@@ -247,11 +243,12 @@ public final class SettingsHandler extends AbstractHandler {
         defaultMobDrops = cfg.getDouble("default-values.mob-drops", 1D);
         defaultBankLimit = new BigDecimal(cfg.getString("default-values.bank-limit", "-1"));
         defaultRoleLimits = new HashMap<>();
-        for(String line : cfg.getStringList("default-values.role-limits")){
+        for (String line : cfg.getStringList("default-values.role-limits")) {
             String[] sections = line.split(":");
             try {
                 defaultRoleLimits.put(Integer.parseInt(sections[0]), new UpgradeValue<>(Integer.parseInt(sections[1]), true));
-            }catch (NumberFormatException ignored){}
+            } catch (NumberFormatException ignored) {
+            }
         }
         islandsHeight = cfg.getInt("islands-height", 100);
         worldBordersEnabled = cfg.getBoolean("world-borders", true);
@@ -267,7 +264,8 @@ public final class SettingsHandler extends AbstractHandler {
                     stackedBlocksLimits.put(Key.of(sections[0]), Integer.parseInt(sections[1]));
                 else if (sections.length == 3)
                     stackedBlocksLimits.put(Key.of(sections[0] + ":" + sections[1]), Integer.parseInt(sections[2]));
-            }catch(Exception ignored){}
+            } catch (Exception ignored) {
+            }
         });
         stackedBlocksAutoPickup = cfg.getBoolean("stacked-blocks.auto-collect", false);
         stackedBlocksMenuEnabled = cfg.getBoolean("stacked-blocks.deposit-menu.enabled", true);
@@ -278,7 +276,7 @@ public final class SettingsHandler extends AbstractHandler {
         islandRolesSection = cfg.getConfigurationSection("island-roles");
         signWarpLine = cfg.getString("sign-warp-line", "[IslandWarp]");
         signWarp = StringUtils.translateColors(cfg.getStringList("sign-warp"));
-        while(signWarp.size() < 4)
+        while (signWarp.size() < 4)
             signWarp.add("");
         visitorsSignLine = cfg.getString("visitors-sign.line", "[Welcome]");
         visitorsSignActive = StringUtils.translateColors(cfg.getString("visitors-sign.active", "&a[Welcome]"));
@@ -334,22 +332,22 @@ public final class SettingsHandler extends AbstractHandler {
         bonusAffectLevel = cfg.getBoolean("bonus-affect-level", true);
         defaultSettings = cfg.getStringList("default-settings");
         defaultGenerator = new KeyMap[3];
-        if(cfg.isConfigurationSection("default-values.generator")){
-            for(String env : cfg.getConfigurationSection("default-values.generator").getKeys(false)){
-                try{
+        if (cfg.isConfigurationSection("default-values.generator")) {
+            for (String env : cfg.getConfigurationSection("default-values.generator").getKeys(false)) {
+                try {
                     World.Environment environment = World.Environment.valueOf(env.toUpperCase());
                     loadGenerator(cfg.getStringList("default-values.generator." + env), environment.ordinal());
-                }catch (Exception ignored){}
+                } catch (Exception ignored) {
+                }
             }
-        }
-        else {
+        } else {
             loadGenerator(cfg.getStringList("default-values.generator"), 0);
         }
         disableRedstoneOffline = cfg.getBoolean("disable-redstone-offline", true);
         disableRedstoneAFK = cfg.getBoolean("afk-integrations.disable-redstone", false);
         disableSpawningAFK = cfg.getBoolean("afk-integrations.disable-spawning", true);
         commandsCooldown = Registry.createRegistry();
-        for(String subCommand : cfg.getConfigurationSection("commands-cooldown").getKeys(false)){
+        for (String subCommand : cfg.getConfigurationSection("commands-cooldown").getKeys(false)) {
             int cooldown = cfg.getInt("commands-cooldown." + subCommand + ".cooldown");
             String permission = cfg.getString("commands-cooldown." + subCommand + ".bypass-permission");
             commandsCooldown.add(subCommand, new Pair<>(cooldown, permission));
@@ -365,7 +363,7 @@ public final class SettingsHandler extends AbstractHandler {
         blockedVisitorsCommands = cfg.getStringList("blocked-visitors-commands");
         defaultContainersEnabled = cfg.getBoolean("default-containers.enabled", false);
         defaultContainersContents = Registry.createRegistry();
-        if(cfg.contains("default-containers.containers")) {
+        if (cfg.contains("default-containers.containers")) {
             for (String container : cfg.getConfigurationSection("default-containers.containers").getKeys(false)) {
                 try {
                     InventoryType containerType = InventoryType.valueOf(container.toUpperCase());
@@ -384,7 +382,8 @@ public final class SettingsHandler extends AbstractHandler {
                             itemCompound.setByte("Slot", Byte.parseByte(slot));
 
                             items.addTag(itemCompound);
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
                 } catch (IllegalArgumentException ex) {
                     SuperiorSkyblockPlugin.log("&cInvalid container type: " + container + ".");
@@ -393,7 +392,7 @@ public final class SettingsHandler extends AbstractHandler {
         }
         defaultSignLines = cfg.getStringList("default-signs");
         eventCommands = Registry.createRegistry();
-        if(cfg.contains("event-commands")) {
+        if (cfg.contains("event-commands")) {
             for (String eventName : cfg.getConfigurationSection("event-commands").getKeys(false)) {
                 eventCommands.add(eventName.toLowerCase(), cfg.getStringList("event-commands." + eventName));
             }
@@ -427,15 +426,15 @@ public final class SettingsHandler extends AbstractHandler {
         islandChestsDefaultPage = cfg.getInt("island-chests.default-pages", 0);
         islandChestsDefaultSize = cfg.getInt("island-chests.default-size", 3);
         commandAliases = new HashMap<>();
-        if(cfg.isConfigurationSection("command-aliases")){
-            for(String label : cfg.getConfigurationSection("command-aliases").getKeys(false)){
+        if (cfg.isConfigurationSection("command-aliases")) {
+            for (String label : cfg.getConfigurationSection("command-aliases").getKeys(false)) {
                 commandAliases.put(label.toLowerCase(), cfg.getStringList("command-aliases." + label));
             }
         }
         valuableBlocks = new KeySet(cfg.getStringList("valuable-blocks"));
         islandPreviewLocations = Registry.createRegistry();
-        if(cfg.isConfigurationSection("preview-islands")){
-            for(String schematic : cfg.getConfigurationSection("preview-islands").getKeys(false))
+        if (cfg.isConfigurationSection("preview-islands")) {
+            for (String schematic : cfg.getConfigurationSection("preview-islands").getKeys(false))
                 islandPreviewLocations.add(schematic.toLowerCase(), LocationUtils.getLocation(cfg.getString("preview-islands." + schematic)));
         }
         bankLogs = cfg.getBoolean("bank-logs", true);
@@ -461,7 +460,7 @@ public final class SettingsHandler extends AbstractHandler {
         SuperiorSkyblockPlugin plugin = SuperiorSkyblockPlugin.getPlugin();
         File file = new File(plugin.getDataFolder(), "config.yml");
 
-        if(!file.exists())
+        if (!file.exists())
             plugin.saveResource("config.yml", false);
 
         CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
@@ -475,12 +474,12 @@ public final class SettingsHandler extends AbstractHandler {
         plugin.setSettings(new SettingsHandler(plugin));
     }
 
-    private void convertData(YamlConfiguration cfg){
-        if(cfg.contains("default-hoppers-limit")){
+    private void convertData(YamlConfiguration cfg) {
+        if (cfg.contains("default-hoppers-limit")) {
             cfg.set("default-limits", Collections.singletonList("HOPPER:" + cfg.getInt("default-hoppers-limit")));
             cfg.set("default-hoppers-limit", null);
         }
-        if(cfg.contains("default-permissions")){
+        if (cfg.contains("default-permissions")) {
             cfg.set("island-roles.guest.name", "Guest");
             cfg.set("island-roles.guest.permissions", cfg.getStringList("default-permissions.guest"));
             cfg.set("island-roles.ladder.member.name", "Member");
@@ -496,70 +495,70 @@ public final class SettingsHandler extends AbstractHandler {
             cfg.set("island-roles.ladder.leader.weight", 3);
             cfg.set("island-roles.ladder.leader.permissions", cfg.getStringList("default-permissions.leader"));
         }
-        if(cfg.contains("spawn-location"))
+        if (cfg.contains("spawn-location"))
             cfg.set("spawn.location", cfg.getString("spawn-location"));
-        if(cfg.contains("spawn-protection"))
+        if (cfg.contains("spawn-protection"))
             cfg.set("spawn.protection", cfg.getBoolean("spawn-protection"));
-        if(cfg.getBoolean("spawn-pvp", false))
+        if (cfg.getBoolean("spawn-pvp", false))
             cfg.set("spawn.settings", Collections.singletonList("PVP"));
-        if(cfg.contains("island-world"))
+        if (cfg.contains("island-world"))
             cfg.set("worlds.normal-world", cfg.getString("island-world"));
-        if(cfg.contains("welcome-sign-line"))
+        if (cfg.contains("welcome-sign-line"))
             cfg.set("visitors-sign.line", cfg.getString("welcome-sign-line"));
-        if(cfg.contains("island-roles.ladder")){
-            for(String name : cfg.getConfigurationSection("island-roles.ladder").getKeys(false)){
-                if(!cfg.contains("island-roles.ladder." + name + ".id"))
+        if (cfg.contains("island-roles.ladder")) {
+            for (String name : cfg.getConfigurationSection("island-roles.ladder").getKeys(false)) {
+                if (!cfg.contains("island-roles.ladder." + name + ".id"))
                     cfg.set("island-roles.ladder." + name + ".id", cfg.getInt("island-roles.ladder." + name + ".weight"));
             }
         }
-        if(cfg.contains("default-island-size"))
+        if (cfg.contains("default-island-size"))
             cfg.set("default-values.island-size", cfg.getInt("default-island-size"));
-        if(cfg.contains("default-limits"))
+        if (cfg.contains("default-limits"))
             cfg.set("default-values.block-limits", cfg.getStringList("default-limits"));
-        if(cfg.contains("default-entity-limits"))
+        if (cfg.contains("default-entity-limits"))
             cfg.set("default-values.entity-limits", cfg.getStringList("default-entity-limits"));
-        if(cfg.contains("default-warps-limit"))
+        if (cfg.contains("default-warps-limit"))
             cfg.set("default-values.warps-limit", cfg.getInt("default-warps-limit"));
-        if(cfg.contains("default-team-limit"))
+        if (cfg.contains("default-team-limit"))
             cfg.set("default-values.team-limit", cfg.getInt("default-team-limit"));
-        if(cfg.contains("default-crop-growth"))
+        if (cfg.contains("default-crop-growth"))
             cfg.set("default-values.crop-growth", cfg.getInt("default-crop-growth"));
-        if(cfg.contains("default-spawner-rates"))
+        if (cfg.contains("default-spawner-rates"))
             cfg.set("default-values.spawner-rates", cfg.getInt("default-spawner-rates"));
-        if(cfg.contains("default-mob-drops"))
+        if (cfg.contains("default-mob-drops"))
             cfg.set("default-values.mob-drops", cfg.getInt("default-mob-drops"));
-        if(cfg.contains("default-island-height"))
+        if (cfg.contains("default-island-height"))
             cfg.set("islands-height", cfg.getInt("default-island-height"));
-        if(cfg.contains("starter-chest")){
+        if (cfg.contains("starter-chest")) {
             cfg.set("default-containers.enabled", cfg.getBoolean("starter-chest.enabled"));
             cfg.set("default-containers.containers.chest", cfg.getConfigurationSection("starter-chest.contents"));
         }
-        if(cfg.contains("default-generator"))
+        if (cfg.contains("default-generator"))
             cfg.set("default-values.generator", cfg.getStringList("default-generator"));
-        if(cfg.isBoolean("void-teleport")){
+        if (cfg.isBoolean("void-teleport")) {
             boolean voidTeleport = cfg.getBoolean("void-teleport");
             cfg.set("void-teleport.members", voidTeleport);
             cfg.set("void-teleport.visitors", voidTeleport);
         }
-        if(cfg.isBoolean("sync-worth"))
+        if (cfg.isBoolean("sync-worth"))
             cfg.set("sync-worth", cfg.getBoolean("sync-worth") ? "BUY" : "NONE");
-        if(!cfg.contains("worlds.nether")){
+        if (!cfg.contains("worlds.nether")) {
             cfg.set("worlds.nether.enabled", cfg.getBoolean("worlds.nether-world"));
             cfg.set("worlds.nether.unlock", cfg.getBoolean("worlds.nether-unlock"));
         }
-        if(!cfg.contains("worlds.end")){
+        if (!cfg.contains("worlds.end")) {
             cfg.set("worlds.end.enabled", cfg.getBoolean("worlds.end-world"));
             cfg.set("worlds.end.unlock", cfg.getBoolean("worlds.end-unlock"));
         }
     }
 
-    private void convertInteractables(SuperiorSkyblockPlugin plugin, YamlConfiguration cfg){
-        if(!cfg.contains("interactables"))
+    private void convertInteractables(SuperiorSkyblockPlugin plugin, YamlConfiguration cfg) {
+        if (!cfg.contains("interactables"))
             return;
 
         File file = new File(plugin.getDataFolder(), "interactables.yml");
 
-        if(!file.exists())
+        if (!file.exists())
             plugin.saveResource("interactables.yml", false);
 
         CommentedConfiguration commentedConfig = CommentedConfiguration.loadConfiguration(file);
@@ -568,15 +567,15 @@ public final class SettingsHandler extends AbstractHandler {
 
         try {
             commentedConfig.save(file);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    private List<String> loadInteractables(SuperiorSkyblockPlugin plugin){
+    private List<String> loadInteractables(SuperiorSkyblockPlugin plugin) {
         File file = new File(plugin.getDataFolder(), "interactables.yml");
 
-        if(!file.exists())
+        if (!file.exists())
             plugin.saveResource("interactables.yml", false);
 
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -584,9 +583,9 @@ public final class SettingsHandler extends AbstractHandler {
         return cfg.getStringList("interactables");
     }
 
-    private void loadGenerator(List<String> lines, int index){
+    private void loadGenerator(List<String> lines, int index) {
         defaultGenerator[index] = new KeyMap<>();
-        for(String line : lines){
+        for (String line : lines) {
             String[] sections = line.split(":");
             String key = sections.length == 2 ? sections[0] : sections[0] + sections[1];
             String percentage = sections.length == 2 ? sections[1] : sections[2];

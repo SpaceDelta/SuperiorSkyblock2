@@ -5,7 +5,6 @@ import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -61,14 +60,13 @@ public final class CmdFly implements ISuperiorCommand {
         Island island = plugin.getGrid().getIslandAt(superiorPlayer.getLocation());
         Player player = superiorPlayer.asPlayer();
 
-        if(superiorPlayer.hasIslandFlyEnabled()){
+        if (superiorPlayer.hasIslandFlyEnabled()) {
             player.setAllowFlight(false);
             player.setFlying(false);
 
             Locale.TOGGLED_FLY_OFF.send(superiorPlayer);
-        }
-        else{
-            if(island != null && island.hasPermission(superiorPlayer, IslandPrivileges.FLY)) {
+        } else {
+            if (island != null && island.hasPermission(superiorPlayer, IslandPrivileges.FLY)) {
                 player.setAllowFlight(true);
                 player.setFlying(true);
             }

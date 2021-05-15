@@ -27,24 +27,56 @@ public final class MenuWarpCategoryManage extends SuperiorMenu {
 
     private final WarpCategory warpCategory;
 
-    private MenuWarpCategoryManage(SuperiorPlayer superiorPlayer, WarpCategory warpCategory){
+    private MenuWarpCategoryManage(SuperiorPlayer superiorPlayer, WarpCategory warpCategory) {
         super("menuWarpCategoryManage", superiorPlayer);
         this.warpCategory = warpCategory;
     }
 
+    public static void init() {
+        MenuWarpCategoryManage menuWarpCategoryManage = new MenuWarpCategoryManage(null, null);
+
+        File file = new File(plugin.getDataFolder(), "menus/warp-category-manage.yml");
+
+        if (!file.exists())
+            FileUtils.saveResource("menus/warp-category-manage.yml");
+
+        CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
+
+        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuWarpCategoryManage, "warp-category-manage.yml", cfg);
+
+        renameSlots = getSlots(cfg, "category-rename", charSlots);
+        iconSlots = getSlots(cfg, "category-icon", charSlots);
+        warpsSlots = getSlots(cfg, "category-warps", charSlots);
+
+        if (cfg.isConfigurationSection("success-update-sound"))
+            successUpdateSound = FileUtils.getSound(cfg.getConfigurationSection("success-update-sound"));
+
+        charSlots.delete();
+
+        menuWarpCategoryManage.markCompleted();
+    }
+
+    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, WarpCategory warpCategory) {
+        new MenuWarpCategoryManage(superiorPlayer, warpCategory).open(previousMenu);
+    }
+
+    public static void refreshMenus(WarpCategory warpCategory) {
+        refreshMenus(MenuWarpCategoryManage.class, superiorMenu -> superiorMenu.warpCategory.equals(warpCategory));
+    }
+
     @Override
     protected void onPlayerClick(InventoryClickEvent e) {
-        if(renameSlots.contains(e.getRawSlot())){
+        if (renameSlots.contains(e.getRawSlot())) {
             previousMove = false;
             e.getWhoClicked().closeInventory();
 
             Locale.WARP_CATEGORY_RENAME.send(e.getWhoClicked());
 
             PlayerChat.listen((Player) e.getWhoClicked(), message -> {
-                if(!message.equalsIgnoreCase("-cancel")) {
+                if (!message.equalsIgnoreCase("-cancel")) {
                     String newName = IslandUtils.getWarpName(message);
 
-                    if(warpCategory.getIsland().getWarpCategory(newName) != null){
+                    if (warpCategory.getIsland().getWarpCategory(newName) != null) {
                         Locale.WARP_CATEGORY_RENAME_ALREADY_EXIST.send(e.getWhoClicked());
                         return true;
                     }
@@ -53,7 +85,7 @@ public final class MenuWarpCategoryManage extends SuperiorMenu {
 
                     Locale.WARP_CATEGORY_RENAME_SUCCESS.send(e.getWhoClicked(), newName);
 
-                    if(successUpdateSound != null)
+                    if (successUpdateSound != null)
                         successUpdateSound.playSound(e.getWhoClicked());
                 }
 
@@ -62,20 +94,18 @@ public final class MenuWarpCategoryManage extends SuperiorMenu {
 
                 return true;
             });
-        }
-        else if(iconSlots.contains(e.getRawSlot())){
-            if(e.getClick().name().contains("RIGHT")){
+        } else if (iconSlots.contains(e.getRawSlot())) {
+            if (e.getClick().name().contains("RIGHT")) {
                 previousMove = false;
                 MenuWarpCategoryIconEdit.openInventory(superiorPlayer, this, warpCategory);
-            }
-            else{
+            } else {
                 previousMove = false;
                 e.getWhoClicked().closeInventory();
 
                 Locale.WARP_CATEGORY_SLOT.send(e.getWhoClicked());
 
                 PlayerChat.listen((Player) e.getWhoClicked(), message -> {
-                    if(!message.equalsIgnoreCase("-cancel")) {
+                    if (!message.equalsIgnoreCase("-cancel")) {
                         int slot;
                         try {
                             slot = Integer.parseInt(message);
@@ -94,7 +124,7 @@ public final class MenuWarpCategoryManage extends SuperiorMenu {
                         warpCategory.setSlot(slot);
                         Locale.WARP_CATEGORY_SLOT_SUCCESS.send(e.getWhoClicked(), slot);
 
-                        if(successUpdateSound != null)
+                        if (successUpdateSound != null)
                             successUpdateSound.playSound(e.getWhoClicked());
                     }
 
@@ -104,8 +134,7 @@ public final class MenuWarpCategoryManage extends SuperiorMenu {
                     return true;
                 });
             }
-        }
-        else if(warpsSlots.contains(e.getRawSlot())){
+        } else if (warpsSlots.contains(e.getRawSlot())) {
             previousMove = false;
             MenuWarps.openInventory(superiorPlayer, this, warpCategory);
         }
@@ -124,12 +153,12 @@ public final class MenuWarpCategoryManage extends SuperiorMenu {
             ItemBuilder itemBuilder = new ItemBuilder(warpCategory.getRawIcon());
             ItemStack currentItem = inventory.getItem(slot);
 
-            if(currentItem != null && currentItem.hasItemMeta()) {
+            if (currentItem != null && currentItem.hasItemMeta()) {
                 ItemMeta itemMeta = currentItem.getItemMeta();
-                if(itemMeta.hasDisplayName())
+                if (itemMeta.hasDisplayName())
                     itemBuilder.withName(itemMeta.getDisplayName());
 
-                if(itemMeta.hasLore())
+                if (itemMeta.hasLore())
                     itemBuilder.appendLore(itemMeta.getLore());
             }
 
@@ -137,38 +166,6 @@ public final class MenuWarpCategoryManage extends SuperiorMenu {
         });
 
         return inventory;
-    }
-
-    public static void init(){
-        MenuWarpCategoryManage menuWarpCategoryManage = new MenuWarpCategoryManage(null, null);
-
-        File file = new File(plugin.getDataFolder(), "menus/warp-category-manage.yml");
-
-        if(!file.exists())
-            FileUtils.saveResource("menus/warp-category-manage.yml");
-
-        CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
-
-        Registry<Character, List<Integer>> charSlots = FileUtils.loadGUI(menuWarpCategoryManage, "warp-category-manage.yml", cfg);
-
-        renameSlots = getSlots(cfg, "category-rename", charSlots);
-        iconSlots = getSlots(cfg, "category-icon", charSlots);
-        warpsSlots = getSlots(cfg, "category-warps", charSlots);
-
-        if(cfg.isConfigurationSection("success-update-sound"))
-            successUpdateSound = FileUtils.getSound(cfg.getConfigurationSection("success-update-sound"));
-
-        charSlots.delete();
-
-        menuWarpCategoryManage.markCompleted();
-    }
-
-    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, WarpCategory warpCategory){
-        new MenuWarpCategoryManage(superiorPlayer, warpCategory).open(previousMenu);
-    }
-
-    public static void refreshMenus(WarpCategory warpCategory){
-        refreshMenus(MenuWarpCategoryManage.class, superiorMenu -> superiorMenu.warpCategory.equals(warpCategory));
     }
 
 }

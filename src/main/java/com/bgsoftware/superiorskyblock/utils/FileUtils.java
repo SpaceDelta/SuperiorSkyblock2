@@ -19,11 +19,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -35,36 +31,37 @@ import java.util.jar.JarInputStream;
 public final class FileUtils {
 
     private static final SuperiorSkyblockPlugin plugin = SuperiorSkyblockPlugin.getPlugin();
+    private static final Object fileMutex = new Object();
 
-    private FileUtils(){
+    private FileUtils() {
 
     }
 
-    public static ItemBuilder getItemStack(String fileName, ConfigurationSection section){
-        if(section == null || !section.contains("type"))
+    public static ItemBuilder getItemStack(String fileName, ConfigurationSection section) {
+        if (section == null || !section.contains("type"))
             return null;
 
         Material type;
         short data;
 
-        try{
+        try {
             type = Material.valueOf(section.getString("type"));
             data = (short) section.getInt("data");
-        }catch(IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
             SuperiorSkyblockPlugin.log("&c[" + fileName + "] Couldn't convert " + section.getCurrentPath() + " into an itemstack. Check type & data sections!");
             return null;
         }
 
         ItemBuilder itemBuilder = new ItemBuilder(type, data);
 
-        if(section.contains("name"))
+        if (section.contains("name"))
             itemBuilder.withName(StringUtils.translateColors(section.getString("name")));
 
-        if(section.contains("lore"))
+        if (section.contains("lore"))
             itemBuilder.withLore(section.getStringList("lore"));
 
-        if(section.contains("enchants")){
-            for(String _enchantment : section.getConfigurationSection("enchants").getKeys(false)) {
+        if (section.contains("enchants")) {
+            for (String _enchantment : section.getConfigurationSection("enchants").getKeys(false)) {
                 Enchantment enchantment;
 
                 try {
@@ -78,29 +75,29 @@ public final class FileUtils {
             }
         }
 
-        if(section.getBoolean("glow", false)){
+        if (section.getBoolean("glow", false)) {
             itemBuilder.withEnchant(EnchantsUtils.getGlowEnchant(), 1);
         }
 
-        if(section.contains("flags")){
-            for(String flag : section.getStringList("flags"))
+        if (section.contains("flags")) {
+            for (String flag : section.getStringList("flags"))
                 itemBuilder.withFlags(ItemFlag.valueOf(flag));
         }
 
-        if(section.contains("skull")){
+        if (section.contains("skull")) {
             itemBuilder.asSkullOf(section.getString("skull"));
         }
 
-        if(section.getBoolean("unbreakable", false)){
+        if (section.getBoolean("unbreakable", false)) {
             itemBuilder.setUnbreakable();
         }
 
-        if(section.contains("effects")){
+        if (section.contains("effects")) {
             ConfigurationSection effectsSection = section.getConfigurationSection("effects");
-            for(String _effect : effectsSection.getKeys(false)) {
+            for (String _effect : effectsSection.getKeys(false)) {
                 PotionEffectType potionEffectType = PotionEffectType.getByName(_effect);
 
-                if(potionEffectType == null){
+                if (potionEffectType == null) {
                     SuperiorSkyblockPlugin.log("&c[" + fileName + "] Couldn't convert " + effectsSection.getCurrentPath() + "." + _effect + " into a potion effect, skipping...");
                     continue;
                 }
@@ -108,7 +105,7 @@ public final class FileUtils {
                 int duration = effectsSection.getInt(_effect + ".duration", -1);
                 int amplifier = effectsSection.getInt(_effect + ".amplifier", 0);
 
-                if(duration == -1){
+                if (duration == -1) {
                     SuperiorSkyblockPlugin.log("&c[" + fileName + "] Potion effect " + effectsSection.getCurrentPath() + "." + _effect + " is missing duration, skipping...");
                     continue;
                 }
@@ -117,23 +114,23 @@ public final class FileUtils {
             }
         }
 
-        if(section.contains("entity")){
+        if (section.contains("entity")) {
             String entity = section.getString("entity");
-            try{
+            try {
                 itemBuilder.withEntityType(EntityType.valueOf(entity.toUpperCase()));
-            }catch (IllegalArgumentException ex){
+            } catch (IllegalArgumentException ex) {
                 SuperiorSkyblockPlugin.log("&c[" + fileName + "] Couldn't convert " + entity + " into an entity type, skipping...");
             }
         }
 
-        if(section.contains("customModel")){
+        if (section.contains("customModel")) {
             itemBuilder.withCustomModel(section.getInt("customModel"));
         }
 
         return itemBuilder;
     }
 
-    public static Registry<Character, List<Integer>> loadGUI(SuperiorMenu menu, String fileName, YamlConfiguration cfg){
+    public static Registry<Character, List<Integer>> loadGUI(SuperiorMenu menu, String fileName, YamlConfiguration cfg) {
         Registry<Character, List<Integer>> charSlots = Registry.createRegistry();
 
         menu.resetData();
@@ -147,16 +144,16 @@ public final class FileUtils {
 
         menu.setRowsSize(pattern.size());
 
-        for(int row = 0; row < pattern.size(); row++){
+        for (int row = 0; row < pattern.size(); row++) {
             String patternLine = pattern.get(row);
             int slot = row * 9;
 
-            for(int i = 0; i < patternLine.length(); i++){
+            for (int i = 0; i < patternLine.length(); i++) {
                 char ch = patternLine.charAt(i);
-                if(ch != ' '){
+                if (ch != ' ') {
                     ItemBuilder itemBuilder = getItemStack(fileName, cfg.getConfigurationSection("items." + ch));
 
-                    if(itemBuilder != null) {
+                    if (itemBuilder != null) {
                         List<String> commands = cfg.getStringList("commands." + ch);
                         SoundWrapper sound = getSound(cfg.getConfigurationSection("sounds." + ch));
                         String permission = cfg.getString("permissions." + ch + ".permission");
@@ -168,7 +165,7 @@ public final class FileUtils {
                         menu.addSound(slot, sound);
                     }
 
-                    if(!charSlots.containsKey(ch))
+                    if (!charSlots.containsKey(ch))
                         charSlots.add(ch, new ArrayList<>());
 
                     charSlots.get(ch).add(slot);
@@ -181,28 +178,28 @@ public final class FileUtils {
         int backButton = charSlots.get(cfg.getString("back", " ").charAt(0), Collections.singletonList(-1)).get(0);
         menu.setBackButton(backButton);
 
-        if(plugin.getSettings().onlyBackButton && backButton == -1)
+        if (plugin.getSettings().onlyBackButton && backButton == -1)
             SuperiorSkyblockPlugin.log("&c[" + fileName + "] Menu doesn't have a back button, it's impossible to close it.");
 
         return charSlots;
     }
 
-    public static String fromLocation(Location location){
+    public static String fromLocation(Location location) {
         return location.getWorld().getName() + "," + location.getX() + "," + location.getY() + "," + location.getZ() + "," +
                 location.getYaw() + "," + location.getPitch();
     }
 
-    public static Location toLocation(String location){
+    public static Location toLocation(String location) {
         String[] sections = location.split(",");
         return new Location(Bukkit.getWorld(sections[0]), Double.parseDouble(sections[1]), Double.parseDouble(sections[2]),
                 Double.parseDouble(sections[3]), Float.parseFloat(sections[4]), Float.parseFloat(sections[5]));
     }
 
-    public static void copyResource(String resourcePath){
+    public static void copyResource(String resourcePath) {
         String fixedPath = resourcePath + ".jar";
         File dstFile = new File(plugin.getDataFolder(), fixedPath);
 
-        if(dstFile.exists())
+        if (dstFile.exists())
             //noinspection ResultOfMethodCallIgnored
             dstFile.delete();
 
@@ -213,20 +210,18 @@ public final class FileUtils {
         file.renameTo(dstFile);
     }
 
-    public static void saveResource(String resourcePath){
+    public static void saveResource(String resourcePath) {
         saveResource(resourcePath, resourcePath);
     }
 
-    public static void saveResource(String destination, String resourcePath){
+    public static void saveResource(String destination, String resourcePath) {
         try {
-            for(ServerVersion serverVersion : ServerVersion.getByOrder()){
+            for (ServerVersion serverVersion : ServerVersion.getByOrder()) {
                 String version = serverVersion.name().substring(1);
-                if(resourcePath.endsWith(".yml") && plugin.getResource(resourcePath.replace(".yml", version + ".yml")) != null) {
+                if (resourcePath.endsWith(".yml") && plugin.getResource(resourcePath.replace(".yml", version + ".yml")) != null) {
                     resourcePath = resourcePath.replace(".yml", version + ".yml");
                     break;
-                }
-
-                else if(resourcePath.endsWith(".schematic") && plugin.getResource(resourcePath.replace(".schematic", version + ".schematic")) != null) {
+                } else if (resourcePath.endsWith(".schematic") && plugin.getResource(resourcePath.replace(".schematic", version + ".schematic")) != null) {
                     resourcePath = resourcePath.replace(".schematic", version + ".schematic");
                     break;
                 }
@@ -235,46 +230,45 @@ public final class FileUtils {
             File file = new File(plugin.getDataFolder(), resourcePath);
             plugin.saveResource(resourcePath, true);
 
-            if(!destination.equals(resourcePath)){
+            if (!destination.equals(resourcePath)) {
                 File dest = new File(plugin.getDataFolder(), destination);
                 //noinspection ResultOfMethodCallIgnored
                 file.renameTo(dest);
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public static InputStream getResource(String resourcePath){
+    public static InputStream getResource(String resourcePath) {
         try {
-            for(ServerVersion serverVersion : ServerVersion.getByOrder()){
+            for (ServerVersion serverVersion : ServerVersion.getByOrder()) {
                 String version = serverVersion.name().substring(1);
-                if(resourcePath.endsWith(".yml") && plugin.getResource(resourcePath.replace(".yml", version + ".yml")) != null) {
+                if (resourcePath.endsWith(".yml") && plugin.getResource(resourcePath.replace(".yml", version + ".yml")) != null) {
                     resourcePath = resourcePath.replace(".yml", version + ".yml");
                     break;
-                }
-
-                else if(resourcePath.endsWith(".schematic") && plugin.getResource(resourcePath.replace(".schematic", version + ".schematic")) != null) {
+                } else if (resourcePath.endsWith(".schematic") && plugin.getResource(resourcePath.replace(".schematic", version + ".schematic")) != null) {
                     resourcePath = resourcePath.replace(".schematic", version + ".schematic");
                     break;
                 }
             }
 
             return plugin.getResource(resourcePath);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return null;
         }
     }
 
-    public static SoundWrapper getSound(ConfigurationSection section){
+    public static SoundWrapper getSound(ConfigurationSection section) {
         Sound sound = null;
 
-        try{
+        try {
             sound = Sound.valueOf(section.getString("type"));
-        }catch(Exception ignored){}
+        } catch (Exception ignored) {
+        }
 
-        if(sound == null)
+        if (sound == null)
             return null;
 
         return new SoundWrapper(sound, (float) section.getDouble("volume"), (float) section.getDouble("pitch"));
@@ -285,7 +279,7 @@ public final class FileUtils {
 
         try (URLClassLoader cl = new URLClassLoader(new URL[]{jar}, clazz.getClassLoader()); JarInputStream jis = new JarInputStream(jar.openStream())) {
             JarEntry jarEntry;
-            while ((jarEntry = jis.getNextJarEntry()) != null){
+            while ((jarEntry = jis.getNextJarEntry()) != null) {
                 String name = jarEntry.getName();
 
                 if (name == null || name.isEmpty() || !name.endsWith(".class")) {
@@ -301,14 +295,13 @@ public final class FileUtils {
                     list.add(c);
                 }
             }
-        } catch (Throwable ignored) { }
+        } catch (Throwable ignored) {
+        }
 
         return list;
     }
 
-    private static final Object fileMutex = new Object();
-
-    public static void replaceString(File file, String str, String replace){
+    public static void replaceString(File file, String str, String replace) {
         synchronized (fileMutex) {
             StringBuilder stringBuilder = new StringBuilder();
 

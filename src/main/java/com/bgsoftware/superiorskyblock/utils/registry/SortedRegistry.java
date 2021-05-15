@@ -15,23 +15,23 @@ public abstract class SortedRegistry<K, V, Z extends Comparator<V>> extends Regi
 
     private final Registry<Z, Set<V>> sortedValues = createRegistry();
 
-    protected SortedRegistry(){
+    protected SortedRegistry() {
         super();
     }
 
-    public V get(int index, Z sortingType){
+    public V get(int index, Z sortingType) {
         ensureType(sortingType);
         return index >= sortedValues.get(sortingType).size() ? null : Iterables.get(sortedValues.get(sortingType), index);
     }
 
-    public int indexOf(V value, Z sortingType){
+    public int indexOf(V value, Z sortingType) {
         ensureType(sortingType);
         return Iterables.indexOf(sortedValues.get(sortingType), value::equals);
     }
 
     @Override
     public V add(K key, V value) {
-        for(Set<V> sortedTree : sortedValues.values())
+        for (Set<V> sortedTree : sortedValues.values())
             sortedTree.add(value);
         return super.add(key, value);
     }
@@ -39,20 +39,20 @@ public abstract class SortedRegistry<K, V, Z extends Comparator<V>> extends Regi
     @Override
     public V remove(K key) {
         V value = super.remove(key);
-        if(value != null){
+        if (value != null) {
             for (Set<V> sortedTree : sortedValues.values())
                 sortedTree.remove(value);
         }
         return value;
     }
 
-    public Iterator<V> iterator(Z sortingType){
+    public Iterator<V> iterator(Z sortingType) {
         ensureType(sortingType);
         return Iterables.unmodifiableIterable(sortedValues.get(sortingType)).iterator();
     }
 
-    protected void sort(Z sortingType, Predicate<V> predicate, Runnable onFinish){
-        if(Bukkit.isPrimaryThread()){
+    protected void sort(Z sortingType, Predicate<V> predicate, Runnable onFinish) {
+        if (Bukkit.isPrimaryThread()) {
             Executor.async(() -> sort(sortingType, predicate, onFinish));
             return;
         }
@@ -68,22 +68,22 @@ public abstract class SortedRegistry<K, V, Z extends Comparator<V>> extends Regi
 
         sortedValues.add(sortingType, newSortedTree);
 
-        if(onFinish != null)
+        if (onFinish != null)
             onFinish.run();
     }
 
-    protected void registerSortingType(Z sortingType, boolean sort, Predicate<V> predicate){
+    protected void registerSortingType(Z sortingType, boolean sort, Predicate<V> predicate) {
         Preconditions.checkArgument(!sortedValues.containsKey(sortingType), "You cannot register an existing sorting type to the database.");
 
         Set<V> sortedIslands = new ConcurrentSkipListSet<>(sortingType);
         sortedIslands.addAll(values());
         sortedValues.add(sortingType, sortedIslands);
 
-        if(sort)
+        if (sort)
             sort(sortingType, predicate, null);
     }
 
-    private void ensureType(Z sortingType){
+    private void ensureType(Z sortingType) {
         Preconditions.checkState(sortedValues.containsKey(sortingType), "The sorting-type " + sortingType + " doesn't exist in the database. Please contact author!");
     }
 

@@ -64,12 +64,12 @@ public final class CmdAdminSetRate implements IAdminIslandCommand {
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, SuperiorPlayer superiorPlayer, Island island, String[] args) {
         SuperiorPlayer targetPlayer = CommandArguments.getPlayer(plugin, sender, args[3]);
 
-        if(targetPlayer == null)
+        if (targetPlayer == null)
             return;
 
         Rating rating = CommandArguments.getRating(sender, args[4]);
 
-        if(rating == null)
+        if (rating == null)
             return;
 
         island.setRating(targetPlayer, rating);

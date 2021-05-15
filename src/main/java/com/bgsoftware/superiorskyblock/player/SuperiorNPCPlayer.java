@@ -18,19 +18,14 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 public final class SuperiorNPCPlayer implements SuperiorPlayer {
 
     private final Entity npc;
 
-    public SuperiorNPCPlayer(Entity npc){
+    public SuperiorNPCPlayer(Entity npc) {
         this.npc = npc;
     }
 
@@ -155,14 +150,13 @@ public final class SuperiorNPCPlayer implements SuperiorPlayer {
     }
 
     @Override
-    public SuperiorPlayer getIslandLeader() {
-        return this;
-    }
-
-
-    @Override
     public void setTeamLeader(UUID teamLeader) {
 
+    }
+
+    @Override
+    public SuperiorPlayer getIslandLeader() {
+        return this;
     }
 
     @Override
@@ -191,13 +185,13 @@ public final class SuperiorNPCPlayer implements SuperiorPlayer {
     }
 
     @Override
-    public boolean hasDisbands() {
-        return false;
+    public void setDisbands(int disbands) {
+
     }
 
     @Override
-    public void setDisbands(int disbands) {
-
+    public boolean hasDisbands() {
+        return false;
     }
 
     @Override

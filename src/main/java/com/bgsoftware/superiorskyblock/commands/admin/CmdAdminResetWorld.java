@@ -66,10 +66,10 @@ public final class CmdAdminResetWorld implements IAdminIslandCommand {
     public void execute(SuperiorSkyblockPlugin plugin, CommandSender sender, SuperiorPlayer targetPlayer, List<Island> islands, String[] args) {
         World.Environment environment = CommandArguments.getEnvironment(sender, args[3]);
 
-        if(environment == null)
+        if (environment == null)
             return;
 
-        if(environment == World.Environment.NORMAL){
+        if (environment == World.Environment.NORMAL) {
             Locale.INVALID_ENVIRONMENT.send(sender, args[3]);
             return;
         }
@@ -79,14 +79,14 @@ public final class CmdAdminResetWorld implements IAdminIslandCommand {
 
             // Sending the players that are in that world to the main island.
             // If the world that will be reset is the normal world, they will be teleported to spawn.
-            for(SuperiorPlayer superiorPlayer : island.getAllPlayersInside()){
-                if(superiorPlayer.getWorld().equals(world))
+            for (SuperiorPlayer superiorPlayer : island.getAllPlayersInside()) {
+                if (superiorPlayer.getWorld().equals(world))
                     superiorPlayer.teleport(island);
             }
 
             // Resetting the chunks
             List<ChunkPosition> chunkPositions = IslandUtils.getChunkCoords(island, world, true, true);
-            for(int i = 0; i < chunkPositions.size() - 1; i++)
+            for (int i = 0; i < chunkPositions.size() - 1; i++)
                 IslandUtils.deleteChunk(island, chunkPositions.get(i), null);
 
             IslandUtils.deleteChunk(island, chunkPositions.get(chunkPositions.size() - 1),
@@ -95,9 +95,9 @@ public final class CmdAdminResetWorld implements IAdminIslandCommand {
             island.setSchematicGenerate(environment, false);
         });
 
-        if(islands.size() > 1)
+        if (islands.size() > 1)
             Locale.RESET_WORLD_SUCCEED_ALL.send(sender, StringUtils.format(args[3]));
-        else if(targetPlayer == null)
+        else if (targetPlayer == null)
             Locale.RESET_WORLD_SUCCEED_NAME.send(sender, StringUtils.format(args[3]), islands.get(0).getName());
         else
             Locale.RESET_WORLD_SUCCEED.send(sender, StringUtils.format(args[3]), targetPlayer.getName());

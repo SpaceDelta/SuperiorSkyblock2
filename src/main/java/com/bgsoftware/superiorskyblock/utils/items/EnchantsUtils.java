@@ -11,16 +11,17 @@ public final class EnchantsUtils {
 
     private static Enchantment glowEnchant;
 
-    private EnchantsUtils(){
+    private EnchantsUtils() {
 
     }
 
-    public static void registerGlowEnchantment(){
+    public static void registerGlowEnchantment() {
         glowEnchant = plugin.getNMSAdapter().getGlowEnchant();
         ACCEPTING_NEW.set(null, true);
-        try{
+        try {
             Enchantment.registerEnchantment(glowEnchant);
-        }catch(Exception ignored){}
+        } catch (Exception ignored) {
+        }
     }
 
     public static Enchantment getGlowEnchant() {

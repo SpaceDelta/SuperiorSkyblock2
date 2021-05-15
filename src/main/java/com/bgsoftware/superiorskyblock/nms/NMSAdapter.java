@@ -38,11 +38,11 @@ public interface NMSAdapter {
 
     void setSkinTexture(SuperiorPlayer superiorPlayer);
 
-    default void setSkinTexture(SuperiorPlayer superiorPlayer, Property property){
+    default void setSkinTexture(SuperiorPlayer superiorPlayer, Property property) {
         superiorPlayer.setTextureValue(property.getValue());
     }
 
-    default Object getCustomHolder(InventoryType inventoryType, InventoryHolder defaultHolder, String title){
+    default Object getCustomHolder(InventoryType inventoryType, InventoryHolder defaultHolder, String title) {
         return defaultHolder;
     }
 
@@ -54,21 +54,21 @@ public interface NMSAdapter {
 
     void playPlaceSound(Location location);
 
-    default void setBiome(ChunkGenerator.BiomeGrid biomeGrid, Biome biome){
-        for(int x = 0; x < 16; x++){
-            for(int z = 0; z < 16; z++){
+    default void setBiome(ChunkGenerator.BiomeGrid biomeGrid, Biome biome) {
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
                 biomeGrid.setBiome(x, z, biome);
             }
         }
     }
 
-    default Object getBlockData(Block block){
+    default Object getBlockData(Block block) {
         return null;
     }
 
     Enchantment getGlowEnchant();
 
-    default void injectChunkSections(Chunk chunk){
+    default void injectChunkSections(Chunk chunk) {
 
     }
 
@@ -78,7 +78,7 @@ public interface NMSAdapter {
 
     double[] getTPS();
 
-    default void addPotion(PotionMeta potionMeta, PotionEffect potionEffect){
+    default void addPotion(PotionMeta potionMeta, PotionEffect potionEffect) {
         potionMeta.addCustomEffect(potionEffect, true);
     }
 
@@ -92,7 +92,7 @@ public interface NMSAdapter {
 
     void sendTitle(Player player, String title, String subtitle, int fadeIn, int duration, int fadeOut);
 
-    default void setCustomModel(ItemMeta itemMeta, int customModel){
+    default void setCustomModel(ItemMeta itemMeta, int customModel) {
 
     }
 

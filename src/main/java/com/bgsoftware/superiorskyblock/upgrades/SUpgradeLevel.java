@@ -20,11 +20,7 @@ import org.bukkit.potion.PotionEffectType;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SUpgradeLevel implements UpgradeLevel {
@@ -52,7 +48,7 @@ public class SUpgradeLevel implements UpgradeLevel {
                          UpgradeValue<Integer> borderSize, KeyMap<UpgradeValue<Integer>> blockLimits,
                          KeyMap<UpgradeValue<Integer>> entityLimits, KeyMap<UpgradeValue<Integer>>[] generatorRates,
                          Map<PotionEffectType, UpgradeValue<Integer>> islandEffects, UpgradeValue<BigDecimal> bankLimit,
-                         Map<Integer, UpgradeValue<Integer>> roleLimits){
+                         Map<Integer, UpgradeValue<Integer>> roleLimits) {
         this.level = level;
         this.price = price;
         this.commands = commands;
@@ -95,12 +91,13 @@ public class SUpgradeLevel implements UpgradeLevel {
 
     @Override
     public String checkRequirements(SuperiorPlayer superiorPlayer) {
-        for(Pair<String, String> requirement : requirements){
+        for (Pair<String, String> requirement : requirements) {
             String check = PlaceholderHook.parse(superiorPlayer, requirement.getKey());
             try {
                 if (!Boolean.parseBoolean(engine.eval(check) + ""))
                     return requirement.getValue();
-            }catch (Exception ignored){}
+            } catch (Exception ignored) {
+            }
         }
 
         return "";
@@ -111,7 +108,7 @@ public class SUpgradeLevel implements UpgradeLevel {
         return cropGrowth.get();
     }
 
-    public UpgradeValue<Double> getCropGrowthUpgradeValue(){
+    public UpgradeValue<Double> getCropGrowthUpgradeValue() {
         return cropGrowth;
     }
 
@@ -120,7 +117,7 @@ public class SUpgradeLevel implements UpgradeLevel {
         return spawnerRates.get();
     }
 
-    public UpgradeValue<Double> getSpawnerRatesUpgradeValue(){
+    public UpgradeValue<Double> getSpawnerRatesUpgradeValue() {
         return spawnerRates;
     }
 
@@ -129,7 +126,7 @@ public class SUpgradeLevel implements UpgradeLevel {
         return mobDrops.get();
     }
 
-    public UpgradeValue<Double> getMobDropsUpgradeValue(){
+    public UpgradeValue<Double> getMobDropsUpgradeValue() {
         return mobDrops;
     }
 
@@ -149,7 +146,7 @@ public class SUpgradeLevel implements UpgradeLevel {
                 Map.Entry::getKey, entry -> entry.getValue().get()));
     }
 
-    public KeyMap<UpgradeValue<Integer>> getBlockLimitsUpgradeValue(){
+    public KeyMap<UpgradeValue<Integer>> getBlockLimitsUpgradeValue() {
         return blockLimits;
     }
 
@@ -177,7 +174,7 @@ public class SUpgradeLevel implements UpgradeLevel {
                 Map.Entry::getKey, entry -> entry.getValue().get()));
     }
 
-    public KeyMap<UpgradeValue<Integer>> getEntityLimitsUpgradeValue(){
+    public KeyMap<UpgradeValue<Integer>> getEntityLimitsUpgradeValue() {
         return entityLimits;
     }
 
@@ -186,7 +183,7 @@ public class SUpgradeLevel implements UpgradeLevel {
         return teamLimit.get();
     }
 
-    public UpgradeValue<Integer> getTeamLimitUpgradeValue(){
+    public UpgradeValue<Integer> getTeamLimitUpgradeValue() {
         return teamLimit;
     }
 
@@ -195,7 +192,7 @@ public class SUpgradeLevel implements UpgradeLevel {
         return warpsLimit.get();
     }
 
-    public UpgradeValue<Integer> getWarpsLimitUpgradeValue(){
+    public UpgradeValue<Integer> getWarpsLimitUpgradeValue() {
         return warpsLimit;
     }
 
@@ -204,7 +201,7 @@ public class SUpgradeLevel implements UpgradeLevel {
         return coopLimit.get();
     }
 
-    public UpgradeValue<Integer> getCoopLimitUpgradeValue(){
+    public UpgradeValue<Integer> getCoopLimitUpgradeValue() {
         return coopLimit;
     }
 
@@ -213,7 +210,7 @@ public class SUpgradeLevel implements UpgradeLevel {
         return borderSize.get();
     }
 
-    public UpgradeValue<Integer> getBorderSizeUpgradeValue(){
+    public UpgradeValue<Integer> getBorderSizeUpgradeValue() {
         return borderSize;
     }
 
@@ -241,7 +238,7 @@ public class SUpgradeLevel implements UpgradeLevel {
                 entry -> entry.getValue().get()));
     }
 
-    public KeyMap<UpgradeValue<Integer>>[] getGeneratorUpgradeValue(){
+    public KeyMap<UpgradeValue<Integer>>[] getGeneratorUpgradeValue() {
         return generatorRates;
     }
 
@@ -256,7 +253,7 @@ public class SUpgradeLevel implements UpgradeLevel {
                 Map.Entry::getKey, entry -> entry.getValue().get()));
     }
 
-    public Map<PotionEffectType, UpgradeValue<Integer>> getPotionEffectsUpgradeValue(){
+    public Map<PotionEffectType, UpgradeValue<Integer>> getPotionEffectsUpgradeValue() {
         return islandEffects;
     }
 
@@ -265,7 +262,7 @@ public class SUpgradeLevel implements UpgradeLevel {
         return bankLimit.get();
     }
 
-    public UpgradeValue<BigDecimal> getBankLimitUpgradeValue(){
+    public UpgradeValue<BigDecimal> getBankLimitUpgradeValue() {
         return bankLimit;
     }
 
@@ -284,7 +281,7 @@ public class SUpgradeLevel implements UpgradeLevel {
                 ));
     }
 
-    public Map<PlayerRole, UpgradeValue<Integer>> getRoleLimitsUpgradeValue(){
+    public Map<PlayerRole, UpgradeValue<Integer>> getRoleLimitsUpgradeValue() {
         return roleLimits.entrySet().stream()
                 .filter(entry -> SPlayerRole.fromId(entry.getKey()) != null)
                 .collect(Collectors.toMap(
@@ -293,7 +290,7 @@ public class SUpgradeLevel implements UpgradeLevel {
                 ));
     }
 
-    public void setItemData(ItemBuilder hasNextLevel, ItemBuilder noNextLevel, SoundWrapper hasNextLevelSound, SoundWrapper noNextLevelSound, List<String> hasNextLevelCommands, List<String> noNextLevelCommands){
+    public void setItemData(ItemBuilder hasNextLevel, ItemBuilder noNextLevel, SoundWrapper hasNextLevelSound, SoundWrapper noNextLevelSound, List<String> hasNextLevelCommands, List<String> noNextLevelCommands) {
         this.itemData = new ItemData(hasNextLevel, noNextLevel, hasNextLevelSound, noNextLevelSound, hasNextLevelCommands, noNextLevelCommands);
     }
 
@@ -301,13 +298,13 @@ public class SUpgradeLevel implements UpgradeLevel {
         return itemData;
     }
 
-    public static class ItemData{
+    public static class ItemData {
 
         public ItemBuilder hasNextLevel, noNextLevel;
         public SoundWrapper hasNextLevelSound, noNextLevelSound;
         public List<String> hasNextLevelCommands, noNextLevelCommands;
 
-        public ItemData(ItemBuilder hasNextLevel, ItemBuilder noNextLevel, SoundWrapper hasNextLevelSound, SoundWrapper noNextLevelSound, List<String> hasNextLevelCommands, List<String> noNextLevelCommands){
+        public ItemData(ItemBuilder hasNextLevel, ItemBuilder noNextLevel, SoundWrapper hasNextLevelSound, SoundWrapper noNextLevelSound, List<String> hasNextLevelCommands, List<String> noNextLevelCommands) {
             this.hasNextLevel = hasNextLevel;
             this.noNextLevel = noNextLevel;
             this.hasNextLevelSound = hasNextLevelSound;

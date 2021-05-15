@@ -14,11 +14,11 @@ public final class KeyMap<V> extends AbstractMap<com.bgsoftware.superiorskyblock
 
     private final Registry<String, V> registry;
 
-    public KeyMap(){
+    public KeyMap() {
         this.registry = Registry.createRegistry();
     }
 
-    public KeyMap(KeyMap<V> other){
+    public KeyMap(KeyMap<V> other) {
         this.registry = Registry.createRegistry(other.registry);
     }
 
@@ -50,10 +50,10 @@ public final class KeyMap<V> extends AbstractMap<com.bgsoftware.superiorskyblock
         return registry.add(key.toString(), value);
     }
 
-    public Key getKey(Key key){
-        if(registry.containsKey(key.toString()))
+    public Key getKey(Key key) {
+        if (registry.containsKey(key.toString()))
             return key;
-        else if(registry.containsKey(key.getGlobalKey()))
+        else if (registry.containsKey(key.getGlobalKey()))
             return Key.of(key.getGlobalKey());
         else
             return key;
@@ -78,7 +78,7 @@ public final class KeyMap<V> extends AbstractMap<com.bgsoftware.superiorskyblock
 
     @Override
     public V get(Object obj) {
-        if(obj instanceof Key){
+        if (obj instanceof Key) {
             V returnValue = registry.get(obj.toString());
             return returnValue == null && !((Key) obj).getSubKey().isEmpty() ? registry.get(((Key) obj).getGlobalKey()) : returnValue;
         }
@@ -86,11 +86,11 @@ public final class KeyMap<V> extends AbstractMap<com.bgsoftware.superiorskyblock
         return null;
     }
 
-    public V getRaw(com.bgsoftware.superiorskyblock.api.key.Key key, V defaultValue){
+    public V getRaw(com.bgsoftware.superiorskyblock.api.key.Key key, V defaultValue) {
         return getRaw((Key) key, defaultValue);
     }
 
-    public V getRaw(Key key, V defaultValue){
+    public V getRaw(Key key, V defaultValue) {
         V returnValue = registry.get(key.toString());
         return returnValue == null ? defaultValue : returnValue;
     }
@@ -107,7 +107,7 @@ public final class KeyMap<V> extends AbstractMap<com.bgsoftware.superiorskyblock
     @Override
     public V getOrDefault(Object key, V defaultValue) {
         V value = get(key);
-        return value == null? defaultValue : value;
+        return value == null ? defaultValue : value;
     }
 
     @Override
@@ -115,11 +115,11 @@ public final class KeyMap<V> extends AbstractMap<com.bgsoftware.superiorskyblock
         registry.clear();
     }
 
-    public Map<com.bgsoftware.superiorskyblock.api.key.Key, V> asKeyMap(){
+    public Map<com.bgsoftware.superiorskyblock.api.key.Key, V> asKeyMap() {
         return registry.toMap().entrySet().stream().collect(Collectors.toMap(entry -> Key.of(entry.getKey()), Entry::getValue));
     }
 
-    public Map<String, V> asMap(){
+    public Map<String, V> asMap() {
         return new HashMap<>(registry.toMap());
     }
 

@@ -18,8 +18,8 @@ public final class BlocksProvider_SilkSpawners implements BlocksProvider {
 
     private static boolean registered = false;
 
-    public BlocksProvider_SilkSpawners(){
-        if(!registered) {
+    public BlocksProvider_SilkSpawners() {
+        if (!registered) {
             Bukkit.getPluginManager().registerEvents(new BlocksProvider_SilkSpawners.StackerListener(), SuperiorSkyblockPlugin.getPlugin());
             registered = true;
             SuperiorSkyblockPlugin.log("Using SilkSpawners as a spawners provider.");
@@ -42,16 +42,16 @@ public final class BlocksProvider_SilkSpawners implements BlocksProvider {
         private final SuperiorSkyblockPlugin plugin = SuperiorSkyblockPlugin.getPlugin();
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSpawnerPlace(SpawnerPlaceEvent e){
+        public void onSpawnerPlace(SpawnerPlaceEvent e) {
             Island island = plugin.getGrid().getIslandAt(e.getSpawner().getLocation());
-            if(island != null)
+            if (island != null)
                 island.handleBlockPlace(Key.of(Materials.SPAWNER.toBukkitType() + ":" + e.getSpawnedEntity()), 1);
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSpawnerUnstack(SpawnerBreakEvent e){
+        public void onSpawnerUnstack(SpawnerBreakEvent e) {
             Island island = plugin.getGrid().getIslandAt(e.getSpawner().getLocation());
-            if(island != null)
+            if (island != null)
                 island.handleBlockBreak(Key.of(Materials.SPAWNER.toBukkitType() + ":" + e.getSpawnedEntity()), 1);
         }
 

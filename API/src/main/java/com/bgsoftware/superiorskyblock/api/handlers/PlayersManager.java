@@ -2,7 +2,6 @@ package com.bgsoftware.superiorskyblock.api.handlers;
 
 import com.bgsoftware.superiorskyblock.api.island.PlayerRole;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -12,6 +11,7 @@ public interface PlayersManager {
 
     /**
      * Get a player by it's name.
+     *
      * @param name The name to check.
      * @return The player with that name. May be null.
      */
@@ -19,12 +19,14 @@ public interface PlayersManager {
 
     /**
      * Get a player by a player.
+     *
      * @param player The player to check.
      */
     SuperiorPlayer getSuperiorPlayer(Player player);
 
     /**
      * Get a player by it's uuid.
+     *
      * @param uuid The uuid to check.
      * @return The player with that uuid.
      */
@@ -37,6 +39,7 @@ public interface PlayersManager {
 
     /**
      * Get a player role by it's weight.
+     *
      * @param weight The weight to check.
      * @return The player role with that weight. May be null.
      */
@@ -44,6 +47,7 @@ public interface PlayersManager {
 
     /**
      * Get a player role by it's id.
+     *
      * @param id The id to check.
      * @return The player role with that weight. May be null.
      */
@@ -51,6 +55,7 @@ public interface PlayersManager {
 
     /**
      * Get a player role by it's name.
+     *
      * @param name The name to check.
      * @return The player role with that name. Throws IllegalArgumentException.
      */

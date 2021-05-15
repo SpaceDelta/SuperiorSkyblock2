@@ -4,10 +4,6 @@ import com.bgsoftware.superiorskyblock.api.island.IslandPrivilege;
 
 public final class IslandPrivileges {
 
-    private IslandPrivileges(){
-
-    }
-
     public static IslandPrivilege ALL = IslandPrivilege.getByName("ALL");
     public static IslandPrivilege ANIMAL_BREED = IslandPrivilege.getByName("ANIMAL_BREED");
     public static IslandPrivilege ANIMAL_DAMAGE = IslandPrivilege.getByName("ANIMAL_DAMAGE");
@@ -72,10 +68,14 @@ public final class IslandPrivileges {
     public static IslandPrivilege VILLAGER_TRADING = IslandPrivilege.getByName("VILLAGER_TRADING");
     public static IslandPrivilege WITHDRAW_MONEY = IslandPrivilege.getByName("WITHDRAW_MONEY");
 
-    private static IslandPrivilege getSafe(String name){
-        try{
+    private IslandPrivileges() {
+
+    }
+
+    private static IslandPrivilege getSafe(String name) {
+        try {
             return IslandPrivilege.getByName(name);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return null;
         }
     }

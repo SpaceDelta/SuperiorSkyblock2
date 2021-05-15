@@ -1,5 +1,6 @@
 package com.bgsoftware.superiorskyblock.commands;
 
+import com.bgsoftware.superiorskyblock.Locale;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
@@ -8,8 +9,6 @@ import com.bgsoftware.superiorskyblock.menu.MenuConfirmLeave;
 import com.bgsoftware.superiorskyblock.utils.commands.CommandArguments;
 import com.bgsoftware.superiorskyblock.utils.events.EventsCaller;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
-import com.bgsoftware.superiorskyblock.Locale;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public final class CmdLeave implements ISuperiorCommand {
 
         Island island = arguments.getKey();
 
-        if(island == null)
+        if (island == null)
             return;
 
         SuperiorPlayer superiorPlayer = arguments.getValue();
@@ -78,7 +77,7 @@ public final class CmdLeave implements ISuperiorCommand {
             return;
         }
 
-        if(!EventsCaller.callIslandQuitEvent(superiorPlayer, island))
+        if (!EventsCaller.callIslandQuitEvent(superiorPlayer, island))
             return;
 
         island.kickMember(superiorPlayer);

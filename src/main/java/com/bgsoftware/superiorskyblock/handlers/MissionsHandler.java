@@ -43,18 +43,19 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
 
     private final static Registry<String, Mission<?>> missionMap = Registry.createRegistry();
     private final static Registry<Mission<?>, MissionData> missionDataMap = Registry.createRegistry();
+    private static int currentIndex = 0;
 
-    public MissionsHandler(SuperiorSkyblockPlugin plugin){
+    public MissionsHandler(SuperiorSkyblockPlugin plugin) {
         super(plugin);
     }
 
     @Override
     @SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"})
-    public void loadData(){
+    public void loadData() {
         File missionsDict = new File(plugin.getDataFolder(), "missions");
         File file = new File(plugin.getDataFolder(), "missions/missions.yml");
 
-        if(!missionsDict.exists())
+        if (!missionsDict.exists())
             missionsDict.mkdirs();
 
         FileUtils.copyResource("missions/BlocksMissions");
@@ -65,7 +66,7 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
         FileUtils.copyResource("missions/KillsMissions");
         FileUtils.copyResource("missions/StatisticsMissions");
 
-        if(!file.exists())
+        if (!file.exists())
             FileUtils.saveResource("missions/missions.yml");
 
         YamlConfiguration cfg = new YamlConfiguration();
@@ -73,18 +74,18 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
         try {
             FileInputStream stream = new FileInputStream(file);
             cfg.load((new InputStreamReader(stream, Charsets.UTF_8)));
-        }catch(Exception ex){
+        } catch (Exception ex) {
             cfg = YamlConfiguration.loadConfiguration(file);
         }
 
         List<Mission<?>> missionsToLoad = new ArrayList<>();
 
-        for(String missionName : cfg.getConfigurationSection("").getKeys(false)){
+        for (String missionName : cfg.getConfigurationSection("").getKeys(false)) {
             ConfigurationSection missionSection = cfg.getConfigurationSection(missionName);
             try {
                 Mission<?> mission = missionMap.get(missionName.toLowerCase());
 
-                if(mission == null) {
+                if (mission == null) {
                     File missionJar = new File(missionsDict, missionSection.getString("mission-file") + ".jar");
                     Optional<Class<?>> missionClass = FileUtils.getClasses(missionJar.toURL(), Mission.class).stream().findFirst();
 
@@ -107,7 +108,7 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
                 missionDataMap.add(mission, new MissionData(mission, missionSection));
 
                 SuperiorSkyblockPlugin.log("Registered mission " + missionName);
-            }catch(Exception ex){
+            } catch (Exception ex) {
                 SuperiorSkyblockPlugin.log("Couldn't register mission " + missionName + ": ");
                 new HandlerLoadException(ex, "Couldn't register mission " + missionName + ".", HandlerLoadException.ErrorLevel.CONTINUE).printStackTrace();
             }
@@ -140,18 +141,17 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
     public boolean hasCompleted(SuperiorPlayer superiorPlayer, Mission<?> mission) {
         Optional<MissionData> missionDataOptional = getMissionData(mission);
 
-        if(!missionDataOptional.isPresent())
+        if (!missionDataOptional.isPresent())
             return false;
 
         MissionData missionData = missionDataOptional.get();
 
         Island playerIsland = superiorPlayer.getIsland();
 
-        if(missionData.islandMission){
-            if(playerIsland != null)
+        if (missionData.islandMission) {
+            if (playerIsland != null)
                 return playerIsland.hasCompletedMission(mission);
-        }
-        else{
+        } else {
             return superiorPlayer.hasCompletedMission(mission);
         }
 
@@ -162,18 +162,17 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
     public boolean canCompleteAgain(SuperiorPlayer superiorPlayer, Mission<?> mission) {
         Optional<MissionData> missionDataOptional = getMissionData(mission);
 
-        if(!missionDataOptional.isPresent())
+        if (!missionDataOptional.isPresent())
             return false;
 
         MissionData missionData = missionDataOptional.get();
 
         Island playerIsland = superiorPlayer.getIsland();
 
-        if(missionData.islandMission){
-            if(playerIsland != null)
+        if (missionData.islandMission) {
+            if (playerIsland != null)
                 return playerIsland.canCompleteMissionAgain(mission);
-        }
-        else{
+        } else {
             return superiorPlayer.canCompleteMissionAgain(mission);
         }
 
@@ -192,18 +191,18 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
     }
 
     @Override
-    public boolean hasAllRequiredMissions(SuperiorPlayer superiorPlayer, Mission<?> mission){
+    public boolean hasAllRequiredMissions(SuperiorPlayer superiorPlayer, Mission<?> mission) {
         return mission.getRequiredMissions().stream().allMatch(_mission ->
                 _mission != null && hasCompleted(superiorPlayer, plugin.getMissions().getMission(_mission)));
     }
 
     @Override
-    public boolean canPassAllChecks(SuperiorPlayer superiorPlayer, Mission<?> mission){
+    public boolean canPassAllChecks(SuperiorPlayer superiorPlayer, Mission<?> mission) {
         return mission.getRequiredChecks().stream().allMatch(check -> {
             check = PlaceholderHook.parse(superiorPlayer, check);
             try {
                 return Boolean.parseBoolean(engine.eval(check) + "");
-            }catch(Throwable ex){
+            } catch (Throwable ex) {
                 return false;
             }
         });
@@ -221,15 +220,15 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
 
     @Override
     public void rewardMission(Mission<?> mission, SuperiorPlayer superiorPlayer, boolean checkAutoReward, boolean forceReward, Consumer<Boolean> result) {
-        if(Bukkit.isPrimaryThread()){
+        if (Bukkit.isPrimaryThread()) {
             Executor.async(() -> rewardMission(mission, superiorPlayer, checkAutoReward, forceReward, result));
             return;
         }
 
         Optional<MissionData> missionDataOptional = getMissionData(mission);
 
-        if(!missionDataOptional.isPresent()) {
-            if(result != null)
+        if (!missionDataOptional.isPresent()) {
+            if (result != null)
                 result.accept(false);
             return;
         }
@@ -243,20 +242,20 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
             if (!forceReward) {
                 if (!canCompleteAgain(superiorPlayer, mission)) {
                     mission.onCompleteFail(superiorPlayer);
-                    if(result != null)
+                    if (result != null)
                         result.accept(false);
                     return;
                 }
 
                 if (!canComplete(superiorPlayer, mission)) {
-                    if(result != null)
+                    if (result != null)
                         result.accept(false);
                     return;
                 }
 
                 if (missionData.islandMission && playerIsland == null) {
                     mission.onCompleteFail(superiorPlayer);
-                    if(result != null)
+                    if (result != null)
                         result.accept(false);
                     throw new IllegalStateException("Cannot reward island mission " + mission.getName() + " as the player " + superiorPlayer.getName() + " does not have island.");
                 }
@@ -264,7 +263,7 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
                 if (checkAutoReward && !isAutoReward(mission)) {
                     if (canCompleteAgain(superiorPlayer, mission)) {
                         Locale.MISSION_NO_AUTO_REWARD.send(superiorPlayer, mission.getName());
-                        if(result != null)
+                        if (result != null)
                             result.accept(false);
                         return;
                     }
@@ -286,7 +285,7 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
             if (event.isCancelled()) {
                 if (!forceReward)
                     mission.onCompleteFail(superiorPlayer);
-                if(result != null)
+                if (result != null)
                     result.accept(false);
                 return;
             }
@@ -301,7 +300,7 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
                 superiorPlayer.completeMission(mission);
             }
 
-            if(result != null)
+            if (result != null)
                 result.accept(true);
 
             for (ItemStack itemStack : event.getResult().getKey()) {
@@ -331,26 +330,26 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
     public void saveMissionsData() {
         File file = new File(plugin.getDataFolder(), "missions/_data.yml");
 
-        if(!file.exists()){
+        if (!file.exists()) {
             try {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
-            }catch(IOException ex){
+            } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
 
         YamlConfiguration data = new YamlConfiguration();
 
-        for(Mission<?> mission : getAllMissions()){
+        for (Mission<?> mission : getAllMissions()) {
             ConfigurationSection section = data.createSection(mission.getName());
             mission.saveProgress(section);
             data.set(mission.getName(), section);
         }
 
-        try{
+        try {
             data.save(file);
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
@@ -364,29 +363,29 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
     public void loadMissionsData(List<Mission<?>> missionsList) {
         File file = new File(plugin.getDataFolder(), "missions/_data.yml");
 
-        if(!file.exists()){
+        if (!file.exists()) {
             try {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
-            }catch(IOException ex){
+            } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
 
         YamlConfiguration data = YamlConfiguration.loadConfiguration(file);
 
-        for(Mission<?> mission : missionsList){
-            if(data.contains(mission.getName()))
+        for (Mission<?> mission : missionsList) {
+            if (data.contains(mission.getName()))
                 mission.loadProgress(data.getConfigurationSection(mission.getName()));
         }
     }
 
-    public Optional<MissionData> getMissionData(Mission<?> mission){
+    public Optional<MissionData> getMissionData(Mission<?> mission) {
         MissionData missionData = missionDataMap.get(mission);
 
-        if(missionData == null){
+        if (missionData == null) {
             missionDataMap.remove(mission);
-            if(mission != null)
+            if (mission != null)
                 missionMap.remove(mission.getName());
             return Optional.empty();
         }
@@ -394,7 +393,7 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
         return Optional.of(missionData);
     }
 
-    private boolean isAutoReward(Mission<?> mission){
+    private boolean isAutoReward(Mission<?> mission) {
         Optional<MissionData> missionDataOptional = getMissionData(mission);
         return missionDataOptional.isPresent() && missionDataOptional.get().autoReward;
     }
@@ -406,12 +405,12 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
                 .collect(Collectors.toList());
     }
 
-    private Mission<?> createInstance(Class<?> clazz, String name, boolean islandMission, List<String> requiredMissions, List<String> requiredChecks, boolean onlyShowIfRequiredCompleted) throws Exception{
+    private Mission<?> createInstance(Class<?> clazz, String name, boolean islandMission, List<String> requiredMissions, List<String> requiredChecks, boolean onlyShowIfRequiredCompleted) throws Exception {
         Preconditions.checkArgument(Mission.class.isAssignableFrom(clazz), "Class " + clazz + " is not a Mission.");
 
-        for(Constructor<?> constructor : clazz.getConstructors()){
-            if(constructor.getParameterCount() == 0) {
-                if(!constructor.isAccessible())
+        for (Constructor<?> constructor : clazz.getConstructors()) {
+            if (constructor.getParameterCount() == 0) {
+                if (!constructor.isAccessible())
                     constructor.setAccessible(true);
 
                 Mission<?> mission = (Mission<?>) constructor.newInstance();
@@ -419,7 +418,7 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
                 mission.setIslandMission(islandMission);
                 mission.addRequiredMission(requiredMissions.toArray(new String[0]));
                 mission.addRequiredCheck(requiredChecks.toArray(new String[0]));
-                if(onlyShowIfRequiredCompleted)
+                if (onlyShowIfRequiredCompleted)
                     mission.toggleOnlyShowIfRequiredCompleted();
 
                 return mission;
@@ -429,20 +428,18 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
         throw new IllegalArgumentException("Class " + clazz + " has no valid constructors.");
     }
 
-    private static int currentIndex = 0;
+    public static class MissionData {
 
-    public static class MissionData{
-
+        public final boolean disbandReset, leaveReset;
+        public final ItemBuilder notCompleted, canComplete, completed;
+        public final int resetAmount;
         private final int index;
         private final Mission<?> mission;
         private final List<ItemStack> itemRewards = new ArrayList<>();
         private final List<String> commandRewards = new ArrayList<>();
         private final boolean autoReward, islandMission;
-        public final boolean disbandReset, leaveReset;
-        public final ItemBuilder notCompleted, canComplete, completed;
-        public final int resetAmount;
 
-        MissionData(Mission<?> mission, ConfigurationSection section){
+        MissionData(Mission<?> mission, ConfigurationSection section) {
             this.index = currentIndex++;
             this.mission = mission;
             this.islandMission = section.getBoolean("island", false);
@@ -451,8 +448,8 @@ public final class MissionsHandler extends AbstractHandler implements MissionsMa
             this.leaveReset = section.getBoolean("leave-reset", false);
             this.resetAmount = section.getInt("reset-amount", 1);
 
-            if(section.contains("rewards.items")){
-                for(String key : section.getConfigurationSection("rewards.items").getKeys(false)) {
+            if (section.contains("rewards.items")) {
+                for (String key : section.getConfigurationSection("rewards.items").getKeys(false)) {
                     ItemStack itemStack = FileUtils.getItemStack("missions.yml", section.getConfigurationSection("rewards.items." + key)).build();
                     itemStack.setAmount(section.getInt("rewards.items." + key + ".amount", 1));
                     this.itemRewards.add(itemStack);

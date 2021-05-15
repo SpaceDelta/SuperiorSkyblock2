@@ -7,7 +7,6 @@ import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import com.bgsoftware.superiorskyblock.commands.CmdTeamChat;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandUtils;
 import net.spacedelta.lib.network.data.event.PlayerQuitNetworkEvent;
-import net.spacedelta.runes.util.D;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

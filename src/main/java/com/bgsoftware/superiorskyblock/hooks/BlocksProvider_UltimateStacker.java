@@ -25,8 +25,8 @@ public final class BlocksProvider_UltimateStacker implements BlocksProvider {
 
     private final UltimateStacker instance = UltimateStacker.getInstance();
 
-    public BlocksProvider_UltimateStacker(){
-        if(!registered) {
+    public BlocksProvider_UltimateStacker() {
+        if (!registered) {
             Bukkit.getPluginManager().registerEvents(new StackerListener(), SuperiorSkyblockPlugin.getPlugin());
             registered = true;
             SuperiorSkyblockPlugin.log("Using UltimateStacker as a spawners provider.");
@@ -36,7 +36,7 @@ public final class BlocksProvider_UltimateStacker implements BlocksProvider {
     @Override
     public Pair<Integer, String> getSpawner(Location location) {
         int blockCount = -1;
-        if(Bukkit.isPrimaryThread()){
+        if (Bukkit.isPrimaryThread()) {
             blockCount = instance.getSpawnerStackManager().getSpawner(location).getAmount();
         }
         return new Pair<>(blockCount, null);
@@ -44,11 +44,11 @@ public final class BlocksProvider_UltimateStacker implements BlocksProvider {
 
     @Override
     public String getSpawnerType(ItemStack itemStack) {
-        try{
+        try {
             BlockStateMeta bsm = (BlockStateMeta) itemStack.getItemMeta();
-            CreatureSpawner cs = (CreatureSpawner)bsm.getBlockState();
+            CreatureSpawner cs = (CreatureSpawner) bsm.getBlockState();
             return cs.getSpawnedType().name();
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return "PIG";
         }
     }
@@ -59,29 +59,27 @@ public final class BlocksProvider_UltimateStacker implements BlocksProvider {
         private final SuperiorSkyblockPlugin plugin = SuperiorSkyblockPlugin.getPlugin();
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onSpawnerStack(SpawnerPlaceEvent e){
+        public void onSpawnerStack(SpawnerPlaceEvent e) {
             Island island = plugin.getGrid().getIslandAt(e.getBlock().getLocation());
 
-            if(island == null)
+            if (island == null)
                 return;
 
             Key blockKey = Key.of(Materials.SPAWNER.toBukkitType() + ":" + e.getSpawnerType().name());
             int increaseAmount = e.getAmount();
 
-            if(island.hasReachedBlockLimit(blockKey, increaseAmount)){
+            if (island.hasReachedBlockLimit(blockKey, increaseAmount)) {
                 e.setCancelled(true);
                 Locale.REACHED_BLOCK_LIMIT.send(e.getPlayer(), StringUtils.format(blockKey.toString()));
-            }
-
-            else{
+            } else {
                 island.handleBlockPlace(blockKey, increaseAmount - 1);
             }
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSpawnerUnstack(SpawnerBreakEvent e){
+        public void onSpawnerUnstack(SpawnerBreakEvent e) {
             Island island = plugin.getGrid().getIslandAt(e.getBlock().getLocation());
-            if(island != null)
+            if (island != null)
                 island.handleBlockBreak(e.getBlock(), e.getAmount());
         }
 

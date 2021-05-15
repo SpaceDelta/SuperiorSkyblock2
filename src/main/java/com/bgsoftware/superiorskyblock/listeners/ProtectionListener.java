@@ -5,6 +5,7 @@ import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.island.IslandPrivilege;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
+import com.bgsoftware.superiorskyblock.commands.admin.CmdAdminChaosTime;
 import com.bgsoftware.superiorskyblock.utils.ServerVersion;
 import com.bgsoftware.superiorskyblock.utils.entities.EntityUtils;
 import com.bgsoftware.superiorskyblock.utils.islands.IslandPrivileges;
@@ -118,7 +119,7 @@ public final class ProtectionListener implements Listener {
         IslandPrivilege islandPermission = blockType == Materials.SPAWNER.toBukkitType() ?
                 IslandPrivileges.SPAWNER_BREAK : IslandPrivileges.BREAK;
 
-        if(!island.hasPermission(superiorPlayer, islandPermission)){
+        if(!CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, islandPermission)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(e.getPlayer());
             return;
@@ -176,7 +177,7 @@ public final class ProtectionListener implements Listener {
         else if(plugin.getGrid().getBlockAmount(clickedBlock) > 1) islandPermission = IslandPrivileges.BREAK;
         else islandPermission = IslandPrivileges.INTERACT;
 
-        if(!island.hasPermission(superiorPlayer, islandPermission)){
+        if(!CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, islandPermission)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(superiorPlayer);
             return;
@@ -241,7 +242,7 @@ public final class ProtectionListener implements Listener {
         }
 
         IslandPrivilege islandPermission = e.getEntity() instanceof ItemFrame ? IslandPrivileges.ITEM_FRAME : IslandPrivileges.PAINTING;
-        if(!island.hasPermission(superiorPlayer, islandPermission)){
+        if(!CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, islandPermission)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(superiorPlayer);
             return;
@@ -466,7 +467,7 @@ public final class ProtectionListener implements Listener {
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(e.getPlayer());
         Island island = plugin.getGrid().getIslandAt(e.getEntity().getLocation());
 
-        if(island != null && !island.hasPermission(superiorPlayer, IslandPrivileges.LEASH)) {
+        if(island != null && !CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, IslandPrivileges.LEASH)) {
             e.setCancelled(true);
             Locale.sendProtectionMessage(superiorPlayer);
         }
@@ -480,7 +481,7 @@ public final class ProtectionListener implements Listener {
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(e.getPlayer());
         Island island = plugin.getGrid().getIslandAt(e.getRightClicked().getLocation());
 
-        if(island != null && !island.hasPermission(superiorPlayer, IslandPrivileges.LEASH)) {
+        if(island != null && !CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, IslandPrivileges.LEASH)) {
             e.setCancelled(true);
             Locale.sendProtectionMessage(superiorPlayer);
         }
@@ -491,7 +492,7 @@ public final class ProtectionListener implements Listener {
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(e.getPlayer());
         Island island = plugin.getGrid().getIslandAt(superiorPlayer.getLocation());
 
-        if(island != null && !island.hasPermission(superiorPlayer, IslandPrivileges.DROP_ITEMS)){
+        if(island != null && !CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, IslandPrivileges.DROP_ITEMS)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(superiorPlayer);
         }
@@ -503,7 +504,7 @@ public final class ProtectionListener implements Listener {
         Island island = plugin.getGrid().getIslandAt(superiorPlayer.getLocation());
         UUID droppedPlayer = getPlayerWhoDropped(e.getItem());
 
-        if(island != null && !superiorPlayer.getUniqueId().equals(droppedPlayer) &&
+        if(island != null && !CmdAdminChaosTime.chaos && !superiorPlayer.getUniqueId().equals(droppedPlayer) &&
                 !island.hasPermission(superiorPlayer, IslandPrivileges.PICKUP_DROPS)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(superiorPlayer);
@@ -563,7 +564,7 @@ public final class ProtectionListener implements Listener {
                     IslandPrivileges.MONSTER_SPAWN : EntityUtils.isAnimal(spawnType) ?
                     IslandPrivileges.ANIMAL_SPAWN : IslandPrivileges.BUILD;
 
-            if(island != null && !island.hasPermission(superiorPlayer, islandPermission)){
+            if(island != null && !CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, islandPermission)){
                 e.setCancelled(true);
                 Locale.sendProtectionMessage(superiorPlayer);
             }
@@ -591,7 +592,7 @@ public final class ProtectionListener implements Listener {
         if(island == null)
             return;
 
-        if(!island.hasPermission(e.getPlayer(), IslandPrivileges.MINECART_PLACE)){
+        if(!CmdAdminChaosTime.chaos && !island.hasPermission(e.getPlayer(), IslandPrivileges.MINECART_PLACE)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(e.getPlayer());
         }
@@ -608,7 +609,7 @@ public final class ProtectionListener implements Listener {
         if(island == null)
             return;
 
-        if(!island.hasPermission(superiorPlayer, IslandPrivileges.MINECART_DAMAGE)){
+        if(!CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, IslandPrivileges.MINECART_DAMAGE)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(superiorPlayer);
         }
@@ -625,7 +626,7 @@ public final class ProtectionListener implements Listener {
         if(island == null)
             return;
 
-        if(!island.hasPermission(superiorPlayer, IslandPrivileges.MINECART_ENTER)){
+        if(!CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, IslandPrivileges.MINECART_ENTER)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(superiorPlayer);
         }
@@ -644,7 +645,7 @@ public final class ProtectionListener implements Listener {
         if(island == null)
             return;
 
-        if(!island.hasPermission(superiorPlayer, IslandPrivileges.MINECART_OPEN)){
+        if(!CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, IslandPrivileges.MINECART_OPEN)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(superiorPlayer);
         }
@@ -663,7 +664,7 @@ public final class ProtectionListener implements Listener {
             Locale.TELEPORT_OUTSIDE_ISLAND.send(superiorPlayer);
         }
 
-        else if(!island.hasPermission(superiorPlayer, IslandPrivileges.ENDER_PEARL)){
+        else if(!CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, IslandPrivileges.ENDER_PEARL)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(superiorPlayer);
         }
@@ -722,7 +723,7 @@ public final class ProtectionListener implements Listener {
             return;
         }
 
-        if(!island.hasPermission(superiorPlayer, IslandPrivileges.FERTILIZE)){
+        if(!CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, IslandPrivileges.FERTILIZE)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(e.getPlayer());
             return;
@@ -752,7 +753,7 @@ public final class ProtectionListener implements Listener {
             return;
         }
 
-        if(!island.hasPermission(superiorPlayer, IslandPrivileges.PICKUP_FISH)){
+        if(!CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, IslandPrivileges.PICKUP_FISH)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(e.getPlayer());
             return;
@@ -770,7 +771,7 @@ public final class ProtectionListener implements Listener {
         SuperiorPlayer superiorPlayer = plugin.getPlayers().getSuperiorPlayer(e.getPlayer());
         Island island = plugin.getGrid().getIslandAt(e.getEntity().getLocation());
 
-        if(island != null && !island.hasPermission(superiorPlayer, IslandPrivileges.ANIMAL_SHEAR)){
+        if(island != null && !CmdAdminChaosTime.chaos && !island.hasPermission(superiorPlayer, IslandPrivileges.ANIMAL_SHEAR)){
             e.setCancelled(true);
             Locale.sendProtectionMessage(superiorPlayer);
         }

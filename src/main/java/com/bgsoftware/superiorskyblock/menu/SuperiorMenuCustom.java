@@ -13,14 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class SuperiorMenuCustom extends SuperiorMenu {
 
@@ -28,36 +21,27 @@ public final class SuperiorMenuCustom extends SuperiorMenu {
 
     private final String fileName;
 
-    private SuperiorMenuCustom(SuperiorPlayer superiorPlayer, String fileName){
+    private SuperiorMenuCustom(SuperiorPlayer superiorPlayer, String fileName) {
         super("menu-" + (fileName = fileName.split("\\.")[0].toLowerCase()), superiorPlayer);
         this.fileName = fileName;
-        if(superiorPlayer == null)
+        if (superiorPlayer == null)
             customMenus.add(fileName);
     }
 
-    @Override
-    public void onPlayerClick(InventoryClickEvent e) {
-    }
-
-    @Override
-    protected void cloneAndOpen(SuperiorMenu previousMenu) {
-        openInventory(superiorPlayer, fileName, previousMenu);
-    }
-
-    public static void createMenu(File file){
+    public static void createMenu(File file) {
         String fileName = file.getName();
 
         SuperiorMenuCustom superiorMenuCustom = new SuperiorMenuCustom(null, fileName);
 
         CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
 
-        if(cfg.contains("command")){
+        if (cfg.contains("command")) {
             ConfigurationSection commandsSection = cfg.getConfigurationSection("command");
             List<String> aliases = Arrays.asList(commandsSection.getString("aliases", "").split(", "));
             String permission = commandsSection.getString("permission", "");
             Map<Locale, String> descriptions = new HashMap<>();
-            if(commandsSection.contains("description")){
-                for(String locale : commandsSection.getConfigurationSection("description").getKeys(false))
+            if (commandsSection.contains("description")) {
+                for (String locale : commandsSection.getConfigurationSection("description").getKeys(false))
                     descriptions.put(LocaleUtils.getLocale(locale), commandsSection.getString("description." + locale));
             }
             boolean displayCommand = commandsSection.getBoolean("display-command", false);
@@ -72,23 +56,32 @@ public final class SuperiorMenuCustom extends SuperiorMenu {
         superiorMenuCustom.markCompleted();
     }
 
-    public static void openInventory(SuperiorPlayer superiorPlayer, String fileName, SuperiorMenu previousMenu){
+    public static void openInventory(SuperiorPlayer superiorPlayer, String fileName, SuperiorMenu previousMenu) {
         new SuperiorMenuCustom(superiorPlayer, fileName).open(previousMenu);
     }
 
-    public static boolean isValidMenu(String menuName){
+    public static boolean isValidMenu(String menuName) {
         return customMenus.contains(menuName.toLowerCase());
     }
 
-    public static Set<String> getCustomMenus(){
+    public static Set<String> getCustomMenus() {
         return Collections.unmodifiableSet(customMenus);
     }
 
-    public static void resetMenus(){
+    public static void resetMenus() {
         customMenus.clear();
     }
 
-    private static final class CustomMenuCommand implements ISuperiorCommand{
+    @Override
+    public void onPlayerClick(InventoryClickEvent e) {
+    }
+
+    @Override
+    protected void cloneAndOpen(SuperiorMenu previousMenu) {
+        openInventory(superiorPlayer, fileName, previousMenu);
+    }
+
+    private static final class CustomMenuCommand implements ISuperiorCommand {
 
         private final String fileName;
         private final List<String> aliases;
@@ -96,7 +89,7 @@ public final class SuperiorMenuCustom extends SuperiorMenu {
         private final Map<Locale, String> descriptions;
         private final boolean displayCommand;
 
-        public CustomMenuCommand(String fileName, List<String> aliases, String permission, Map<Locale, String> descriptions, boolean displayCommand){
+        public CustomMenuCommand(String fileName, List<String> aliases, String permission, Map<Locale, String> descriptions, boolean displayCommand) {
             this.fileName = fileName;
             this.aliases = aliases;
             this.permission = permission;

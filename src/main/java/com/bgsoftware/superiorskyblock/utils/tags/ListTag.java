@@ -69,6 +69,40 @@ public final class ListTag extends Tag<List<Tag<?>>> {
         this.type = type;
     }
 
+    public static ListTag fromNBT(Object tag) {
+        Preconditions.checkArgument(tag.getClass().equals(CLASS), "Cannot convert " + tag.getClass() + " to ListTag!");
+
+        List<Tag<?>> list = new ArrayList<>();
+
+        try {
+            int size = SIZE.invoke(tag);
+
+            for (int i = 0; i < size; i++)
+                list.add(Tag.fromNBT(plugin.getNMSTags().getNBTListIndexValue(tag, i)));
+
+            return new ListTag(size == 0 ? EndTag.class : list.get(0).getClass(), list);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ListTag fromStream(DataInputStream is, int depth) throws IOException {
+        int childType = is.readByte();
+        int length = is.readInt();
+        List<Tag<?>> tagList = new ArrayList<>();
+
+        for (int i = 0; i < length; i++) {
+            Tag<?> tag = Tag.fromStream(is, depth + 1, childType);
+            if (tag instanceof EndTag) {
+                throw new IOException("TAG_End not permitted in a list.");
+            }
+            tagList.add(tag);
+        }
+
+        return new ListTag(NBTUtils.getTypeClass(childType), tagList);
+    }
+
     @Override
     public List<Tag<?>> getValue() {
         return Collections.unmodifiableList(value);
@@ -83,7 +117,7 @@ public final class ListTag extends Tag<List<Tag<?>>> {
         return type;
     }
 
-    public void addTag(Tag<?> tag){
+    public void addTag(Tag<?> tag) {
         value.add(tag);
     }
 
@@ -110,40 +144,6 @@ public final class ListTag extends Tag<List<Tag<?>>> {
         }
         bldr.append("}");
         return bldr.toString();
-    }
-
-    public static ListTag fromNBT(Object tag){
-        Preconditions.checkArgument(tag.getClass().equals(CLASS), "Cannot convert " + tag.getClass() + " to ListTag!");
-
-        List<Tag<?>> list = new ArrayList<>();
-
-        try {
-            int size = SIZE.invoke(tag);
-
-            for(int i = 0; i < size; i++)
-                list.add(Tag.fromNBT(plugin.getNMSTags().getNBTListIndexValue(tag, i)));
-
-            return new ListTag(size == 0 ? EndTag.class : list.get(0).getClass(), list);
-        }catch(Exception ex){
-            ex.printStackTrace();
-            return null;
-        }
-    }
-
-    public static ListTag fromStream(DataInputStream is, int depth) throws IOException{
-        int childType = is.readByte();
-        int length = is.readInt();
-        List<Tag<?>> tagList = new ArrayList<>();
-
-        for (int i = 0; i < length; i++) {
-            Tag<?> tag = Tag.fromStream(is, depth + 1, childType);
-            if (tag instanceof EndTag) {
-                throw new IOException("TAG_End not permitted in a list.");
-            }
-            tagList.add(tag);
-        }
-
-        return new ListTag(NBTUtils.getTypeClass(childType), tagList);
     }
 
 }

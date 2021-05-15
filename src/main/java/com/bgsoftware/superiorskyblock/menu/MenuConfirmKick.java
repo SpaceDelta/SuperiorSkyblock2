@@ -15,42 +15,17 @@ public final class MenuConfirmKick extends SuperiorMenu {
 
     private static List<Integer> confirmSlot, cancelSlot;
 
-    private MenuConfirmKick(SuperiorPlayer superiorPlayer, SuperiorPlayer targetPlayer){
+    private MenuConfirmKick(SuperiorPlayer superiorPlayer, SuperiorPlayer targetPlayer) {
         super("menuConfirmKick", superiorPlayer);
         updateTargetPlayer(targetPlayer);
     }
 
-    @Override
-    protected void onPlayerClick(InventoryClickEvent e) {
-        Island island = superiorPlayer.getIsland();
-
-        boolean closeMenu = false;
-
-        if(confirmSlot.contains(e.getRawSlot())){
-            IslandUtils.handleKickPlayer(superiorPlayer, island, targetPlayer);
-            closeMenu = true;
-        }
-        else if(cancelSlot.contains(e.getRawSlot())) {
-            closeMenu = true;
-        }
-
-        if(closeMenu){
-            previousMove = false;
-            superiorPlayer.asPlayer().closeInventory();
-        }
-    }
-
-    @Override
-    protected void cloneAndOpen(SuperiorMenu previousMenu) {
-        openInventory(superiorPlayer, previousMenu, targetPlayer);
-    }
-
-    public static void init(){
+    public static void init() {
         MenuConfirmKick menuConfirmKick = new MenuConfirmKick(null, null);
 
         File file = new File(plugin.getDataFolder(), "menus/confirm-kick.yml");
 
-        if(!file.exists())
+        if (!file.exists())
             FileUtils.saveResource("menus/confirm-kick.yml");
 
         CommentedConfiguration cfg = CommentedConfiguration.loadConfiguration(file);
@@ -65,8 +40,32 @@ public final class MenuConfirmKick extends SuperiorMenu {
         menuConfirmKick.markCompleted();
     }
 
-    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, SuperiorPlayer targetPlayer){
+    public static void openInventory(SuperiorPlayer superiorPlayer, SuperiorMenu previousMenu, SuperiorPlayer targetPlayer) {
         new MenuConfirmKick(superiorPlayer, targetPlayer).open(previousMenu);
+    }
+
+    @Override
+    protected void onPlayerClick(InventoryClickEvent e) {
+        Island island = superiorPlayer.getIsland();
+
+        boolean closeMenu = false;
+
+        if (confirmSlot.contains(e.getRawSlot())) {
+            IslandUtils.handleKickPlayer(superiorPlayer, island, targetPlayer);
+            closeMenu = true;
+        } else if (cancelSlot.contains(e.getRawSlot())) {
+            closeMenu = true;
+        }
+
+        if (closeMenu) {
+            previousMove = false;
+            superiorPlayer.asPlayer().closeInventory();
+        }
+    }
+
+    @Override
+    protected void cloneAndOpen(SuperiorMenu previousMenu) {
+        openInventory(superiorPlayer, previousMenu, targetPlayer);
     }
 
 }

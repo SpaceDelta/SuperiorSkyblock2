@@ -10,6 +10,7 @@ public interface ProvidersManager {
     /**
      * Set custom spawners provider for the plugin.
      * Cannot be null.
+     *
      * @param spawnersProvider The spawner provider to set.
      */
     void setSpawnersProvider(SpawnersProvider spawnersProvider);
@@ -17,12 +18,14 @@ public interface ProvidersManager {
     /**
      * Set custom ecconomy provider for the plugin.
      * Cannot be null.
+     *
      * @param economyProvider The economy provider to set.
      */
     void setEconomyProvider(EconomyProvider economyProvider);
 
     /**
      * Set a custom worlds provider for the plugin.
+     *
      * @param worldsProvider The worlds provider to set.
      */
     void setWorldsProvider(WorldsProvider worldsProvider);
@@ -30,12 +33,14 @@ public interface ProvidersManager {
     /**
      * Set custom economy provider for the island banks.
      * Cannot be null.
+     *
      * @param economyProvider The economy provider to set.
      */
     void setBankEconomyProvider(EconomyProvider economyProvider);
 
     /**
      * Add AFK Provider to the plugin.
+     *
      * @param afkProvider The afk-provider to add.
      */
     void addAFKProvider(AFKProvider afkProvider);

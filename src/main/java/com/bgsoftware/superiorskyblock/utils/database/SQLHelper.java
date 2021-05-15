@@ -5,11 +5,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -21,14 +17,14 @@ public final class SQLHelper {
 
     private static HikariDataSource dataSource;
 
-    private SQLHelper(){
+    private SQLHelper() {
 
     }
 
-    public static void waitForConnection(){
+    public static void waitForConnection() {
         try {
             ready.get();
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -37,7 +33,7 @@ public final class SQLHelper {
         return mutex;
     }
 
-    public static boolean createConnection(SuperiorSkyblockPlugin plugin){
+    public static boolean createConnection(SuperiorSkyblockPlugin plugin) {
         try {
             SuperiorSkyblockPlugin.log("Trying to connect to " + plugin.getSettings().databaseType + " database...");
             HikariConfig config = new HikariConfig();
@@ -83,20 +79,21 @@ public final class SQLHelper {
             ready.complete(null);
 
             return true;
-        }catch(Exception ignored){}
+        } catch (Exception ignored) {
+        }
 
         return false;
     }
 
-    public static void executeUpdate(String statement){
+    public static void executeUpdate(String statement) {
         String prefix = plugin.getSettings().databaseType.equalsIgnoreCase("MySQL") ? plugin.getSettings().databaseMySQLPrefix : "";
         Connection conn = null;
         PreparedStatement preparedStatement = null;
-        try{
+        try {
             conn = dataSource.getConnection();
             preparedStatement = conn.prepareStatement(statement.replace("{prefix}", prefix));
             preparedStatement.executeUpdate();
-        }catch(SQLException ex){
+        } catch (SQLException ex) {
             System.out.println(statement);
             ex.printStackTrace();
         } finally {
@@ -105,19 +102,19 @@ public final class SQLHelper {
         }
     }
 
-    public static boolean doesConditionExist(String statement){
+    public static boolean doesConditionExist(String statement) {
         boolean ret = false;
 
         String prefix = plugin.getSettings().databaseType.equalsIgnoreCase("MySQL") ? plugin.getSettings().databaseMySQLPrefix : "";
         Connection conn = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        try{
+        try {
             conn = dataSource.getConnection();
             preparedStatement = conn.prepareStatement(statement.replace("{prefix}", prefix));
             resultSet = preparedStatement.executeQuery();
             ret = resultSet.next();
-        }catch(SQLException ex){
+        } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
             close(resultSet);
@@ -128,17 +125,17 @@ public final class SQLHelper {
         return ret;
     }
 
-    public static void executeQuery(String statement, QueryConsumer<ResultSet> callback){
+    public static void executeQuery(String statement, QueryConsumer<ResultSet> callback) {
         String prefix = plugin.getSettings().databaseType.equalsIgnoreCase("MySQL") ? plugin.getSettings().databaseMySQLPrefix : "";
         Connection conn = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        try{
+        try {
             conn = dataSource.getConnection();
             preparedStatement = conn.prepareStatement(statement.replace("{prefix}", prefix));
             resultSet = preparedStatement.executeQuery();
             callback.accept(resultSet);
-        }catch(SQLException ex){
+        } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
             close(resultSet);
@@ -147,48 +144,49 @@ public final class SQLHelper {
         }
     }
 
-    public static void close(){
+    public static void close() {
         dataSource.close();
     }
 
-    public static void buildStatement(String query, QueryConsumer<PreparedStatement> consumer, Consumer<SQLException> failure){
+    public static void buildStatement(String query, QueryConsumer<PreparedStatement> consumer, Consumer<SQLException> failure) {
         String prefix = plugin.getSettings().databaseType.equalsIgnoreCase("MySQL") ? plugin.getSettings().databaseMySQLPrefix : "";
         Connection conn = null;
         PreparedStatement preparedStatement = null;
-        try{
+        try {
             conn = dataSource.getConnection();
             preparedStatement = conn.prepareStatement(query.replace("{prefix}", prefix));
             consumer.accept(preparedStatement);
-        }catch(SQLException ex){
+        } catch (SQLException ex) {
             failure.accept(ex);
         } finally {
-          close(preparedStatement);
-          close(conn);
+            close(preparedStatement);
+            close(conn);
         }
     }
 
-    private static void close(AutoCloseable closeable){
-        if(closeable != null){
+    private static void close(AutoCloseable closeable) {
+        if (closeable != null) {
             try {
-                if(!(closeable instanceof Connection) || plugin.getSettings().databaseType.equalsIgnoreCase("MySQL"))
+                if (!(closeable instanceof Connection) || plugin.getSettings().databaseType.equalsIgnoreCase("MySQL"))
                     closeable.close();
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 
-    public static void setAutoCommit(boolean autoCommit){
+    public static void setAutoCommit(boolean autoCommit) {
         Connection conn = null;
         try {
             conn = dataSource.getConnection();
             conn.setAutoCommit(autoCommit);
-        }catch(SQLException ex){
+        } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
             close(conn);
         }
     }
 
-    public static void commit() throws SQLException{
+    public static void commit() throws SQLException {
         Connection conn = null;
         try {
             conn = dataSource.getConnection();
@@ -198,23 +196,23 @@ public final class SQLHelper {
         }
     }
 
-    public interface QueryConsumer<T>{
+    public interface QueryConsumer<T> {
 
         void accept(T value) throws SQLException;
 
     }
 
 
-    private static class HikariDataSourceSQLiteWrapper extends HikariDataSource{
+    private static class HikariDataSourceSQLiteWrapper extends HikariDataSource {
 
         private final Connection conn;
 
-        HikariDataSourceSQLiteWrapper(HikariConfig config) throws SQLException{
+        HikariDataSourceSQLiteWrapper(HikariConfig config) throws SQLException {
             conn = DriverManager.getConnection(config.getJdbcUrl());
         }
 
         @Override
-        public Connection getConnection(){
+        public Connection getConnection() {
             return conn;
         }
 
@@ -222,7 +220,8 @@ public final class SQLHelper {
         public void close() {
             try {
                 conn.close();
-            }catch(SQLException ignored){}
+            } catch (SQLException ignored) {
+            }
         }
     }
 

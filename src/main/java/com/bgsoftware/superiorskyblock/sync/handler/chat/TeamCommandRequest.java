@@ -7,8 +7,6 @@ import com.bgsoftware.superiorskyblock.sync.handler.Handler;
 import net.spacedelta.lib.data.DataBuffer;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.UUID;
-
 public class TeamCommandRequest implements Handler {
 
     @NotNull

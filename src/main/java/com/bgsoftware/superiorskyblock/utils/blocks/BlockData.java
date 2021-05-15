@@ -19,7 +19,7 @@ public final class BlockData {
 
     private CompoundTag clonedTileEntity = null;
 
-    public BlockData(Location location, int combinedId, byte skyLightLevel, byte blockLightLevel, CompoundTag statesTag, CompoundTag tileEntity){
+    public BlockData(Location location, int combinedId, byte skyLightLevel, byte blockLightLevel, CompoundTag statesTag, CompoundTag tileEntity) {
         this.location = location;
         this.combinedId = combinedId;
         this.skyLightLevel = skyLightLevel;
@@ -28,19 +28,24 @@ public final class BlockData {
         this.tileEntity = tileEntity;
     }
 
-    public int getX(){
+    private static String getSignLine(int index, String def) {
+        return index >= plugin.getSettings().defaultSignLines.size() ? def :
+                plugin.getSettings().defaultSignLines.get(index);
+    }
+
+    public int getX() {
         return location.getBlockX();
     }
 
-    public int getY(){
+    public int getY() {
         return location.getBlockY();
     }
 
-    public int getZ(){
+    public int getZ() {
         return location.getBlockZ();
     }
 
-    public World getWorld(){
+    public World getWorld() {
         return location.getWorld();
     }
 
@@ -68,8 +73,8 @@ public final class BlockData {
         return clonedTileEntity;
     }
 
-    public void doPrePlace(Island island){
-        if(tileEntity == null)
+    public void doPrePlace(Island island) {
+        if (tileEntity == null)
             return;
 
         clonedTileEntity = new CompoundTag(tileEntity);
@@ -82,28 +87,24 @@ public final class BlockData {
                 );
         }
 
-        if(plugin.getSettings().defaultContainersEnabled) {
+        if (plugin.getSettings().defaultContainersEnabled) {
             String inventoryType = clonedTileEntity.getString("inventoryType");
             if (inventoryType != null) {
                 try {
                     InventoryType containerType = InventoryType.valueOf(inventoryType);
                     ListTag items = plugin.getSettings().defaultContainersContents.get(containerType);
-                    if(items != null)
+                    if (items != null)
                         clonedTileEntity.setTag("Items", new ListTag(CompoundTag.class, items.getValue()));
-                }catch (Exception ignored){}
+                } catch (Exception ignored) {
+                }
             }
         }
     }
 
-    public void doPostPlace(Island island){
-        if(clonedTileEntity != null && (clonedTileEntity.containsKey("Text1") || clonedTileEntity.containsKey("Text2") ||
+    public void doPostPlace(Island island) {
+        if (clonedTileEntity != null && (clonedTileEntity.containsKey("Text1") || clonedTileEntity.containsKey("Text2") ||
                 clonedTileEntity.containsKey("Text3") || clonedTileEntity.containsKey("Text4")))
             plugin.getNMSBlocks().handleSignPlace(island, location);
-    }
-
-    private static String getSignLine(int index, String def){
-        return index >= plugin.getSettings().defaultSignLines.size() ? def :
-                plugin.getSettings().defaultSignLines.get(index);
     }
 
 }

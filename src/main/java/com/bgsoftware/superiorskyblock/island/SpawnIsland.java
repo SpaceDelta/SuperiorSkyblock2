@@ -3,13 +3,7 @@ package com.bgsoftware.superiorskyblock.island;
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
 import com.bgsoftware.superiorskyblock.api.data.IslandDataHandler;
 import com.bgsoftware.superiorskyblock.api.enums.Rating;
-import com.bgsoftware.superiorskyblock.api.island.Island;
-import com.bgsoftware.superiorskyblock.api.island.IslandChest;
-import com.bgsoftware.superiorskyblock.api.island.IslandFlag;
-import com.bgsoftware.superiorskyblock.api.island.IslandPrivilege;
-import com.bgsoftware.superiorskyblock.api.island.PermissionNode;
-import com.bgsoftware.superiorskyblock.api.island.PlayerRole;
-import com.bgsoftware.superiorskyblock.api.island.SortingType;
+import com.bgsoftware.superiorskyblock.api.island.*;
 import com.bgsoftware.superiorskyblock.api.island.bank.IslandBank;
 import com.bgsoftware.superiorskyblock.api.island.warps.IslandWarp;
 import com.bgsoftware.superiorskyblock.api.island.warps.WarpCategory;
@@ -44,12 +38,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -66,7 +55,7 @@ public final class SpawnIsland implements Island {
     private final List<IslandFlag> islandSettings;
     private Biome biome = Biome.PLAINS;
 
-    public SpawnIsland(SuperiorSkyblockPlugin plugin){
+    public SpawnIsland(SuperiorSkyblockPlugin plugin) {
         SpawnIsland.plugin = plugin;
 
         String spawnLocation = plugin.getSettings().spawnLocation.replace(" ", "");
@@ -75,10 +64,10 @@ public final class SpawnIsland implements Island {
         islandSize = plugin.getSettings().spawnSize;
         islandSettings = plugin.getSettings().spawnSettings.stream().map(IslandFlag::getByName).collect(Collectors.toList());
 
-        if(center.getWorld() == null)
+        if (center.getWorld() == null)
             SWMHook.tryWorldLoad(spawnLocation.split(",")[0]);
 
-        if(center.getWorld() == null){
+        if (center.getWorld() == null) {
             new HandlerLoadException("The spawn location is in invalid world.", HandlerLoadException.ErrorLevel.SERVER_SHUTDOWN).printStackTrace();
             Bukkit.shutdown();
             return;
@@ -228,18 +217,18 @@ public final class SpawnIsland implements Island {
     }
 
     @Override
-    public int getCoopLimitRaw() {
-        return -1;
-    }
-
-    @Override
     public void setCoopLimit(int coopLimit) {
 
     }
 
     @Override
+    public int getCoopLimitRaw() {
+        return -1;
+    }
+
+    @Override
     public void setPlayerInside(SuperiorPlayer superiorPlayer, boolean inside) {
-        if(inside)
+        if (inside)
             playersInside.add(superiorPlayer);
         else
             playersInside.remove(superiorPlayer);
@@ -268,6 +257,11 @@ public final class SpawnIsland implements Island {
     }
 
     @Override
+    public void setTeleportLocation(Location teleportLocation) {
+
+    }
+
+    @Override
     public Location getTeleportLocation(World.Environment environment) {
         return getCenter(environment);
     }
@@ -282,11 +276,6 @@ public final class SpawnIsland implements Island {
     @Override
     public Location getVisitorsLocation() {
         return getCenter(World.Environment.NORMAL);
-    }
-
-    @Override
-    public void setTeleportLocation(Location teleportLocation) {
-
     }
 
     @Override
@@ -343,9 +332,9 @@ public final class SpawnIsland implements Island {
 
         List<Chunk> chunks = new ArrayList<>();
 
-        for(int x = minChunk.getX(); x <= maxChunk.getX(); x++){
-            for(int z = minChunk.getZ(); z <= maxChunk.getZ(); z++){
-                if(!noEmptyChunks || ChunksTracker.isMarkedDirty(this, world, x, z))
+        for (int x = minChunk.getX(); x <= maxChunk.getX(); x++) {
+            for (int z = minChunk.getZ(); z <= maxChunk.getZ(); z++) {
+                if (!noEmptyChunks || ChunksTracker.isMarkedDirty(this, world, x, z))
                     chunks.add(minChunk.getWorld().getChunkAt(x, z));
             }
         }
@@ -367,9 +356,9 @@ public final class SpawnIsland implements Island {
 
         List<Chunk> chunks = new ArrayList<>();
 
-        for(int chunkX = min.getBlockX() >> 4; chunkX <= max.getBlockX() >> 4; chunkX++){
-            for(int chunkZ = min.getBlockZ() >> 4; chunkZ <= max.getBlockZ() >> 4; chunkZ++){
-                if(world.isChunkLoaded(chunkX, chunkZ) && (!noEmptyChunks || ChunksTracker.isMarkedDirty(this, world, chunkX, chunkZ))){
+        for (int chunkX = min.getBlockX() >> 4; chunkX <= max.getBlockX() >> 4; chunkX++) {
+            for (int chunkZ = min.getBlockZ() >> 4; chunkZ <= max.getBlockZ() >> 4; chunkZ++) {
+                if (world.isChunkLoaded(chunkX, chunkZ) && (!noEmptyChunks || ChunksTracker.isMarkedDirty(this, world, chunkX, chunkZ))) {
                     chunks.add(world.getChunkAt(chunkX, chunkZ));
                 }
             }
@@ -420,7 +409,7 @@ public final class SpawnIsland implements Island {
 
     @Override
     public boolean isInside(Location location) {
-        if(!location.getWorld().equals(getCenter(World.Environment.NORMAL).getWorld()))
+        if (!location.getWorld().equals(getCenter(World.Environment.NORMAL).getWorld()))
             return false;
 
         Location min = getMinimum(), max = getMaximum();
@@ -440,7 +429,7 @@ public final class SpawnIsland implements Island {
 
     @Override
     public boolean isInsideRange(Chunk chunk) {
-        if(!chunk.getWorld().equals(getCenter(World.Environment.NORMAL).getWorld()))
+        if (!chunk.getWorld().equals(getCenter(World.Environment.NORMAL).getWorld()))
             return false;
 
         Location min = getMinimum(), max = getMaximum();
@@ -550,13 +539,13 @@ public final class SpawnIsland implements Island {
     }
 
     @Override
-    public String getRawName() {
-        return "";
+    public void setName(String islandName) {
+
     }
 
     @Override
-    public void setName(String islandName) {
-
+    public String getRawName() {
+        return "";
     }
 
     @Override
@@ -610,13 +599,13 @@ public final class SpawnIsland implements Island {
     }
 
     @Override
-    public int getIslandSizeRaw() {
-        return islandSize;
+    public void setIslandSize(int islandSize) {
+
     }
 
     @Override
-    public void setIslandSize(int islandSize) {
-
+    public int getIslandSizeRaw() {
+        return islandSize;
     }
 
     @Override
@@ -680,7 +669,7 @@ public final class SpawnIsland implements Island {
     }
 
     @Override
-    public void sendTitle(String title, String subtitle, int fadeIn, int duration, int fadeOut, UUID... ignoredMembers){
+    public void sendTitle(String title, String subtitle, int fadeIn, int duration, int fadeOut, UUID... ignoredMembers) {
 
     }
 
@@ -720,13 +709,13 @@ public final class SpawnIsland implements Island {
     }
 
     @Override
-    public BigDecimal getBankLimitRaw() {
-        return BigDecimal.valueOf(-1);
+    public void setBankLimit(BigDecimal bankLimit) {
+
     }
 
     @Override
-    public void setBankLimit(BigDecimal bankLimit) {
-
+    public BigDecimal getBankLimitRaw() {
+        return BigDecimal.valueOf(-1);
     }
 
     @Override
@@ -965,22 +954,17 @@ public final class SpawnIsland implements Island {
     }
 
     @Override
-    public double getCropGrowthRaw() {
-        return 1;
-    }
-
-    @Override
     public void setCropGrowthMultiplier(double cropGrowth) {
 
     }
 
     @Override
-    public double getSpawnerRatesMultiplier() {
+    public double getCropGrowthRaw() {
         return 1;
     }
 
     @Override
-    public double getSpawnerRatesRaw() {
+    public double getSpawnerRatesMultiplier() {
         return 1;
     }
 
@@ -990,18 +974,23 @@ public final class SpawnIsland implements Island {
     }
 
     @Override
-    public double getMobDropsMultiplier() {
+    public double getSpawnerRatesRaw() {
         return 1;
     }
 
     @Override
-    public double getMobDropsRaw() {
+    public double getMobDropsMultiplier() {
         return 1;
     }
 
     @Override
     public void setMobDropsMultiplier(double mobDrops) {
 
+    }
+
+    @Override
+    public double getMobDropsRaw() {
+        return 1;
     }
 
     @Override
@@ -1115,13 +1104,13 @@ public final class SpawnIsland implements Island {
     }
 
     @Override
-    public int getTeamLimitRaw() {
-        return 0;
+    public void setTeamLimit(int teamLimit) {
+
     }
 
     @Override
-    public void setTeamLimit(int teamLimit) {
-
+    public int getTeamLimitRaw() {
+        return 0;
     }
 
     @Override
@@ -1130,13 +1119,13 @@ public final class SpawnIsland implements Island {
     }
 
     @Override
-    public int getWarpsLimitRaw() {
-        return IslandUtils.NO_LIMIT.get();
+    public void setWarpsLimit(int warpsLimit) {
+
     }
 
     @Override
-    public void setWarpsLimit(int warpsLimit) {
-
+    public int getWarpsLimitRaw() {
+        return IslandUtils.NO_LIMIT.get();
     }
 
     @Override

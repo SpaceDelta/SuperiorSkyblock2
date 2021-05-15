@@ -67,9 +67,9 @@ public final class CmdAdminRemoveBlockLimit implements IAdminIslandCommand {
 
         Executor.data(() -> islands.forEach(island -> island.removeBlockLimit(key)));
 
-        if(islands.size() > 1)
+        if (islands.size() > 1)
             Locale.CHANGED_BLOCK_LIMIT_ALL.send(sender, StringUtils.format(key.getGlobalKey()));
-        else if(targetPlayer == null)
+        else if (targetPlayer == null)
             Locale.CHANGED_BLOCK_LIMIT_NAME.send(sender, StringUtils.format(key.getGlobalKey()), islands.get(0).getName());
         else
             Locale.CHANGED_BLOCK_LIMIT.send(sender, StringUtils.format(key.getGlobalKey()), targetPlayer.getName());

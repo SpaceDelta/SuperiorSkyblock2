@@ -8,9 +8,13 @@ import org.bukkit.entity.Player;
 
 public final class PlaceholderHook_PAPI extends PlaceholderHook {
 
-    PlaceholderHook_PAPI(){
+    PlaceholderHook_PAPI() {
         SuperiorSkyblockPlugin.log("Using PlaceholderAPI for placeholders support.");
         new EZPlaceholder().register();
+    }
+
+    public static String parse(OfflinePlayer offlinePlayer, String str) {
+        return PlaceholderAPI.setPlaceholders(offlinePlayer, str);
     }
 
     private class EZPlaceholder extends PlaceholderExpansion {
@@ -44,10 +48,6 @@ public final class PlaceholderHook_PAPI extends PlaceholderHook {
         public boolean persist() {
             return true;
         }
-    }
-
-    public static String parse(OfflinePlayer offlinePlayer, String str){
-        return PlaceholderAPI.setPlaceholders(offlinePlayer, str);
     }
 
 }

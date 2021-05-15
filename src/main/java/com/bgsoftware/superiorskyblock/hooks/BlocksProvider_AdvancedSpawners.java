@@ -1,14 +1,9 @@
 package com.bgsoftware.superiorskyblock.hooks;
 
 import com.bgsoftware.superiorskyblock.SuperiorSkyblockPlugin;
-import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.objects.Pair;
-import com.bgsoftware.superiorskyblock.utils.key.Key;
-import com.bgsoftware.superiorskyblock.utils.legacy.Materials;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,8 +11,8 @@ public final class BlocksProvider_AdvancedSpawners implements BlocksProvider {
 
     private static boolean registered = false;
 
-    public BlocksProvider_AdvancedSpawners(){
-        if(false && !registered) { // SpaceDelta
+    public BlocksProvider_AdvancedSpawners() {
+        if (false && !registered) { // SpaceDelta
             Bukkit.getPluginManager().registerEvents(new BlocksProvider_AdvancedSpawners.StackerListener(), SuperiorSkyblockPlugin.getPlugin());
             registered = true;
             SuperiorSkyblockPlugin.log("Using AdvancedSpawners as a spawners provider.");
@@ -28,7 +23,7 @@ public final class BlocksProvider_AdvancedSpawners implements BlocksProvider {
     public Pair<Integer, String> getSpawner(Location location) {
         // Start SpaceDelta
         return /*!Bukkit.isPrimaryThread() ? */ new Pair<>(-1, null);
-                /* new Pair<>(ASAPI.getSpawnerAmount(location), ASAPI.getSpawnerType(location).toUpperCase()) */
+        /* new Pair<>(ASAPI.getSpawnerAmount(location), ASAPI.getSpawnerType(location).toUpperCase()) */
     }
 
     @Override
